@@ -15,8 +15,8 @@
 				<Logo></Logo>
 			</div>
 			<div class='flex justify-between'>
-				<span class="inline-block pt-4 text-sm font-light text-blue-100 opacity-30">
-					trxmini.games developed by Nick Mura
+				<span class="inline-block pt-4 text-sm font-light text-blue-100 opacity-30 flex flex-wrap">
+					trxmini.games developed & created by  <div class='ml-1 hover:scale-[1.06] transition transition-300'><a class='underline' href='http://github.com/nickmura'>Nick Mura</a></div>
 				</span>
 				<span class="inline-block pt-4 text-sm font-light text-blue-200 opacity-20">
 					© 2022. All rights reserved by Jan Uchytil

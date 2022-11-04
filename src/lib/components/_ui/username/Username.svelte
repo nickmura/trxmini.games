@@ -28,7 +28,6 @@
         if (!$connectedAddress) {
             errorHandling = 'Connect to Tronlink wallet first before creating a username.'
         } else {
-
             let user = JSON.stringify({address: $connectedAddress, name: username})
             const submitData = async (url) => { // sending address to express and postgres
                 const res = await fetch(url, {
@@ -51,7 +50,7 @@
         if (!res.ok) throw new Error('null fetch')
         if (res) user = await res.json()
         if (user) {
-            console.log(user)
+            //console.log(user)
             connectedUsername.set(user.username)
         }
     }
@@ -60,10 +59,6 @@
     async function checkUniqueUser(uniqueUser) {
         const url3 = `http://localhost:5001/unique?user=${uniqueUser}`
         let user = JSON.stringify({name: uniqueUser})
-        console.log(url3, uniqueUser)
-        let isUsernameTaken 
-        
-        //const response = await fetch(url3)
             const submitData = async (url) => { // sending address to express and postgres
                 const res = await fetch(url, {
                     method: 'post',
@@ -78,8 +73,6 @@
             console.log(json.unique)
             if (json.unique == false) isUnique = false
             if (json.unique == true) isUnique = true
-            // .then(res => console.log(res.json()))
-            // .catch(err => console.error(err))
     }
 
     const debounce = (callback, delay) => {

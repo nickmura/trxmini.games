@@ -30,7 +30,7 @@
                 } if (res.tronWeb) {
                     connectedAddress.set(res.tronWeb.defaultAddress.base58)
                     sessionStorage.setItem('connectedAddr', res.tronWeb.defaultAddress.base58)
-                    console.log($page)   
+
                 }
             }
         } catch (error) {
@@ -45,13 +45,13 @@
     })
 
     async function checkUser() {
-        console.log($connectedAddress)
+        //console.log($connectedAddress)
         if ($connectedAddress) {
             const res = await fetch(`http://localhost:5001/username?addr=${$connectedAddress}`)
             if (!res.ok) throw new Error('null fetch')
             if (res) user = await res.json()
             if (user) {
-                console.log(user)
+            //    console.log(user)
                 connectedUsername.set(user.username)
             }
         }
