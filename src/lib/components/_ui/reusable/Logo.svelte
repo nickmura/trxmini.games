@@ -1,10 +1,14 @@
 <script>
     import { theme } from '$lib/state/Theme.svelte'
     import { goto } from '$app/navigation'
-
+    import { page } from '$app/stores'
 
     function refresh() {
-        goto('./')
+        if ($page.routeId == '/username') {
+            goto('../')
+        } else {
+            goto('./')
+        }
     }
 </script>
 

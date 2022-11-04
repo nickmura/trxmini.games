@@ -2,7 +2,7 @@
 	<div class="mx-auto max-w-7xl px-4 py-20 md:px-6">
 		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
 			<div
-				class="max-w-sm place-self-center sm:px-12 md:max-w-max md:place-self-start md:px-8 lg:px-16"
+				class="max-w-sm place-self-center sm:px-12 md:max-w-max md:place-self-start md:px-8 lg:px-16 hover:scale-[1.04] transition transition-200"
 			>
 				<img src="/img/pool-chess-cover-2nd-slide.png" alt="" />
 			</div>

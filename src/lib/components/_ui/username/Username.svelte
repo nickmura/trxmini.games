@@ -5,6 +5,7 @@
 
     import { connectedAddress, connectedUsername } from '$lib/state/state'
     import { url0, url1 } from '$lib/state/state'
+	import { goto } from '$app/navigation';
 
     const url2 = `http://localhost:5001/username?addr=${$connectedAddress}`
 
@@ -27,6 +28,7 @@
         if (!$connectedAddress) {
             errorHandling = 'Connect to Tronlink wallet first before creating a username.'
         } else {
+
             let user = JSON.stringify({address: $connectedAddress, name: username})
             const submitData = async (url) => { // sending address to express and postgres
                 const res = await fetch(url, {
@@ -40,6 +42,7 @@
         submitData(url1)
             .then(res => console.log(res))
             .catch(err => console.error(err))
+        goto('../')
         }
     }
 
@@ -93,7 +96,7 @@
 
 
 
-    <div class='flex flex-initial  flex-col justify-center text-center items-center w-full min-h-screen '>
+    <div class='flex flex-initial  flex-col justify-center text-center items-center w-full min-h-screen ' transition:slide>
         
         <h1 class='flex-initial pl-4 pr-4 pb-2 text-4xl dark:text-white' transition:slide>
             Get a unique username domain on us, free for
@@ -159,7 +162,7 @@
 
 
                     
-                    <button on:click={(e)=>createUsername(user)} class='rounded-[10px] border border-indigo-500 ml-2 dark:border-blue-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+                    <button on:click={(e)=>createUsername(username)} class='rounded-[10px] border border-indigo-500 ml-2 dark:border-blue-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                         transition-200'> 
                         Set Username
                     </button>

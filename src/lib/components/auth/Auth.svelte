@@ -3,8 +3,11 @@
 
     import { beforeUpdate, onMount } from 'svelte'
     import { slide } from 'svelte/transition'
+
+    import { browser } from '$app/environment'
     import { goto } from '$app/navigation'
     import { page } from '$app/stores'
+
 
 
     import { connectedAddress, connectedUsername } from '$lib/state/state'
@@ -19,20 +22,22 @@
 
     async function check() { 
         try {
-            const res = await window.tronLink
-
-            if (res.tronWeb == undefined || res.tronWeb === false) { 
-                sessionStorage.setItem('connectedAddr', '')
-                connectedAddress.set()
-            } if (res.tronWeb) {
-                connectedAddress.set(res.tronWeb.defaultAddress.base58)
-                sessionStorage.setItem('connectedAddr', res.tronWeb.defaultAddress.base58)
-                console.log($page)   
+            if (browser) {
+                const res = await window.tronLink 
+                if (res.tronWeb == undefined || res.tronWeb === false) { 
+                    sessionStorage.setItem('connectedAddr', '')
+                    connectedAddress.set()
+                } if (res.tronWeb) {
+                    connectedAddress.set(res.tronWeb.defaultAddress.base58)
+                    sessionStorage.setItem('connectedAddr', res.tronWeb.defaultAddress.base58)
+                    console.log($page)   
+                }
             }
-            } catch (error) {
-                console.log(error)
-            }
+        } catch (error) {
+            console.log(error)
         }
+    } setTimeout(check, 200)
+    
 
     onMount(() => {
         check()
@@ -98,7 +103,12 @@
     }
 
     async function redirectUsername() {
-        goto('./username')
+        if ($page.routeId == "/username") {
+            goto('./')
+        } else {
+            goto('./username')
+        }
+
     }
 
     async function redirectJoin() {
@@ -106,7 +116,7 @@
     }
 
     async function tipPlayer() {
-        // DONT WORK ON THIS NOW
+        // COMING SOON
     }
 
 
@@ -144,11 +154,11 @@
                 {:else if copied}
                     <p class=' '>Address: <i>Copied!</i></p>
                 {/if}
-                <button class='mb-2'on:click={copyClipboard}>
+                <button class=''on:click={copyClipboard}>
                     {#if $theme == 'dark'}
-                        <img class='ml-2 fixed' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
+                        <img class='ml-3' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
                     {:else if $theme == 'light'}
-                        <img class='ml-2 fixed ' src='/img/copy-light.svg' width='10px' height='10px' alt='Copy to clipboard'>
+                        <img class='ml-3' src='/img/copy-light.svg' width='10px' height='10px' alt='Copy to clipboard'>
                     {/if}
                 </button>
             </div>
@@ -179,9 +189,9 @@
                 {/if}
                 <button class=''on:click={copyClipboard}>
                     {#if $theme == 'dark'}
-                        <img class='ml-2 ' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
+                        <img class='ml-3 ' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
                     {:else if $theme == 'light'}
-                        <img class='ml-2 ' src='/img/copy-light.svg' width='10px' height='10px' alt='Copy to clipboard'>
+                        <img class='ml-3 ' src='/img/copy-light.svg' width='10px' height='10px' alt='Copy to clipboard'>
                     {/if}
                 </button>
             </div>

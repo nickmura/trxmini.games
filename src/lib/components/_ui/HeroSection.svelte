@@ -73,11 +73,12 @@
 			<div class="relative flex min-h-[600px] flex-col items-center justify-end">
 				<img
 					src="/img/3d-arcade-hero-cover.png"
-					class="absolute -top-2 w-[500px] max-w-3xl md:w-auto lg:-right-6"
+					class="absolute -top-2 w-[500px] max-w-3xl md:w-auto lg:-right-6 hover:scale-[1.02] transition transition-200"
 					alt=""
 				/>
 				<div
-					class="relative flex max-w-lg flex-col items-center gap-4 rounded-[10px] bg-gradient-to-r from-blue-500 to-blue-800 py-4 px-4 sm:px-12 md:px-16 md:mr-14"
+					class="relative flex max-w-lg flex-col items-center gap-4 rounded-[10px] bg-gradient-to-r from-blue-500 to-blue-800 py-4 px-4 sm:px-12 md:px-16 
+					md:ml-9 lg:mr-24 hover:scale-[1.05] transition transition-200 hover:animate-pulse"
 				>
 					<span class="text-lg font-medium text-white">Our beta launches in... </span>
 					<div class="flex items-center justify-center gap-3">

@@ -24,6 +24,7 @@ app.post('/address', (req, res) => {
 
 app.post('/username', (req, res) => {
     let user = req.body
+    console.log(user)
     let insert = `UPDATE usernames SET username = ($1) WHERE address = ($2)`;
     
     const values = [`${user.name}`, `${user.address}`]
