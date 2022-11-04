@@ -10,6 +10,8 @@
 		{ name: 'FAQs', url: '/#faq' },
 		{ name: 'Whitepaper', url: '/#whitepaper' }
 	];
+
+	
 </script>
 
 <nav class="relative z-50 flex items-center justify-between py-8">
