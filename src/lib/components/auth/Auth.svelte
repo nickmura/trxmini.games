@@ -4,6 +4,8 @@
     import { beforeUpdate, onMount } from 'svelte'
     import { slide } from 'svelte/transition'
     import { goto } from '$app/navigation'
+    import { page } from '$app/stores'
+
 
     import { connectedAddress, connectedUsername } from '$lib/state/state'
     import { theme } from '$lib/state/Theme.svelte'
@@ -25,7 +27,7 @@
             } if (res.tronWeb) {
                 connectedAddress.set(res.tronWeb.defaultAddress.base58)
                 sessionStorage.setItem('connectedAddr', res.tronWeb.defaultAddress.base58)
-                    
+                console.log($page)   
             }
             } catch (error) {
                 console.log(error)
@@ -142,9 +144,9 @@
                 {:else if copied}
                     <p class=' '>Address: <i>Copied!</i></p>
                 {/if}
-                <button class=''on:click={copyClipboard}>
+                <button class='mb-2'on:click={copyClipboard}>
                     {#if $theme == 'dark'}
-                        <img class='ml-2 fixed ' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
+                        <img class='ml-2 fixed' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
                     {:else if $theme == 'light'}
                         <img class='ml-2 fixed ' src='/img/copy-light.svg' width='10px' height='10px' alt='Copy to clipboard'>
                     {/if}

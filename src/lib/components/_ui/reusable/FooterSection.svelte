@@ -1,3 +1,7 @@
+<script>
+	import Logo from './Logo.svelte'
+</script>
+
 <section
 	id="whitepaper"
 	class="bg-gradient-to-r from-indigo-900 via-indigo-700 to-blue-500 text-white"
@@ -8,7 +12,7 @@
 		</div>
 		<footer class="py-12">
 			<div class="border-b border-gray-200 py-4">
-				<img src="/img/bottom-logo.png" width='250px' height='65px' alt="" />
+				<Logo></Logo>
 			</div>
 			<div class='flex justify-between'>
 				<span class="inline-block pt-4 text-sm font-light text-blue-100 opacity-30">
