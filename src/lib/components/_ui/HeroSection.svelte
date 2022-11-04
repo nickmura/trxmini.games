@@ -1,8 +1,9 @@
 <script>
 	//@ts-nocheck
-	import Navbar from './Navbar.svelte';
-	import Theme from '../state/Theme.svelte'
-	import { theme } from '../state/Theme.svelte'
+	import Navbar from './reusable/Navbar.svelte';
+	
+	import Theme from '$lib/state/Theme.svelte'
+	import { theme } from '$lib/state/Theme.svelte'
 	let date
 	let target = 1668373200
 	let countdown

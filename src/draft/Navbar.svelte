@@ -25,11 +25,11 @@
 			{/each}
 		</ul>
 		<div class="flex items-center gap-4">
-			<button
+			<!-- <button
 				class="rounded-[10px] border border-blue-500 py-1.5 px-6 text-lg font-medium text-[#3C1272]"
 			>
 				Sign In
-			</button>
+			</button> -->
 			<button
 				class="rounded-[10px] border border-transparent bg-gradient-to-r from-blue-500 to-blue-600 py-1.5 px-6 text-lg font-medium text-white"
 			>

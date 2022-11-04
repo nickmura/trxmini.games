@@ -1,6 +1,8 @@
 <script>
-    import { theme } from '../../state/Theme.svelte'
+    import { theme } from '$lib/state/Theme.svelte'
     import { goto } from '$app/navigation'
+
+    
     function refresh() {
         goto('./')
     }
