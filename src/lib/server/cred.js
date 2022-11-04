@@ -4,8 +4,8 @@ const { Client } = pkg;
 
 export const post = new Client({
     host: "localhost",
-    user: "postgres",
+    user: "nick",
     port: 5432,
-    password: "admin",
-    database: "trx-names"
+    password: "8151",
+    database: "trx-data"
 })
