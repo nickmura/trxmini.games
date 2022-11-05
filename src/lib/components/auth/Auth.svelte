@@ -25,7 +25,6 @@
             if (browser) {
                 const res = await window.tronLink 
                 if (res.tronWeb == undefined || res.tronWeb === false) { 
-                    sessionStorage.setItem('connectedAddr', '')
                     connectedAddress.set()
                 } if (res.tronWeb) {
                     connectedAddress.set(res.tronWeb.defaultAddress.base58)

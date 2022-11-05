@@ -9,9 +9,15 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
-app.use(cors({
-    origin: "http://www.trxmini.games",
-}))
+
+const whitelist = ['http://www.trxmini.games', 'http://trxmini.games']
+const config = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) callback(null, true)
+        else callback(new Error(`CORS Policy denied, origin is unexpected origin ${origin}`))
+    }
+}
+app.use(cors(config))
 
 app.post('/address', (req, res) => {
     let user = req.body

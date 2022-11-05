@@ -6,6 +6,7 @@
     import { connectedAddress, connectedUsername } from '$lib/state/state'
     import { url0, url1 } from '$lib/state/state'
 	import { goto } from '$app/navigation';
+	import { USERNAME } from '$env/static/private';
 
     const url2 = `http://170.187.182.220:5001/username?addr=${$connectedAddress}`
 
@@ -103,6 +104,14 @@
                 <div class='text-sm text-red-400 italic max-w-3/4 w-3/4 text-red-400 dark:hover:text-red-200' transition:slide>
                     This username is already taken.
                 </div>
+            {:else if $connectedAddress && username && isUnique}
+                <div class='text-sm text-green-400 italic max-w-3/4 w-3/4 text-red-400 dark:hover:text-red-200' transition:slide>
+                    This username is available.
+                </div>
+            {:else if $connectedAddress && username.includes('.trx')}
+                <div class='text-sm text-red-400 italic max-w-3/4 w-3/4 text-red-400 dark:hover:text-red-200' transition:slide>
+                    Remove any instance of '.trx', as it will be added to your username inherently. 
+                </div>
             {:else}
                 <div class='text-sm text-zinc-400 italic max-w-3/4 w-3/4 text-gray-400 dark:hover:text-gray-200'>
                     Personalize your address on our platform, and receive
@@ -121,7 +130,7 @@
                 <input bind:value={username} on:input={(e) => bounceCheckUser(username)} id="username" name="username" required class="relative w-full opacity-50 px-3 py-2 border dark:bg-[#57575e] border-gray-300 placeholder-gray-500  dark:text-white dark:placeholder-gray-100 rounded-lg focus:outline-none 
                 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm font-medium" placeholder="Enter a username here!" disabled>
                 {/if}
-                {#if !username}
+                {#if !username || username.includes('.trx')}
                     <button on:click={setUserWarning} class="rounded-[10px] border border-indigo-500 ml-2 dark:border-blue-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white opacity-50 border-opacity-50" disabled>
                     <span class="">Create </button>
                 {:else if username && $connectedUsername || !isUnique}
