@@ -1,7 +1,9 @@
 <script>
 	import { slide } from 'svelte/transition';
-	import { theme } from '$lib/state/Theme.svelte'
+	import { goto } from '$app/navigation'
+	import { page } from '$app/stores'
 
+	import { theme } from '$lib/state/Theme.svelte'
 
 	import Theme from '$lib/state/Theme.svelte'
 	import Logo from '$lib/components/_ui/reusable/Logo.svelte'
@@ -26,6 +28,15 @@
 		if ($connectedAddress && !$connectedUsername) hasName = false
 	}, 1000)
 
+
+    async function redirectUsername() {
+        if ($page.routeId == "/username") {
+            goto('./')
+        } else {
+            goto('./username')
+        }
+
+    }
 </script>
 
 <nav class="relative z-50 flex items-center justify-between py-8">
@@ -42,7 +53,7 @@
     <div class="animate-pulse duration-1000 p-2 absolute z-20 max-w-10 left-1/2 -translate-x-1/2 max-w-full text-xs  
     flex justify-center transition-opacity text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
         <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-2 " fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-        <div class='pt-0.5'>Log into Tronlink via extension first, and switch to Shasta network before connecting.</div>
+        <div class='pt-0.5'>Create a unique, domain username <button class='hover:scale-[1.05] transition transition-200' on:click={redirectUsername}><u>here</u></button></div>
     </div>
     {/if}
 	<div class="hidden lg:flex lg:items-center lg:gap-10">
