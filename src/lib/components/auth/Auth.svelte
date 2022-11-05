@@ -36,13 +36,9 @@
         } catch (error) {
             console.log(error)
         }
-    } setTimeout(check, 200)
+    } setTimeout(check, 500)
     
 
-    onMount(() => {
-        check()
-        
-    })
 
     async function checkUser() {
         //console.log($connectedAddress)
@@ -56,7 +52,7 @@
             }
         }
     }
-    setTimeout(checkUser, 400)
+    setTimeout(checkUser, 1000)
       
 
     async function connectTronlink() {
