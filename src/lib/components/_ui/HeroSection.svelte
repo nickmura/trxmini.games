@@ -1,6 +1,6 @@
 <script>
 	//@ts-nocheck
-	import Navbar from './reusable/Navbar.svelte';
+	import Navbar from '$lib/components/_ui/reusable/Navbar.svelte';
 	
 	import Theme from '$lib/state/Theme.svelte'
 	import { theme } from '$lib/state/Theme.svelte'
