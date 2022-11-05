@@ -6,7 +6,7 @@
     import { connectedAddress, connectedUsername } from '$lib/state/state'
     import { url0, url1 } from '$lib/state/state'
 	import { goto } from '$app/navigation';
-	import { USERNAME } from '$env/static/private';
+
 
     const url2 = `http://170.187.182.220:5001/username?addr=${$connectedAddress}`
 
