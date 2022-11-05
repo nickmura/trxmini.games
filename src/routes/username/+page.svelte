@@ -1,4 +1,5 @@
 <script>
+    // @ts-ignore
     import Navbar from '$lib/components/_ui/reusable/Navbar.svelte'
     import Username from '$lib/components/_ui/username/Username.svelte'
 </script>
