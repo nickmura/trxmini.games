@@ -8,7 +8,7 @@
 	import { goto } from '$app/navigation';
 
 
-    const url2 = `http://170.187.182.220:5001/username?addr=${$connectedAddress}`
+    const url2 = `http://localhost:5001/username?addr=${$connectedAddress}`
 
     let username 
     
@@ -58,7 +58,7 @@
 
 
     async function checkUniqueUser(uniqueUser) {
-        const url3 = `http://170.187.182.220:5001/unique?user=${uniqueUser}`
+        const url3 = `http://localhost:5001/unique?user=${uniqueUser}`
         let user = JSON.stringify({name: uniqueUser})
             const submitData = async (url) => { // sending address to express and postgres
                 const res = await fetch(url, {
