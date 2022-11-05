@@ -26,7 +26,7 @@
     setTimeout(() => {
 		if (!$connectedAddress) isUser = false
 		if ($connectedAddress && !$connectedUsername) hasName = false
-		console.log($page)
+		//console.log($page)
 	}, 1000)
 
 
