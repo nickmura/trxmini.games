@@ -9,7 +9,9 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
-app.use(cors())
+app.use(cors({
+    origin: "http://www.trxmini.games",
+}))
 
 app.post('/address', (req, res) => {
     let user = req.body

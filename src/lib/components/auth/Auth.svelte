@@ -15,7 +15,7 @@
     import { url0, url1 } from '$lib/state/state'
     
 
-    const url2 = `http://localhost:5001/username?addr=${$connectedAddress}`
+    const url2 = `http:/170.187.182.220:5001/username?addr=${$connectedAddress}`
 
     let isExpanded = false
     let user
@@ -43,7 +43,7 @@
     async function checkUser() {
         //console.log($connectedAddress)
         if ($connectedAddress) {
-            const res = await fetch(`http://localhost:5001/username?addr=${$connectedAddress}`)
+            const res = await fetch(`http://trxmini.games:5001/username?addr=${$connectedAddress}`)
             if (!res.ok) throw new Error('null fetch')
             if (res) user = await res.json()
             if (user) {
