@@ -15,7 +15,7 @@
     import { url0, url1 } from '$lib/state/state'
     
 
-    const url2 = `http:/170.187.182.220:5001/username?addr=${$connectedAddress}`
+    const url2 = `http:/172.105.106.183:5001/username?addr=${$connectedAddress}`
 
     let isExpanded = false
     let user
