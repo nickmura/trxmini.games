@@ -15,7 +15,7 @@
     import { url0, url1 } from '$lib/state/state'
     
 
-    const url2 = `http:/172.105.106.183:5001/username?addr=${$connectedAddress}`
+    const url2 = `http:/170.187.182.220:5001/username?addr=${$connectedAddress}`
 
     let isExpanded = false
     let user
@@ -159,9 +159,9 @@
             </div>
             <div class='flex wrap mt-3'>
                 <button on:click={redirectCreate} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
+                dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50 border-opacity-50'disabled>Create Game</button>
                 <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs  hover:scale-[1.05] transition transition-200'>Join Game</button>
+                dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50 border-opacity-50' disabled>Join Game</button>
                 <button on:click={tipPlayer} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50 border-opacity-50' disabled>Tip</button>
             </div>
