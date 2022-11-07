@@ -40,18 +40,22 @@
 
 
     async function checkUser() {
-        //console.log($connectedAddress)
-        if ($connectedAddress) {
-            const res = await fetch(url2)
-            if (!res.ok) throw new Error('null fetch')
-            if (res) user = await res.json()
-            if (user) {
-            //    console.log(user)
-                connectedUsername.set(user.username)
+        if (browser) {
+            const res = await window.tronLink 
+            if (res.tronWeb) connectedAddress.set(res.tronWeb.defaultAddress.base58)
+            if ($connectedAddress) {
+                const res = await fetch(`http://170.187.182.220:5001/username?addr=${$connectedAddress}`)
+                if (!res.ok) throw new Error('null fetch')
+                if (res) user = await res.json()
+                if (user) {
+                    console.log($connectedAddress, user)
+                    connectedUsername.set(user.username)
+                }
             }
         }
+        
     }
-    setTimeout(checkUser, 1000)
+    setTimeout(checkUser, 1500)
       
 
     async function connectTronlink() {
