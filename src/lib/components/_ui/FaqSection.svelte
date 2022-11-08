@@ -19,7 +19,7 @@
 			question: 'What is the reason of this project?',
 			answer:
 				`This project was conceived at the end of September 2022 when attempting to find wagering services for
-				 for a chess game. Providing a personalized escrow service to stake and wager against players on your favorite games
+				a chess game. Providing a personalized escrow service to stake and wager against players on your favorite games
 				has been limited to specific intermedaries. TRON is has an excellent catalog of GameFi projects
 				and history of supporting GameFi projects, we hope the TRON community and ecosystem
 				will find our project important to take interest in supporting back!`

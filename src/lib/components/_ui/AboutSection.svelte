@@ -33,7 +33,7 @@
 				<p class="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
 					Players can start or join another player's game for a specified wager/stake of supported
 					tokens on TRON, which will be stored on one of our escrow smart contracts. The player
-					who wins the game, gets the prize pool of the entire stake! Players will
+					who wins the game gets the prize pool of the entire stake! Players will
 					also be able to play the same games with no stake.
 				</p>
 				<p class="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
