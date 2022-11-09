@@ -2,7 +2,7 @@
 import express from 'express'
 import cors from 'cors';
 
-import { chessEventListener } from '../../state/state.js';
+import { chessEventListener } from '../state.js';
 
 import { createClient } from 'redis';
 const client = createClient({ url: "redis://nick:admin@172.105.106.183:6379"});

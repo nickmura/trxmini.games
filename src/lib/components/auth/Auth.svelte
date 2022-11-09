@@ -16,15 +16,15 @@
         connectedUsername, 
         createPrompt, 
         createGameForm,
-        getBalance
+        getBalance,
+        urlRooms
     } from '$lib/state/state'
 
     
-
-    
-
     let isExpanded = false
     let user
+    let rooms
+    let currentRoom
 
     async function check() { 
         try {
@@ -43,6 +43,21 @@
         }
     } setTimeout(check, 500)
     
+    
+    async function updateRooms() {
+        let room
+		const res = await fetch(urlRooms)
+		if (!res.ok) return res.text().then(text => { throw new Error(text) })
+		else rooms = JSON.parse(await res.json())
+
+        //Make condition to call endedRooms if rooms.find fails TODO 
+        if ($connectedUsername) { //This is not runing because $connectedUsername isn't before this component via Auth.svelte
+            if (rooms != null) room = rooms.find(room => room.players.includes($connectedUsername))
+                if (room) currentRoom = true
+                else currentRoom = false
+            }       
+        
+    } updateRooms()
 
 
     async function checkUser() {
@@ -53,7 +68,7 @@
             getBalance.set(await window.tronWeb.trx.getBalance($connectedAddress) / 1000000)
             if ($connectedAddress) {
                 console.log($connectedAddress)
-                const url2 = `http://localhost:5001/username?addr=${$connectedAddress}`
+                const url2 = `http://172.105.106.183:5001/username?addr=${$connectedAddress}`
                 const res = await fetch(url2)
                 if (!res.ok) throw new Error('null fetch')
                 if (res) user = await res.json()
@@ -63,7 +78,7 @@
                 }
             }
         }   
-    } setTimeout(checkUser, 1500)
+    } setTimeout(checkUser, 700)
       
 
     async function connectTronlink() {
@@ -171,8 +186,13 @@
                 </button>
             </div>
             <div class='flex wrap mt-3'>
+                {#if !currentRoom}
                 <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
+                {:else if currentRoom}
+                    <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                    dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200 opacity-50' disabled>Create Game</button>
+                {/if}
                 <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs  hover:scale-[1.05] transition transition-200 '>Join Game</button>
                 <button on:click={tipPlayer} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  

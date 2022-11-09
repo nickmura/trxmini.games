@@ -1,0 +1,37 @@
+/** URLs to images for all chess pieces */
+.cg-wrap piece.pawn.white {
+	background-image: var(--cg-url-wP);
+}
+.cg-wrap piece.bishop.white {
+	background-image: var(--cg-url-wB);
+}
+.cg-wrap piece.knight.white {
+	background-image: var(--cg-url-wN);
+}
+.cg-wrap piece.rook.white {
+	background-image: var(--cg-url-wR);
+}
+.cg-wrap piece.queen.white {
+	background-image: var(--cg-url-wQ);
+}
+.cg-wrap piece.king.white {
+	background-image: var(--cg-url-wK);
+}
+.cg-wrap piece.pawn.black {
+	background-image: var(--cg-url-bP);
+}
+.cg-wrap piece.bishop.black {
+	background-image: var(--cg-url-bB);
+}
+.cg-wrap piece.knight.black {
+	background-image: var(--cg-url-bN);
+}
+.cg-wrap piece.rook.black {
+	background-image: var(--cg-url-bR);
+}
+.cg-wrap piece.queen.black {
+	background-image: var(--cg-url-bQ);
+}
+.cg-wrap piece.king.black {
+	background-image: var(--cg-url-bK);
+}

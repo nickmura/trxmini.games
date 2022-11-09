@@ -5,10 +5,10 @@
 	import { goto } from '$app/navigation';
     import { page } from '$app/stores'
     import { theme } from '$lib/state/Theme.svelte'
-    import { url0, url1 } from '$lib/state/state'
+    import { url0, url1, chessWs } from '$lib/state/state'
 
     import { io } from 'socket.io-client'
-    //const socket = io('http://localhost:3500/')
+    const socket = io(chessWs)
 
     import { 
         connectedAddress, 
@@ -85,8 +85,8 @@
                 let room = {
                     gameID: uuid, 
                     game: 'chess', 
-                    players: [$connectedAddress], 
-                    host: `${$connectedAddress}`,
+                    players: [$connectedUsername], 
+                    host: `${$connectedUsername}`,
                     player2: ``, 
                     chat: [],
                     orientation: ``, // For when the game ends, client can know what the orientation was.
@@ -101,10 +101,11 @@
                     redeemedDraw: [],
                 } 
 
-                //socket.emit('createRoom', uuid, room)
+                socket.emit('createRoom', uuid, room)
+                createPrompt.set(false)
                 if ($page.routeId == '/username' || $page.routeId == '/join') goto('../chess')
                 else {
-                    console.log('my nipples are weird looking')
+                    
                     goto('./chess')
                     
                 }
@@ -190,7 +191,7 @@
                     <div class=' font-semibold flex justify-center py-6 px-4 '>
                         
                         <div class='mt-1.5 mr-2'>Stake:</div>
-                        <input bind:value={stakeValue} id="stake" name="stake" type='number' required class="relative px-3 py-1.5 
+                        <input bind:value={stakeValue} id="stake" min='0' name="stake" type='number' required class="relative px-3 py-1.5 
                     border dark:bg-[#111112] bg-[#EDEDE8] w-32 border-gray-300 placeholder-gray-500 dark:text-white dark:placeholder-gray-450 bg-gray-100 rounded-lg focus:outline-none 
                     focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-light" placeholder="Enter a wager">
                     </div>   
@@ -207,8 +208,8 @@
                 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                 transition-200" on:click={createGameForm}>Cancel</button>
 
-
-                {#if stakeValue && stakeValue < $getBalance - 16 && !hasClicked}
+                <!-- Change last and operator to stakeValue > 49 -->
+                {#if stakeValue && stakeValue < $getBalance - 16 && !hasClicked && stakeValue > 9}  
                     <button on:click={(e)=>createGame(username)} class=' rounded-[10px] border 
                         border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
                         font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 

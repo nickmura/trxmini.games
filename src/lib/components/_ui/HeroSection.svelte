@@ -97,7 +97,7 @@
 							<div
 								class="flex h-16 w-16 items-center justify-center rounded-[10px] border border-white text-xl font-medium text-white sm:h-20 sm:w-20 md:text-2xl"
 							>
-								{hours  || hours == 0 ? hours : ''}
+								{hours || hours == 0 ? hours : ''}
 							</div>
 							<span class="inline-block pt-1 font-medium uppercase text-white">Hours</span>
 						</div>

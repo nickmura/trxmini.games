@@ -7,7 +7,6 @@
 		"db": "node ./src/lib/server/db/server.js",
 		"redis": "node ./src/lib/server/redis/server.js",
 		"chess": "node ./src/lib/server/chess/server.js",
-		
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -19,6 +18,7 @@
 		"@sveltejs/adapter-auto": "^1.0.0-next.86",
 		"@sveltejs/adapter-static": "^1.0.0-next.47",
 		"@sveltejs/kit": "next",
+		"@types/chess.js": "^0.13.4",
 		"autoprefixer": "^10.4.7",
 		"postcss": "^8.4.14",
 		"postcss-load-config": "^4.0.1",
@@ -36,6 +36,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"chess.js": "^0.12.0",
+		"chessground": "^8.1.7",
 		"cors": "^2.8.5",
 		"express": "^4.18.2",
 		"pg": "^8.8.0",

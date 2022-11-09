@@ -1,0 +1,49 @@
+.cg-wrap coords {
+	text-shadow: var(--cg-cs);
+}
+
+/** Alternating colors in rank/file labels */
+.cg-wrap.orientation-white coords.ranks coord:nth-child(2n),
+.cg-wrap.orientation-white coords.files coord:nth-child(2n),
+.cg-wrap.orientation-black coords.ranks coord:nth-child(2n + 1),
+.cg-wrap.orientation-black coords.files coord:nth-child(2n + 1) {
+	color: var(--cg-ccb);
+}
+
+.cg-wrap.orientation-black coords.ranks coord:nth-child(2n),
+.cg-wrap.orientation-black coords.files coord:nth-child(2n),
+.cg-wrap.orientation-white coords.ranks coord:nth-child(2n + 1),
+.cg-wrap.orientation-white coords.files coord:nth-child(2n + 1) {
+	color: var(--cg-ccw);
+}
+
+.cg-wrap coords {
+	position: absolute;
+	display: flex;
+	pointer-events: none;
+	opacity: 0.8;
+	font-family: sans-serif;
+	font-size: 1em;
+}
+
+.cg-wrap coords.ranks {
+	flex-flow: column-reverse;
+	height: 100%;
+}
+
+.cg-wrap coords.ranks.black {
+	flex-flow: column;
+}
+
+.cg-wrap coords.files {
+	flex-flow: row;
+	width: 100%;
+}
+
+.cg-wrap coords.files.black {
+	flex-flow: row-reverse;
+}
+
+.cg-wrap coords coord {
+	flex: 1 1 12.5%;
+}

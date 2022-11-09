@@ -51,7 +51,7 @@
 
 
     async function checkUniqueUser(uniqueUser) {
-        const url3 = `http://localhost:5001/unique?user=${uniqueUser}`
+        const url3 = `http://172.105.106.183:5001/unique?user=${uniqueUser}`
         let user = JSON.stringify({name: uniqueUser})
             const submitData = async (url) => { // sending address to express and postgres
                 const res = await fetch(url, {
