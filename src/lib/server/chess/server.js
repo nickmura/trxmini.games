@@ -9,14 +9,37 @@ client.connect()
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
+
+const whitelist = ['http://test.trxmini.games', 'https://test.trxmini.games', 'http://trxmini.games', 
+'https://trxmini.games', 'http://localhost:5173', 'https://localhost:5173']
+const config = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) callback(null, true)
+        else callback(new Error(`CORS Policy denied, origin is unexpected origin ${origin}`))
+    }
+}
+app.use(cors(config));
 
 let rooms = [];
 let endedRooms = []
 
+
+
+async function getRoomsOnStartup() { // Doesn't require 'ENDEDROOMS' key as this is only grabbing
+    if (await client.get('ROOMS') != null) {
+        rooms =  await client.get('ROOMS')
+        rooms = JSON.parse(rooms)
+    } else {
+        rooms = []
+    }
+
+    console.log(rooms)
+} getRoomsOnStartup()
+
+
 const io = new Server(3001, {
     cors: {
-        origin: '*',
+        origin: 'http://localhost:5173',
     }
 })
 
@@ -41,6 +64,35 @@ io.on('connection', (socket) => {
         client.set('ROOMS', jRooms)
     })
 
+    socket.on('joinRoom', (player, gameId) => {
+        socket.join(`${gameId}`)
+        let room = rooms.find(room => room.gameID === gameId)
+        // updates game state with new player and functional chessboard
+        room.players.push(player)
+        room.player2 = player
+        room.fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+        room.orientation = player // for when game ends, retrieve orientation if player black
+
+        console.log(`PLAYER ${player} IS JOINING ROOM ${gameId}`)
+        let jRooms = JSON.stringify(rooms)
+        client.set('ROOMS', jRooms)
+
+        console.log(room.gameID)
+        io.to(`${gameId}`).emit('playerJoined', room.fen)
+    })
+
+    socket.on('chessMove', (player, fenValue) => {
+        console.log(player)
+        let room = rooms.find(room => room.players.includes(player))
+        socket.join(`${room.gameID}`)
+
+        room.fen = fenValue
+        console.log(`CHESS MOVE IN ${room.gameID}`, room.fen)
+        let jRooms = JSON.stringify(rooms)
+        client.set('ROOMS', jRooms)
+
+        io.to(`${room.gameID}`).emit('emitMove', fenValue, player) // emits the fenValue to the specific room
+    })
 
 
     // Long because of the different side effects <!------ !> <!------ !> <!------ !> Leaving and ending room from cache
@@ -96,6 +148,8 @@ io.on('connection', (socket) => {
             client.set('ENDEDROOMS', jEndedRooms)
         }
     })
+
+
 
 })
 

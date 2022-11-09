@@ -49,7 +49,7 @@
     let color
 
 
-    
+
     async function getEndedRoom() { // Checks if currentRoom has already ended (host or someone left, etc)
        let room
        const res = await fetch(urlEndedRooms)
@@ -158,6 +158,8 @@
     }
     let cgApi
     // currentState is undefined until player joins game, which is assigned FEN value when player joins
+    
+    
     socket.on('playerJoined', (FEN) => {
         console.log('playerJoined')
         currentState.set(FEN)
@@ -356,7 +358,7 @@
         {#if currentRoom}
             <div class='border rounded-lg dark:border-blue-500 border-indigo-500 h-fit w-[24rem] font-semibold'>
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: {host ? `${host}` : ''} {player2 ? `, ${player2}` : ``}</div>
-                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Current Turn: {currentTurnPlayer ? currentTurnPlayer : ''} {$connectedUsername === currentTurnPlayer ? '(Your turn)' : ''}</div>
+                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Current Turn: {currentTurn} {$connectedUsername === currentTurnPlayer ? '(Your turn)' : ''}</div>
                 <div class='mx-4 px-2 py-4 border-b mb-8 dark:border-blue-800 border-indigo-800'>Stake: {currentRoom ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${currentRoom.stake * 2} TRX`: ''} {$connectedUsername === currentTurnPlayer ? '(Your turn)' : ''}</div>
                 <button class="ml-2 rounded-[10px] border border-indigo-500 dark:border-red-500 
                 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition

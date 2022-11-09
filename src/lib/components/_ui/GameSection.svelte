@@ -1,15 +1,20 @@
 <script>
 	//@ts-nocheck
 	import { onDestroy } from 'svelte'
-	import { connectedAddress, connectedUsername, urlEndedRooms, urlRooms } from '$lib/state/state'
+	import { page } from '$app/stores'
+	import { goto } from '$app/navigation'
+	import { chessContract, connectedAddress, connectedUsername, urlEndedRooms, urlRooms, chessWs } from '$lib/state/state'
+	
+	import { io } from 'socket.io-client'
+	const socket = io(chessWs)
 
-
+	
 	let endedRooms
 	let rooms
 	let hasRoom
 	let selectedRoom
 	let isPlayer
-
+	let getPlayerBalance
 	let throwErr
 	let hasClicked
 
@@ -76,7 +81,7 @@
 				selectedRoom = room
 				isExpanded = !isExpanded
 				getPlayerBalance = await window.tronWeb.trx.getBalance($connectedAddress) / 1000000
-				if (room.stake > getPlayerBalance) throwErr = `Insufficient balance to join game - requires a stake of ${room.stake} ${room.token}`
+				if (selectedRoom.stake > getPlayerBalance) throwErr = `Insufficient balance to join game - requires a stake of ${selectedRoom.stake} ${room.token}`
 			} catch (error) {
 				hasClicked = false
 			}
@@ -84,7 +89,33 @@
 	}
 
 	async function joinGame(room) {
+		let stake
+		let i 
+		try {
+			throwErr = ''
+			hasClicked = true
+			stake = room.stake*1000000
+			//console.log(typeof(stake), stake)
+			i = parseInt(room.index)
+			console.log(stake, i)
+			let parameter = [{type:'uint256',value:i},{type:'address', value:$connectedAddress}, {type:'uint256', value:stake}]
+			let options = {
+				feeLimit:100000000,
+				callValue:stake
+			}
+			// Invoke contract function joinGame() with parameters above
+			const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(window.tronWeb.address.toHex(chessContract), 
+			"joinGame(uint256,address,uint256)", options, parameter, window.tronWeb.address.toHex($connectedAddress))
+			const signedTx = await tronWeb.trx.sign(tx.transaction);
+			const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx);
 
+			socket.emit('joinRoom', $connectedUsername, room.gameID)
+			if ($page.routeId == '/join') goto('../chess')
+			else goto('./chess')
+		} catch (error) {
+			console.log(error)
+			hasClicked = false
+		}
 	}
 
 </script>
@@ -96,13 +127,14 @@
 			<h2 class="text-3xl font-medium md:text-4xl">Game Lobbies</h2>
 			<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-50' disabled>Create a game here</button>
 		</div>
-		<div class="relative mt-12 divide-y divide-gray-200 rounded-[10px] border border-blue-400 border-opacity-100 px-6 md:px-10 opacity-100">
+		{#if rooms}
+		<div class="relative mt-12 divide-bottom divide-gray-200 rounded-[10px] border border-blue-400 border-opacity-100 px-6 md:px-10 opacity-100">
 			<!-- <div class='absolute font-bold z-20 opacity-100 text-[#4957B0] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
 			mx-auto text-5xl hover:scale-[1.02] transition transition-200'
 			>Coming soon</div> -->
 			
 			<!-- Game Lobby -->
-			{#if rooms}
+
 				{#each rooms as room, index}
 					<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
 						<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
@@ -136,64 +168,124 @@
 							<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
 						</div>
 						{#if isPlayer || !$connectedAddress || !$connectedUsername}
-							<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
-							disabled>Join Game</button>
+							<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
+							>Join Game</button>
 						{:else}
-							<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px] hover:scale-[1.075] transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
+							<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px] z-50 hover:scale-[1.075] transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
 							>Join Game</button>
 						{/if}
 					</div>
 				{/each}
 				{#if selectedRoom}
-				<div id="container" class:show={isExpanded}>
-					<div id="exampleModal" class="reveal-modal flex flex-col bg-white justify-between w-1/2 font-serif dark:text-white dark:bg-zinc-600">
-						{#if throwErr}
-							<div class='error'>{throwErr}</div>
-						{/if}
-						<h2 class='title text-3xl flex justify-center'>Join Game {selectedRoom.gameID}</h2>
-						<div class='flex justify-center text-center'>
-							<p class='warning text-lg mt-5 w-1/2 flex items-center'>
-							Are you sure you want to join this game? You need to stake 
-								{selectedRoom.stake} {selectedRoom.token} to play this game.</p>
-						</div>
-							
+				<div id="container" class='flex flex-initial' class:show={isExpanded}>
 						
-						<!-- svelte-ignore a11y-invalid-attribute -->
-						<div class="">
-							<div class='between flex justify-between flex-end '>
-								
+					<div id="exampleModal" class="absolute reveal-modal overflow-hidden bottom-[8rem] border border-[#b3b2b1] text-black opacity-[98] bg-[#ECECEA] dark:bg-[#111112] dark:text-white 
+					shadow-xL rounded-lg p-6">
+				
+						<h2 class='title font-semibold'>Join {selectedRoom.host}'s game</h2>
 
-									{#if !hasClicked}
-									<button class="close-reveal-modal group  ml-2 py-4 px-8 border border-transparent 
-									text-2xl font-medium rounded-md text-white bg-red-500 hover:bg-red-600 
-									hover:scale-[1.04] transition transition-200 dark:bg-red-500 
-									dark:hover:bg-red-600 focus:outline-none focus:ring-red-400" on:click={(e)=>joinGameExpanded(selectedRoom)}>Cancel</button>
-										<button on:click={(e)=>joinGame(selectedRoom)} class='group relative ml-2 py-4 px-8 border border-transparent 
-											text-2xl font-medium rounded-md text-white bg-sky-500 hover:bg-sky-600 
-											hover:scale-[1.04] transition transition-200 dark:bg-indigo-500 
-											dark:hover:bg-indigo-600 focus:outline-none focus:ring-indigo-400'> 
-											Join Game
-										</button>
-									{:else if hasClicked}
-										<button class="close-reveal-modal group  ml-2 py-4 px-8 border border-transparent 
-											text-2xl font-medium rounded-md text-white bg-red-600
-											focus:outline-none opacity-50 " on:click={(e)=>joinGameExpanded(selectedRoom)} disabled>Cancel</button>
-										<button on:click={(e)=>joinGame(selectedRoom)} class='group relative ml-2 py-4 px-8 border border-transparent 
-											text-2xl font-medium rounded-md text-white bg-sky-600
-											transition transition-200 dark:bg-indigo-500 opacity-50
-											focus:outline-none focus:ring-indigo-400' disabled> 
-											Join Game
-										</button>
-									{/if}
+						<div class=''>
+							<div class='flex justify-center h-[16rem] mt-3 '>
+								<div class='border border-[#b3b2b1] dark:border-zinc-700 
+								rounded-lg w-full'>
+								<div class='mr-2 text-[10px] text-[#b6bab7] flex justify-end'><i>Balance: {Math.round(100*getPlayerBalance)/100} TRX</i></div>
+									<div class='flex justify-center'>
+										{#if throwErr}
+											{throwErr}
+										{/if}
+									</div>
+									<div class='flex wrap py-12 px-8 flex justify-center mx-2 ml-2 border-[#535754]'>
+										<div class='font-semibold mt-1.5 text-center'>Are you sure you want to join this game? The required
+											stake is {selectedRoom.stake} TRX.	
+										</div>
+
+
+										</div>
+
+									
+									
+								</div>  
+								
 							</div>
+						</div>
+
+						<div class='absolute inset-x-0 bottom-0 mb-4 ml-4 mr-[1.5rem]'>
+							<div class='flex justify-between'>
+								<button class="ml-2 rounded-[10px] border border-indigo-500 dark:border-red-500 
+								py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+								transition-200" on:click={(e)=>joinGameExpanded(selectedRoom)}>Cancel</button>
+				
+								<!-- Change last and operator to selectedRoom.stake > 49 -->
+								{#if selectedRoom.stake && selectedRoom.stake < getPlayerBalance - 16 && !hasClicked && selectedRoom.stake > 9}  
+									<button on:click={(e)=>joinGame(selectedRoom)} class=' rounded-[10px] border 
+										border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
+										font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
+										transition-200'> 
+										Join Game
+									</button>
+								
+								{:else if hasClicked}
+									<button on:click={(e)=>joinGame(selectedRoom)} class=' rounded-[10px] 
+										border border-emerald-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] 
+										dark:text-white scale-[1.05] opacity-80
+										' disabled> 
+										Join Game
+									</button>
+								{:else if !selectedRoom.stake || selectedRoom.stake > getPlayerBalance || selectedRoom.stake > getPlayerBalance - 16 || selectedRoom.stake < 50}
+									<button on:click={(e)=>joinGame(selectedRoom)} class=' rounded-[10px] border border-[#b3b2b1] 
+										py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white opacity-50' disabled> 
+										Join Game
+									</button>
+								{/if}
+							</div>
+							
 						</div>
 					</div>
 				</div>
 				{/if}
-			{/if}
-
-			
-		</div>
-		
+			</div>
+		{/if}
 	</div>
 </section>
+
+
+<style>
+	#container {
+		width: 100%;
+
+		position: absolute;
+		top: 0;
+		left: 0;
+		visibility:hidden;
+		display:none;
+	}
+	
+	#container.show {
+		z-index: 20;
+		visibility: visible;
+		display: block;
+	}
+	
+	.reveal-modal {
+		margin: 0 auto;
+		width:320px; 
+		height: 400px;
+		position:relative;
+		
+		z-index:100;
+		;
+		/* padding:30px;  */
+		/* -webkit-box-shadow:0 0 10px rgba(0,0,0,0.4);
+		-moz-box-shadow:0 0 10px rgba(0,0,0,0.4); 
+		box-shadow:0 0 10px rgba(0,0,0,0.4); */
+	}
+	.title {
+		display: flex;
+		justify-content: center;
+	}
+	/* .between {
+		display: flex;
+		margin-top: 1rem;
+		justify-content: space-between;
+	} */
+</style>

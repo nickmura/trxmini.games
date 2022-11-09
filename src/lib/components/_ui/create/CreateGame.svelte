@@ -97,6 +97,7 @@
                     stake: `${stakeValue}`, 
                     token: 'TRX', 
                     index: ``,
+                    currentTurn: $connectedUsername,
                     redeemedStake: [],
                     redeemedDraw: [],
                 } 
