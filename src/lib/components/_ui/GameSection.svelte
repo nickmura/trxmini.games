@@ -3,9 +3,10 @@
 	import { onDestroy } from 'svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
-	import { chessContract, connectedAddress, connectedUsername, urlEndedRooms, urlRooms, chessWs } from '$lib/state/state'
+	import { chessContract, connectedAddress, connectedUsername, createGameForm, urlEndedRooms, urlRooms, chessWs } from '$lib/state/state'
 	
 	import { io } from 'socket.io-client'
+	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
 	const socket = io(chessWs)
 
 
@@ -125,8 +126,15 @@
 		
 		<div class="flex flex-col items-center gap-8">
 			<h2 class="text-3xl font-medium md:text-4xl">Game Lobbies</h2>
-			<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-50' disabled>Create a game here</button>
+			{#if connectedUsername}
+				{#if $page.routeId == '/'}
+					<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105' on:click={createGameForm}><a href='/#'>Create a game here</a></button>
+				{:else}
+					<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105' on:click={createGameForm}>Create a game here</button>
+				{/if}
+			{/if}
 		</div>
+		<CreateGame></CreateGame>
 		{#if rooms}
 		<div class="relative mt-12 divide-bottom divide-gray-200 rounded-[10px] border border-blue-400 border-opacity-100 px-6 md:px-10 opacity-100">
 			<!-- <div class='absolute font-bold z-20 opacity-100 text-[#4957B0] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
@@ -134,7 +142,9 @@
 			>Coming soon</div> -->
 			
 			<!-- Game Lobby -->
-
+				{#if !rooms.length}
+					<div class='flex justify-center w-full py-6 font-semibold text-2xl'>No games available!</div>
+				{/if}
 				{#each rooms as room, index}
 					<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
 						<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">

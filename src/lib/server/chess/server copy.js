@@ -6,7 +6,6 @@ import { eventAPI } from '../../state/state.js'
 import { createClient } from 'redis';
 const client = createClient({ url: "redis://nick:admin@172.105.106.183:6379"});
 client.connect()
-
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -26,26 +25,16 @@ let endedRooms = []
 
 
 
-async function getRooms() {
-    if (await client.get('ROOMS')) {
+async function getRoomsOnStartup() { // Doesn't require 'ENDEDROOMS' key as this is only grabbing
+    if (await client.get('ROOMS') != null) {
         rooms =  await client.get('ROOMS')
         rooms = JSON.parse(rooms)
     } else {
         rooms = []
     }
-    console.log('getRooms (redis get ROOMS)', rooms)
-} getRooms()
 
-async function getEndedRooms() {
-    if (await client.get('ENDEDROOMS')) {
-        endedRooms =  await client.get('ENDEDROOMS')
-        endedRooms = JSON.parse(endedRooms)
-    } else {
-        endedRooms = []
-    }
-    console.log('getEndedRooms (redis get ENDEDROOMS)', endedRooms)
-} getEndedRooms()
-
+    console.log(rooms)
+} getRoomsOnStartup()
 
 
 const io = new Server(3001, {
@@ -55,42 +44,30 @@ const io = new Server(3001, {
 })
 
 io.on('connection', (socket) => {
-    // For creating game
     socket.on('createRoom', async (uuid, room) => {
-        console.log(`PLAYER ${room.host} CREATED A ROOM... CREATING...`)
+        console.log(uuid)
         socket.join(`${uuid}`)
 
-        // Calls contract events from API until it gets what it needs
-        let counter = 0
+        let counter = 0;
         while (room.index == '' && counter < 5000 || room.index == undefined && counter < 5000) {
-            counter++
-            let events
-            const res = await fetch(eventAPI)
+            counter++;
+            let events;
+            const res = await fetch(eventAPI);
             if (res) events = await res.json()
-            let event = events.data.find(event => event?.result._gameId == uuid.toString())
+            let event = events.data.find(event => event?.result._gameId == uuid);
             room.index = event?.result.index;
-        } 
-        console.log(counter)
-        rooms.push(room)
-        console.log(`ROOM ${uuid} HAS BEEN CREATED:`, room)
+        } console.log(`FETCHING ROOM ${uuid} EVENT TOOK ${counter} TRIES`);
+        rooms.push(room);
+        console.log(`ROOM ${uuid} HAS BEEN CREATED:`, room);
     
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
+        socket.join(`${uuid}`)
     })
-
-
-    //For joining game
-    socket.on('getGameIndex', (gameId) => {
-        let room = rooms.find(room => room.gameID === gameId)
-        console.log(`PLAYER ATTEMPTING TO CONNECT TO ROOM ${gameId} WAGER & STAKE:`, room.index, room.stake)
-        socket.emit('fetchedIndex', room.index, room.stake)
-    })
-
 
     socket.on('joinRoom', (player, gameId) => {
-        socket.join(`${gameId}`)
-        let room = rooms.find(room => room.gameID === gameId)
 
+        let room = rooms.find(room => room.gameID === gameId)
         // updates game state with new player and functional chessboard
         room.players.push(player)
         room.player2 = player
@@ -100,22 +77,12 @@ io.on('connection', (socket) => {
         console.log(`PLAYER ${player} IS JOINING ROOM ${gameId}`)
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
-
         console.log(room.gameID)
+        socket.join(`${gameId}`)
         io.to(`${room.gameID}`).emit('playerJoined', room.fen)
     })
-
-    socket.on('sendMessage', (chatlog) => {
-        console.log(chatlog)
-        let room = rooms.find(room => room.players.includes(chatlog.user))
-        socket.join(`${room.gameID}`)
-
-        room.chat.push(chatlog)
-
-        let jRooms = JSON.stringify(rooms)
-        client.set('ROOMS', jRooms)
-
-        io.to(`${room.gameID}`).emit('recieveMessage', room.chat)
+    socket.on('reconnectPlayer', (gameId) => {
+        socket.join(`${gameId}`)
     })
     socket.on('chessMove', (player, fenValue) => {
         console.log(player)
@@ -136,93 +103,9 @@ io.on('connection', (socket) => {
         client.set('ROOMS', jRooms)
         // emits the fenValue to the specific room
     })
-
-
-    socket.on('reconnectPlayer', (room) => {
-        socket.join(`${room.gameID}`)
-    })
-
-    // Game outcomes (checkmate, stalemate, draw... etc) <!------ !>
-    socket.on('isCheckmate', (winner) => {
-        let room = rooms?.find(room => room.players.includes(winner))
-        room.isCheckmate = winner
-        console.log(`CHECKMATE by ${winner} in ROOM ${room.gameID}`)
-        let jRooms = JSON.stringify(rooms)
-        client.set('ROOMS', jRooms)
-    })
-
-    socket.on('isStalemate', (player) => {
-        let room = rooms?.find(room => room.players.includes(player))
-        console.log(`ROOM ${room.gameID} IS A STALEMATE (draw)`)
-        room.isStalemate = 'true'
-
-        let jRooms = JSON.stringify(rooms)
-        client.set('ROOMS', jRooms)
-    })
-
-    socket.on('isDraw', (player) => {
-        let room = rooms?.find(room => room.players.includes(player))
-        console.log(`ROOM ${room.gameID} IS A DRAW`)
-        room.isDraw = 'true'
-
-        let jRooms = JSON.stringify(rooms)
-        client.set('ROOMS', jRooms)
-        
-    })
-
-    // Fetched wager stake <!------ !> <!------ !> <!------ !> (BUSINESS LOGIC)
-    socket.on('redeemedStake', (player) => {
-        let room
-        if (rooms?.find(room => room.players.includes(player))) {
-            room = rooms.find(room => room.players.includes(player))
-            room.redeemedStake.push(player)
-            console.log('getRooms - redeemedStake', room)
-
-            let jRooms = JSON.stringify(rooms)
-            client.set('ROOMS', jRooms)
-           
-        } else if (endedRooms?.find(room => room.players.includes(player))) {
-            room = endedRooms.find(room => room.players.includes(player))
-            room.redeemedStake.push(player)
-            console.log('getEndedRooms - redeemedStake', room)
-
-            let jEndedRooms = JSON.stringify(endedRooms)
-            client.set('ENDEDROOMS', jEndedRooms)
-        }
-        console.log(`PLAYER ${player} IN ROOM ${room.gameID} HAS REDEEMED THEIR STAKE`)
-    })
-
-    socket.on('redeemedDraw', (player) => { 
-        let room
-        if (rooms?.find(room => room.players.includes(player))) {
-            room = rooms.find(room => room.players.includes(player))
-            room.redeemedDraw.push(player)
     
-            let jRooms = JSON.stringify(rooms)
-            client.set('ROOMS', jRooms)
-            
-        } else if (endedRooms?.find(room => room.players.includes(player))) {
-            room = endedRooms.find(room => room.players.includes(player))
-            room.redeemedDraw.push(player)
 
-            let jEndedRooms = JSON.stringify(endedRooms)
-            client.set('ENDEDROOMS', jEndedRooms)
-        }
-        console.log(`(DRAW) PLAYER ${player} IN ROOM ${room.gameID} HAS REDEEMED HALF THE STAKE`)
-    })
 
-    socket.on('avertGame', (player) => {
-        let room
-        if (rooms?.find(room => room.players.includes(player))) {
-            room = rooms.find(room => room.players.includes(player))
-            
-            room.redeemedDraw.push(player)
-    
-            let jRooms = JSON.stringify(rooms)
-            client.set('ROOMS', jRooms)
-        }
-
-    })
     // Long because of the different side effects <!------ !> <!------ !> <!------ !> Leaving and ending room from cache
     // that need to be handled from leaving a game <!------ !> <!------ !> <!------ !>
     socket.on('deleteRoom', (player) => {
@@ -277,5 +160,10 @@ io.on('connection', (socket) => {
         }
     })
 
+
+
 })
+
+
+
 console.log('Listening on port 3001 for chess-game websocket instructions - trxmini.games')

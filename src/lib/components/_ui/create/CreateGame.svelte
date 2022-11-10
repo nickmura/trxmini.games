@@ -145,9 +145,9 @@
                             <div class='absolute text-sm text-red-400 top-[4rem] italic w-[15rem] text-center text-red-400 dark:hover:text-red-200' transition:slide>
                                 Insufficient balance - you need at least 16 TRX to pay for fees.
                             </div>
-                        {:else if stakeValue < 50}
+                        {:else if stakeValue < 10}
                             <div class='absolute text-sm text-red-400 top-[4rem] italic w-[15rem] text-center text-red-400 dark:hover:text-red-200' transition:slide>
-                                Insufficient balance - minimum wager is 50 TRX
+                                Insufficient balance - minimum wager is 10 TRX
                             </div>
                         {:else}
                             <div ></div>
@@ -182,8 +182,8 @@
                             {/if}
                         </div>
                     <div class='flex justify-between'>
-                        <div class='ml-2  text-[10px] text-[#b6bab7]'>
-                            {#if stakeValue || stakeValue == 0}
+                        <div class='ml-2  text-[10px] text-[#b6bab7] animate-pulse'>
+                            {#if stakeValue > 9}
                                 Wager: {stakeValue} TRX
                             {/if}
                         </div>

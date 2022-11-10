@@ -91,7 +91,7 @@
 		if (!res.ok) return res.text().then(text => { throw new Error(text) })
 		rooms = JSON.parse(await res.json())
         console.log($connectedUsername)
-        console.log($connectedAddress)
+        //console.log($connectedUsername)
         //Make condition to call endedRooms if rooms.find fails TODO 
         
         
@@ -143,7 +143,55 @@
 
     } setTimeout(updateRooms, 1000)
 
+    async function updateRooms2() {
+        let room
+		const res = await fetch(urlRooms)
+		if (!res.ok) throw new Error(res)
+		else rooms = JSON.parse(await res.json())
 
+        //Make condition to call endedRooms if rooms.find fails TODO 
+        if ($connectedUsername ) { //This is not runing because $connectedUsername  isn't before this component via Auth.svelte
+            if (rooms != null) room = rooms.find(room => room.players.includes($connectedUsername ))
+            while (!room) {
+                const res = await fetch(urlRooms)
+		        if (!res.ok) throw new Error(res)
+		        rooms = JSON.parse(await res.json())
+                room = rooms?.find(room => room.players.includes($connectedUsername ))
+            }
+                if (room) {
+                    socket.emit('reconnectPlayer', room)
+                    currentRoom = room
+                }
+                host = room.host
+                console.log(currentRoom)
+
+            }
+        
+
+        if (room && room.players.length > 1) {
+            socket.emit('reconnectPlayer', room) //No reason to grab state before game starts.
+            currentRoom = room
+            player2 = room.player2
+            fullGame = true
+            currentState.set(room.fen)
+            if (player2 == $connectedUsername ){
+                color = 'black'
+            } else if (host == $connectedUsername ) {
+                color = 'white'
+            }
+            if (currentRoom.isCheckmate) {
+                winner = currentRoom.isCheckmate
+            }
+            if (currentRoom.isStalemate == 'true') {
+                Stalemate = true
+            }
+            if (currentRoom.isDraw == 'true') {
+                isDraw = true;
+            }
+            console.log(Stalemate)
+        } 
+
+    } updateRooms2()
 
     function redirectJoin() {
         goto('../join')
@@ -158,14 +206,20 @@
         chess = new Chess($currentState);
     }
     let cgApi
+
+
+    socket.on('emitMove', (FEN, turn) => {
+        currentState.set(FEN)
+        currentTurnPlayer = turn
+    })
+
     // currentState is undefined until player joins game, which is assigned FEN value when player joins
-    
-    
     socket.on('playerJoined', (FEN) => {
         console.log('playerJoined')
         currentState.set(FEN)
         updateRooms()
     })
+
 
     $: config = {
         fen: $currentState,
@@ -179,6 +233,7 @@
         },
     };
 
+    
     const playOtherSide = (orig,dest)=> {
         chess.move({from:orig,to:dest});
         cgApi.set({
@@ -203,13 +258,6 @@
             socket.emit('isDraw', $connectedUsername)
         }
     }
-
-    socket.on('emitMove', (FEN, turn) => { //grabs game state from other player when they make a move
-        console.log('state change')
-        currentState.set(FEN)
-        currentTurn = turn
-    })
-
 
 
     function init(api) {
@@ -242,18 +290,77 @@
     // BUSINESS LOGIC BELOW -----><----- //
     // BUSINESS LOGIC BELOW -----><----- //
 
-    async function collectWager(index) { // TO ALLOW PLAYER TO COLLECT WINNINGS
-        // DO THIS AFTER GAME LOGIC IS SORTED OUT
+    async function collectWager(index) {
+        try {
+            hasClicked = true
+            //let index = parseInt(index)
+            var parameter = [{type:'uint',value:index}]
+            var options = {
+                feeLimit: 100000000,
+
+            }
+
+            // invoking contract function
+            const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+                window.tronWeb.address.toHex(chessContract), "payWager(uint256)",
+                options, parameter, window.tronWeb.address.toHex($connectedAddress))
+            const signedTx = await tronWeb.trx.sign(tx.transaction);
+            const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
+            
+            socket.emit('redeemedStake', $connectedUsername)
+            receivedStake = true
+            
+        } catch (error) {
+            hasClicked = false
+        }
+    }
+    async function collectDraw(index) {
+        try {
+            hasClicked = true
+            //let index = parseInt(index)
+            var parameter = [{type:'uint',value:index}]
+            var options = {
+                feeLimit: 100000000,
+
+            }
+
+            // invoking contract function
+            const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+                window.tronWeb.address.toHex(chessContract), "payDraw(uint256)",
+                options, parameter, window.tronWeb.address.toHex($connectedAddress))
+            const signedTx = await tronWeb.trx.sign(tx.transaction);
+            const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
+            
+            socket.emit('redeemedDraw', $connectedUsername)
+            receivedStake = true
+        } catch (error) {
+            hasClicked = false
+        }
     }
 
-    async function collectDraw(index) { // TO ALLOW PLAYERS TO DRAW AND COLLECT THEIR STAKE
-        // DO THIS AFTER GAME LOGIC IS SORTED OUT
-    }
+    async function avertGame(index) {
+        try {
+            hasClicked = true
+            //let index = parseInt(index)
+            var parameter = [{type:'uint',value:index}]
+            var options = {
+                feeLimit: 100000000,
 
-    async function avertGame(index) { // TO ALLOW PLAYER TO LEAVE GAME BEFORE NOBODY JOINS
-        // DO THIS AFTER GAME LOGIC IS SORTED OUT
-    }
+            }
 
+            // invoking contract function
+            const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+                window.tronWeb.address.toHex(chessContract), "forfeit(uint256)",
+                options, parameter, window.tronWeb.address.toHex($connectedAddress))
+            const signedTx = await tronWeb.trx.sign(tx.transaction);
+            const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
+            
+            socket.emit('avertGame', $connectedUsername)
+            receivedStake = true
+        } catch (error) {
+            hasClicked = false
+        }
+    }
 </script>
 
 <main>
@@ -361,23 +468,84 @@
         {#if currentRoom}
             <div class='border rounded-lg dark:border-blue-500 border-indigo-500 h-fit w-[24rem] font-semibold'>
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: {host ? `${host}` : ''} {player2 ? `, ${player2}` : ``}</div>
-                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Current Turn: {currentTurn ? currentTurn : ''} {$connectedUsername === currentTurn ? '(Your turn)' : ''}</div>
+                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Current Turn: {currentTurn && currentRoom ? currentTurn : 'Awaiting players...'} {$connectedUsername === currentTurn ? '(Your turn)' : ''} </div>
                 <div class='mx-4 px-2 py-4 border-b mb-8 dark:border-blue-800 border-indigo-800'>Stake: {currentRoom ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${currentRoom.stake * 2} TRX`: ''} </div>
-                <button class="ml-2 rounded-[10px] border border-indigo-500 dark:border-red-500 
+                <!-- <button class="ml-2 rounded-[10px] border border-indigo-500 dark:border-red-500 
                 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
-                transition-200" on:click={leaveGame}>Cancel</button>
+                transition-200" on:click={leaveGame}>Cancel</button> -->
+
+                <div class='flex justify-center w-full py-4 px-2 flex-col'>
+                    <div class='flex flex-row'>
+                        {#if currentRoom.isCheckmate == $connectedUsername && !hasClicked && !currentRoom.redeemedStake.includes($connectedUsername)}
+                            <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
+                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+                            transition-200'
+                            on:click={(e)=>collectWager(currentRoom.index)}>
+                            Collect win</button>
+                        {:else if currentRoom.isCheckmate != $connectedUsername || hasClicked 
+                        || currentRoom.redeemedStake.includes($connectedUsername)}
+                            <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
+                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+                            transition-200'
+                            disabled>
+                            Collect win</button>
+                        {/if}
+                        {#if isDraw && !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername) || Stalemate && 
+                        !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername)}
+                            <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
+                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+                            transition-200'
+                            on:click={(e)=>collectDraw(currentRoom.index)}>Collect draw wager</button>
+                        {:else if hasClicked || !isDraw && !Stalemate || currentRoom.redeemedDraw.includes($connectedUsername)}
+                            <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
+                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+                            transition-200'
+                            disabled>Collect draw wager</button>
+                        {/if}
+                    </div>
+                    <div class='flex flex-row'>
+                        {#if currentRoom.isCheckmate != $connectedUsername && currentRoom.isCheckmate || currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.redeemedStake || currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.redeemedDraw|| receivedStake}
+                            <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
+                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+                            transition-200' on:click={leaveGame}>
+                            Leave Game
+                        </button>
+                        {:else}
+                            <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
+                            border-indigo-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white transition
+                            transition-200 opacity-50 ' disabled>
+                            Leave Game
+                            </button>
+                        {/if}
+                        {#if currentRoom.players.length < 2 && !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername)}
+                            <button class=' rounded-[10px] border border-zinc-500 hover:border-green-500 
+                            py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+                            transition-200 '
+                            on:click={(e)=>avertGame(currentRoom.index)}>
+                            Avert Game
+                            </button>
+                        {:else}
+                            <button class='rounded-[10px] border border-zinc-500 hover:border-green-500 
+                            py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+                            transition-200  opacity-50'
+                                disabled>
+                            Avert Game
+                            </button>
+                        {/if}
+                    </div>
+            </div>
             </div>
         {:else if !currentRoom}
-            <div class='border rounded-lg dark:border-blue-500 border-indigo-500 h-fit w-[24rem] font-semibold dark:opacity-30 opacity-50'>
-                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: </div>
-                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Current Turn: {currentTurnPlayer ? currentTurnPlayer : ''} {$connectedUsername === currentTurnPlayer ? '(Your turn)' : ''}</div>
-                <div class='mx-4 px-2 py-4 border-b mb-8 dark:border-blue-800 border-indigo-800'>Stake: {currentRoom ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${currentRoom.stake * 2} TRX`: ''} {$connectedUsername === currentTurnPlayer ? '(Your turn)' : ''}</div>
+            <div class='border rounded-lg dark:border-blue-500 border-indigo-500 h-fit w-[24rem] font-semibold dark:border-opacity-30 border-opacity-50'>
+                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-30 opacity-50'>Players: Not in a game</div>
+                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-60 opacity-70'><button on:click={redirectJoin} class='hover:scale-[1.07] transition transition-200 hover:underline animate-pulse hover:text-blue-400 mr-2.5 opacity-100'>Click here to create/join a game</button></div>
+                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 mb-8 dark:opacity-30 opacity-50'>Stake: {currentRoom ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${currentRoom.stake * 2} TRX`: ''} {$connectedUsername === currentTurnPlayer ? '(Your turn)' : ''}</div>
                 
             </div>
         {/if}
         <div class='ml-12 shadow-xl'>
             
-            {#if $theme == 'dark' && currentRoom}
+            {#if $theme == 'dark' && currentRoom && currentRoom.players.length > 1}
                 <div
                     use:Chessground={{ config, initializer: init }}
                     class="blue transition transition-200"
@@ -388,7 +556,7 @@
                     }}
                     style="height: 540px; width: 540px;" 
                 />
-            {:else if $theme == 'dark' && !currentRoom}
+            {:else if $theme == 'dark' && !currentRoom || currentRoom.players.length < 2}
                 <div
                 use:Chessground={{ config, initializer: init }}
                 class="blue transition transition-200 opacity-30"
