@@ -8,7 +8,7 @@
 	import { io } from 'socket.io-client'
 	const socket = io(chessWs)
 
-	
+
 	let endedRooms
 	let rooms
 	let hasRoom
@@ -168,7 +168,7 @@
 							<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
 						</div>
 						{#if isPlayer || !$connectedAddress || !$connectedUsername}
-							<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
+							<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
 							>Join Game</button>
 						{:else}
 							<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px] z-50 hover:scale-[1.075] transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"

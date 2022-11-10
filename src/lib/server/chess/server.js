@@ -62,10 +62,11 @@ io.on('connection', (socket) => {
     
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
+        socket.join(`${uuid}`)
     })
 
     socket.on('joinRoom', (player, gameId) => {
-        socket.join(`${gameId}`)
+
         let room = rooms.find(room => room.gameID === gameId)
         // updates game state with new player and functional chessboard
         room.players.push(player)
@@ -76,11 +77,13 @@ io.on('connection', (socket) => {
         console.log(`PLAYER ${player} IS JOINING ROOM ${gameId}`)
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
-
         console.log(room.gameID)
-        io.to(`${gameId}`).emit('playerJoined', room.fen)
+        socket.join(`${gameId}`)
+        io.to(`${room.gameID}`).emit('playerJoined', room.fen)
     })
-
+    socket.on('reconnectPlayer', (gameId) => {
+        socket.join(`${gameId}`)
+    })
     socket.on('chessMove', (player, fenValue) => {
         console.log(player)
         let room = rooms.find(room => room.players.includes(player))
@@ -88,11 +91,19 @@ io.on('connection', (socket) => {
 
         room.fen = fenValue
         console.log(`CHESS MOVE IN ${room.gameID}`, room.fen)
+
+        if (player == room.host) {
+            room.currentTurn = room.player2
+            io.to(`${room.gameID}`).emit('emitMove', fenValue, room.player2)
+        } else if (player == room.player2) {
+            room.currentTurn = room.host
+            io.to(`${room.gameID}`).emit('emitMove', fenValue, room.host)
+        }
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
-
-        io.to(`${room.gameID}`).emit('emitMove', fenValue, player) // emits the fenValue to the specific room
+        // emits the fenValue to the specific room
     })
+    
 
 
     // Long because of the different side effects <!------ !> <!------ !> <!------ !> Leaving and ending room from cache
