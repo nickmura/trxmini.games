@@ -41,11 +41,11 @@
 			>
 				<span class="text-lg">trxmini.games presents... </span>
 				<h1 class="text-5xl font-light">
-					<span class="font-semibold text-[#4957B0]">The First GameFi Arcade & Mini Games</span>
+					<span class="font-semibold text-[#4957B0]">The First Multiplayer GameFi Arcade & Mini Games</span>
 					platform on TRON & BTTC
 				</h1>
 				<p class="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
-					trxmini.games is a new GameFi platform in beta providing and developing various
+					trxmini.games is a new multiplayer GameFi platform in beta providing and developing various
 					minigames to play against your friends and users online. Players can stake
 					and wager against each other in our turn based and upcoming real time arcade games.
 				</p>
