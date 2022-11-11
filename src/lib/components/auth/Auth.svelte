@@ -141,7 +141,7 @@
 {:else if $connectedAddress && $connectedUsername}
     <button on:click={myProfile} class='relative rounded-[10px] border border-indigo-500 dark:border-blue-500 py-1.5 px-6 
     text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition transition-200'>
-    {$connectedUsername}.trx
+    {$connectedUsername}
     </button>
     {#if isExpanded}
         <div class='absolute justify-center right-12 rounded-[10px] border border-indigo-500 dark:border-blue-500 border text-black dark:text-white  

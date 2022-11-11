@@ -35,7 +35,7 @@ app.post('/username', (req, res) => {
     console.log(user)
     let insert = `UPDATE usernames SET username = ($1) WHERE address = ($2)`;
     
-    const values = [`${user.name}`, `${user.address}`]
+    const values = [`${user.name}.trx`, `${user.address}`]
 
     post.query(insert, values, (err, result) => {
         if (!err) console.log('Username insertion was successful')
