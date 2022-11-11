@@ -4,7 +4,7 @@
     import Chess from '$lib/components/chess/Chess.svelte'
 
 </script>
-<div class='mx-auto max-w-7xl px-4 pb-20 md:px-6'>
+<div class='mx-auto max-w-[88rem] px-4 pb-20 md:px-6'>
     <Navbar></Navbar>
     <CreateGame></CreateGame>
     <Chess></Chess>

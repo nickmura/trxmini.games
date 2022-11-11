@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
     import { page } from '$app/stores'
     import { theme } from '$lib/state/Theme.svelte'
-    import { url0, url1, chessWs } from '$lib/state/state'
+    import { url0, url1, chessWs, inGame } from '$lib/state/state'
 
     import { io } from 'socket.io-client'
     const socket = io(chessWs)
@@ -63,7 +63,7 @@
             try {
                 hasClicked = true
                 errorHandling = ''
-                let uuid = Math.floor(Math.random()*10000) // gameID
+                let uuid = Math.floor(Math.random()*1000000) // gameID
                 let price = stakeValue * 1000000 // format in proper denomination
 
 
@@ -104,9 +104,10 @@
 
                 socket.emit('createRoom', uuid, room)
                 createPrompt.set(false)
+                inGame.set(true)
                 if ($page.routeId == '/username' || $page.routeId == '/join') goto('../chess')
+                else if ($page.routeId == '/chess') goto('./')
                 else {
-                    
                     goto('./chess')
                     
                 }

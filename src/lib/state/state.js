@@ -10,6 +10,7 @@ export const getBalance = writable()
 
 export const createPrompt = writable()
 export const selectedOption = writable('Chess')
+export const inGame = writable(false)
 
 // POSTGRES ENDPOINTS
 export const url0 = 'http://172.105.106.183:5001/address'

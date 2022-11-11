@@ -33,7 +33,7 @@
 </script>
 
 <section class="overflow-hidden">
-	<div class="mx-auto max-w-7xl px-4 pb-20 md:px-6">
+	<div class="mx-auto max-w-[88rem] px-4 pb-20 md:px-6">
 		<Navbar />
 		<div><CreateGame></CreateGame></div>
 		<!-- Hero -->

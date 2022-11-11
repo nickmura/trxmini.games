@@ -7,7 +7,7 @@
 <main class=''>
     <section class="overflow-hidden">
         <div class='fixed inset-x-0 top-0'>
-            <div class="mx-auto max-w-7xl px-4 pb-20 md:px-6">
+            <div class="mx-auto max-w-[88rem] px-4 pb-20 md:px-6">
 
                 <Navbar></Navbar>
 

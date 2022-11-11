@@ -15,6 +15,7 @@
         connectedUsername,
         chessContract,
         currentState,
+        inGame
     } from '$lib/state/state'
 
     import Chat from './Chat.svelte'
@@ -66,7 +67,7 @@
             fullGame = true
             gameEnded = true
             console.log(currentRoom)
-            
+            inGame.set(true)
             if (currentRoom.orientation == $connectedUsername) {
                 color = 'black'
             } else {
@@ -109,6 +110,7 @@
                 if (!room) invalidRoom - true;
             }
                 if (room) {
+                    inGame.set(true)
                     socket.emit('reconnectPlayer', room)
                     currentRoom = room
                 }
@@ -364,129 +366,39 @@
 </script>
 
 <main>
-    <!-- <div class='border-2 rounded-lg font-sarif fixed left-0 min-h-min p-4 mt-4 ml-14 w-1/4  dark:text-white'>
-        <div class='border-b-2'>Players: 
-            {#if host}{host.substring(0,4)}...{host.substring(29,34)}{/if}
-            {#if player2}{player2.substring(0,4)}...{player2.substring(29,34)}{/if}
-        </div>
-        <div class='border-b-2'>Stake: {#if currentRoom}{currentRoom.stake} {currentRoom.token}{/if}</div>
-    
-        <div class='mt-2 flex flex-col max-w-[24rem] mx-auto min-h-min'>
-            {#if currentRoom}
-    
-                <div class='flex justify-center w-full'>
-                    {#if currentRoom.isCheckmate == $connectedUsername && !hasClicked && !currentRoom.redeemedStake.includes($connectedUsername)}
-                        <button class='py-2 px-4 border border-transparent 
-                        text-sm font-medium rounded-md text-white bg-sky-500 hover:bg-sky-600 
-                        hover:scale-[1.04] transition transition-200 dark:bg-indigo-500 
-                        dark:hover:bg-indigo-600 focus:outline-none focus:ring-indigo-400 w-full'
-                        on:click={(e)=>collectWager(currentRoom.index)}>
-                        Collect total stake</button>
-                    {:else if currentRoom.isCheckmate != $connectedUsername || hasClicked 
-                    || currentRoom.redeemedStake.includes($connectedUsername)}
-                        <button class='py-2 px-4 border border-transparent 
-                        text-sm font-medium rounded-md text-white bg-sky-600 
-                         transition transition-200 dark:bg-indigo-600 
-                         focus:outline-none focus:ring-indigo-400  opacity-50 w-full'
-                        disabled>
-                        Collect winning stakes</button>
-                    {/if}
-                    {#if isDraw && !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername) || Stalemate && !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername)}
-                        <button class='py-2 px-4 border border-transparent 
-                        text-sm font-medium rounded-md text-white bg-sky-500 hover:bg-sky-600 
-                        hover:scale-[1.04] transition transition-200 dark:bg-indigo-500 
-                        dark:hover:bg-indigo-600 focus:outline-none focus:ring-indigo-400  w-full'
-                        on:click={(e)=>collectDraw(currentRoom.index)}>Collect draw wager</button>
-                    {:else if hasClicked || !isDraw && !Stalemate || currentRoom.redeemedDraw.includes($connectedUsername)}
-                        <button class='py-2 px-4 border border-transparent 
-                         text-sm font-medium rounded-md text-white bg-sky-600 
-                         transition transition-200 dark:bg-indigo-600 
-                         focus:outline-none focus:ring-indigo-400 opacity-50 w-full'
-                         disabled>Collect draw wager</button>
-                    {/if}
-                </div>
-        
-                {#if currentRoom}
-                <div class='flex justify-center w-full'>
-                        {#if currentRoom.isCheckmate != $connectedUsername && currentRoom.isCheckmate || currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.redeemedStake || currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.redeemedDraw|| receivedStake}
-                            <button class='py-2 px-4 border border-transparent 
-                            text-sm font-medium rounded-md text-white bg-sky-500 hover:bg-sky-600 
-                            hover:scale-[1.04] transition transition-200 dark:bg-indigo-500 
-                            dark:hover:bg-indigo-600 focus:outline-none focus:ring-indigo-400 mt-2 w-full' on:click={leaveGame}>
-                            Leave Game
-                        </button>
-                        {:else}
-                            <button class='py-2 px-4 border border-transparent 
-                            text-sm font-medium rounded-md text-white bg-sky-600  
-                            transition transition-200 dark:bg-indigo-600 
-                            focus:outline-none focus:ring-indigo-400 mt-2 opacity-50 w-full' disabled>
-                            Leave Game
-                            </button>
-                        {/if}
-                        {#if currentRoom.players.length < 2 && !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername)}
-                            <button class='py-2 px-4 border border-transparent 
-                            text-sm font-medium rounded-md text-white bg-gray-400  
-                            hover:scale-[1.04] transition transition-200 
-                            hover:bg-red-800 focus:outline-none focus:ring-indigo-400 mt-2 w-full'
-                            on:click={(e)=>avertGame(currentRoom.index)}>
-                            Avert Game
-                            </button>
-                        {:else}
-                            <button class='py-2 px-4 border border-transparent 
-                                text-sm font-medium rounded-md text-white bg-gray-500  
-                                transition transition-200
-                                focus:outline-none focus:ring-indigo-400 mt-2 w-full opacity-50'
-                                disabled>
-                            Avert Game
-                            </button>
-                        {/if}
-                </div>
-                {/if}
-    
-            {/if}
-                
-        </div>
-        {#if winner}
-            <div class='mt-4'>{winner} won by checkmate!</div>
-        {/if}
-        {#if Stalemate || isDraw}
-            <div class='mt-4'>The game is a stalemate! (draw)</div>
-        {/if}
-    
-        {#if isDraw && !Stalemate}
-            <div class='mt-4'>The game is a draw!</div>
-        {/if}
-    </div> -->
-    <div class='flex justify-center px-4 py-8'>
-        {#if !invalidRoom}
-        <div transition:slide></div>
-        {:else}
-            <div class='flex justify-center flex-wrap absolute font-semibold text-3xl text-center w-[30rem] z-20 my-52 ' transition:slide>
-                You currently are not in a game! <button on:click={redirectJoin} class='hover:scale-[1.07] transition transition-200 hover:underline hover:text-blue-400 mr-2.5'>Click here</button> to create join one.</div>
-        
-        {/if}
+
+    <div class='flex justify-between py-12'>
         {#if currentRoom}
             <div class='border rounded-lg dark:border-blue-500 border-indigo-500 h-fit w-[24rem] font-semibold'>
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: {host ? `${host}` : ''} {player2 ? `, ${player2}` : ``}</div>
-                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Current Turn: {currentTurn && currentRoom ? currentTurn : 'Awaiting players...'} {$connectedUsername === currentTurn ? '(Your turn)' : ''} </div>
-                <div class='mx-4 px-2 py-4 border-b mb-8 dark:border-blue-800 border-indigo-800'>Stake: {currentRoom ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${currentRoom.stake * 2} TRX`: ''} </div>
-                <!-- <button class="ml-2 rounded-[10px] border border-indigo-500 dark:border-red-500 
-                py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
-                transition-200" on:click={leaveGame}>Cancel</button> -->
+                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>
+                    {#if winner}
+                        {winner} won by checkmate!
+                    {:else if Stalemate || isDraw}
+                        The game is a stalemate! (draw)
+                    {:else if isDraw && !Stalemate}
+                        The game is a draw!
+                    {:else}
+                        Current Turn: {currentTurn && currentRoom ? currentTurn : 'Awaiting players...'} {$connectedUsername === currentTurn ? '(Your turn)' : ''} 
+                    {/if}
+                </div>
+                <div class='mx-4 px-2 py-4 border-b mb-8 dark:border-blue-800 border-indigo-800'>
+                    {currentRoom && player2 ? 'Total Stake' : 'Stake'}: {currentRoom && !player2 ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${currentRoom.stake * 2} TRX`: ''} </div>
+
 
                 <div class='flex justify-center w-full py-4 px-2 flex-col'>
-                    <div class='flex flex-row'>
+                    <div class='flex flex-row justify-center items-center mb-2'>
                         {#if currentRoom.isCheckmate == $connectedUsername && !hasClicked && !currentRoom.redeemedStake.includes($connectedUsername)}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
-                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
-                            transition-200'
+                            border-indigo-500 hover:border-green-500 dark:hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
+                            transition-200 ml-1'
                             on:click={(e)=>collectWager(currentRoom.index)}>
                             Collect win</button>
                         {:else if currentRoom.isCheckmate != $connectedUsername || hasClicked 
                         || currentRoom.redeemedStake.includes($connectedUsername)}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
-                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
-                            transition-200'
+                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white transition
+                            transition-200 opacity-50 mr-1 '
                             disabled>
                             Collect win</button>
                         {/if}
@@ -494,26 +406,25 @@
                         !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername)}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
-                            transition-200'
-                            on:click={(e)=>collectDraw(currentRoom.index)}>Collect draw wager</button>
+                            transition-200 mr-1 '
+                            on:click={(e)=>collectDraw(currentRoom.index)}>Collect draw </button>
                         {:else if hasClicked || !isDraw && !Stalemate || currentRoom.redeemedDraw.includes($connectedUsername)}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
-                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
-                            transition-200'
-                            disabled>Collect draw wager</button>
+                            border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] mr-1 dark:text-white opacity-50'
+                            disabled>Collect draw</button>
                         {/if}
                     </div>
-                    <div class='flex flex-row'>
+                    <div class='flex flex-row justify-center w-full'>
                         {#if currentRoom.isCheckmate != $connectedUsername && currentRoom.isCheckmate || currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.redeemedStake || currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.redeemedDraw|| receivedStake}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
-                            transition-200' on:click={leaveGame}>
+                            transition-200 mr-1' on:click={leaveGame}>
                             Leave Game
                         </button>
                         {:else}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white transition
-                            transition-200 opacity-50 ' disabled>
+                            transition-200 opacity-50 mr-1' disabled>
                             Leave Game
                             </button>
                         {/if}
@@ -526,9 +437,8 @@
                             </button>
                         {:else}
                             <button class='rounded-[10px] border border-zinc-500 hover:border-green-500 
-                            py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
-                            transition-200  opacity-50'
-                                disabled>
+                            py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white transition
+                            transition-200  opacity-50' disabled>
                             Avert Game
                             </button>
                         {/if}
@@ -536,14 +446,15 @@
             </div>
             </div>
         {:else if !currentRoom}
-            <div class='border rounded-lg dark:border-blue-500 border-indigo-500 h-fit w-[24rem] font-semibold dark:border-opacity-30 border-opacity-50'>
+            <div class='border rounded-lg dark:border-blue-500 border-indigo-500 h-fit 
+            w-[24rem] font-semibold dark:border-opacity-30 border-opacity-50'>
                 <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-30 opacity-50'>Players: Not in a game</div>
                 <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-60 opacity-70'><button on:click={redirectJoin} class='hover:scale-[1.07] transition transition-200 hover:underline animate-pulse hover:text-blue-400 mr-2.5 opacity-100'>Click here to create/join a game</button></div>
-                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 mb-8 dark:opacity-30 opacity-50'>Stake: {currentRoom ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${currentRoom.stake * 2} TRX`: ''} {$connectedUsername === currentTurnPlayer ? '(Your turn)' : ''}</div>
+                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 mb-8 dark:opacity-30 opacity-50'>Stake: {currentRoom ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${parseInt(currentRoom.stake) * 2} TRX`: ''} </div>
                 
             </div>
         {/if}
-        <div class='ml-12 shadow-xl'>
+        <div class=''>
             
             {#if $theme == 'dark' && currentRoom && currentRoom.players.length > 1}
                 <div
@@ -592,10 +503,9 @@
                 />
             {/if}
         </div>
-    
-        <!-- <div class='font-sarif fixed right-0 min-h-min min-w-fit pt-2.5 pr-2.5 w-1/4'>
+        <div class=''>
             <Chat></Chat>
-        </div> -->
+        </div>
     </div> 
     <style>
         :global(.cg-wrap coords.files) {

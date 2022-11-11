@@ -4,6 +4,7 @@
     import { page } from '$app/stores'
 
     function refresh() {
+        
         if ($page.routeId == '/username' || $page.routeId == '/join' || $page.routeId == '/chess') goto('../')
         else goto('./')
         

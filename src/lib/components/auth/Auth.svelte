@@ -17,7 +17,8 @@
         createPrompt, 
         createGameForm,
         getBalance,
-        urlRooms
+        urlRooms,
+        inGame
     } from '$lib/state/state'
 
     
@@ -41,7 +42,8 @@
         } catch (error) {
             console.log(error)
         }
-    } setTimeout(check, 500)
+    } check()
+    setTimeout(check, 100)
     
     
     async function updateRooms() {
@@ -50,12 +52,17 @@
 		if (!res.ok) return res.text().then(text => { throw new Error(text) })
 		else rooms = JSON.parse(await res.json())
 
-        //Make condition to call endedRooms if rooms.find fails TODO 
+        
         if ($connectedUsername) { //This is not runing because $connectedUsername isn't before this component via Auth.svelte
             if (rooms != null) room = rooms.find(room => room.players.includes($connectedUsername))
-                if (room) currentRoom = true
-                else currentRoom = false
-            }       
+                if (room) { 
+                    inGame.set(true)
+                    currentRoom = true
+                } else {
+                    inGame.set(false)
+                    currentRoom = false
+                }
+        }       
         
     } updateRooms()
 
@@ -78,7 +85,7 @@
                 }
             }
         }   
-    } setTimeout(checkUser, 700)
+    } setTimeout(checkUser, 200)
       
 
     async function connectTronlink() {
@@ -186,15 +193,20 @@
                 </button>
             </div>
             <div class='flex wrap mt-3'>
-                {#if !currentRoom}
+                {#if !currentRoom && !$inGame}
                 <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
-                {:else if currentRoom}
-                    <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                    dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200 opacity-50' disabled>Create Game</button>
+                {:else if currentRoom && $inGame}
+                    <button class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                    dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50' disabled>Create Game</button>
                 {/if}
-                <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs  hover:scale-[1.05] transition transition-200 '>Join Game</button>
+                {#if !currentRoom && !$inGame}
+                    <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                    dark:bg-[#16161e]  z-20 p-2 text-xs  hover:scale-[1.05] transition transition-200 '>Join Game</button>
+                {:else if currentRoom && $inGame}
+                    <button class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                    dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50' disabled>Join Game</button>
+                {/if}
                 <button on:click={tipPlayer} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50 border-opacity-50' disabled>Tip</button>
             </div>
