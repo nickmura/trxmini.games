@@ -44,7 +44,7 @@
 			>
 				<span class="text-lg">trxmini.games presents... </span>
 				<h1 class="text-5xl font-light">
-					<span class="font-semibold text-[#4957B0]">The First MultiplayerGameFi Arcade & Mini Games</span>
+					<span class="font-semibold text-[#4957B0]">The First Multiplayer GameFi Arcade & Mini Games</span>
 					platform on TRON & BTTC
 				</h1>
 				<p class="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
