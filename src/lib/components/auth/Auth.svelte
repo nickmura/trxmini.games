@@ -146,7 +146,7 @@
     {#if isExpanded}
         <div class='absolute justify-center right-12 rounded-[10px] border border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
         dark:bg-[#16161e]  max-h-2/4 w-[16rem] z-20 pt-3 pl-6 pr-6 pb-3 mt-44  text-sm' transition:slide>
-            <i><div>{$connectedUsername}.trx's account</div></i>
+            <i><div>{$connectedUsername}'s account</div></i>
             <div class='flex wrap text-gray-400 hover:text-gray-500'>
                 {#if !copied}
                     <p class=' '>Address: {$connectedAddress.substring(0,5)}...{$connectedAddress.substring(29,34)}</p>
