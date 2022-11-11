@@ -30,7 +30,8 @@
     async function check() { 
         try {
             if (browser) {
-                const res = await window.tronLink 
+                const res = await window.tronLink
+                console.log(res)
                 if (res.tronWeb == undefined || res.tronWeb === false) { 
                     connectedAddress.set()
                 } if (res.tronWeb) {
