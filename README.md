@@ -7,3 +7,5 @@ Project Test Instructions:
 - Create or join a game with a selected stake or no stake (select your game)
 - If stake, sign a transaction to lock your stake in
 - If win or draw, retrieve stake!
+
+[A video demonstration can be found here.](https://www.youtube.com/watch?v=fJrk-uvFE2A&ab_channel=nickmura) The protocol will be up on Sunday November 13, or Monday November 14th! 
