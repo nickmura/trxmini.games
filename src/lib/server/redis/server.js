@@ -7,7 +7,8 @@ import { chessEventListener } from '../state.js';
 import { createClient } from 'redis';
 const client = createClient({ url: "redis://nick:admin@172.105.106.183:6379"});
 
-const whitelist = ['http://test.trxmini.games', 'http://trxmini.games', 'http://localhost:5173']
+const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'https://trxmini.games', 
+'//trxmini.games', 'http://localhost:5173', '//localhost:5173']
 const config = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) callback(null, true)

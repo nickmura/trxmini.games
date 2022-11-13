@@ -3,7 +3,7 @@
     import { onMount } from 'svelte'
     import { slide } from 'svelte/transition'
     import { goto } from '$app/navigation'
-
+    import { browser } from '$app/environment'
     import { io } from 'socket.io-client'
 
 
@@ -15,7 +15,8 @@
         connectedUsername,
         chessContract,
         currentState,
-        inGame
+        inGame,
+        creatingGame,
     } from '$lib/state/state'
 
     import Chat from './Chat.svelte'
@@ -49,7 +50,7 @@
     let player2
     let color
 
-
+    
 
     async function getEndedRoom() { // Checks if currentRoom has already ended (host or someone left, etc)
        let room
@@ -284,6 +285,7 @@
     async function leaveGame() {
             currentState.set('')
             socket.emit('deleteRoom', $connectedUsername)
+            sessionStorage.removeItem('inGame')
             goto('../')
     }
 
@@ -291,6 +293,10 @@
     // BUSINESS LOGIC BELOW -----><----- //
     // BUSINESS LOGIC BELOW -----><----- //
     // BUSINESS LOGIC BELOW -----><----- //
+    let isNotGame = false
+    if (browser && !sessionStorage.getItem('inGame')) {
+            isNotGame = true
+    }
 
     async function collectWager(index) {
         try {
@@ -428,7 +434,7 @@
                             Leave Game
                             </button>
                         {/if}
-                        {#if currentRoom.players.length < 2 && !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername)}
+                        {#if currentRoom.players.length < 2 && !hasClicked && !currentRoom.redeemedDraw.length && !currentRoom.redeemedStake.length}
                             <button class=' rounded-[10px] border border-zinc-500 hover:border-green-500 
                             py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 '
@@ -448,8 +454,12 @@
         {:else if !currentRoom}
             <div class='border rounded-lg dark:border-blue-500 border-indigo-500 h-fit 
             w-[24rem] font-semibold dark:border-opacity-30 border-opacity-50'>
-                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-30 opacity-50'>Players: Not in a game</div>
-                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-60 opacity-70'><button on:click={redirectJoin} class='hover:scale-[1.07] transition transition-200 hover:underline animate-pulse hover:text-blue-400 mr-2.5 opacity-100'>Click here to create/join a game</button></div>
+                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-30 opacity-50'>Please wait...</div>
+                {#if isNotGame}
+                    <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-60 opacity-70'><button on:click={redirectJoin} class='hover:scale-[1.07] transition transition-200 hover:underline animate-pulse hover:text-blue-400 mr-2.5 opacity-100'>Click here to create/join a game</button></div>
+                {:else}
+                    <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-60 opacity-70 animate-pulse'>Please wait...</div>
+                {/if}
                 <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 mb-8 dark:opacity-30 opacity-50'>Stake: {currentRoom ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${parseInt(currentRoom.stake) * 2} TRX`: ''} </div>
                 
             </div>

@@ -11,8 +11,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const whitelist = ['http://test.trxmini.games', 'https://test.trxmini.games', 'http://trxmini.games', 
-'https://trxmini.games', 'http://localhost:5173', 'https://localhost:5173']
+const whitelist = ['//test2.trxmini.games', '//test2.trxmini.games', '//trxmini.games', 
+'//trxmini.games', '//localhost:5173', '//localhost:5173']
 const config = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) callback(null, true)
@@ -50,7 +50,7 @@ async function getEndedRooms() {
 
 const io = new Server(3001, {
     cors: {
-        origin: 'http://localhost:5173',
+        origin: 'https://test2.trxmini.games/',
     }
 })
 

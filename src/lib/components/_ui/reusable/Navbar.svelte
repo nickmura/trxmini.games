@@ -9,7 +9,7 @@
 	import Logo from '$lib/components/_ui/reusable/Logo.svelte'
 	import Auth from '$lib/components/auth/Auth.svelte'
 
-	import { connectedAddress, connectedUsername } from '$lib/state/state'
+	import { connectedAddress, connectedUsername, connectedChain, inGame, chessContract } from '$lib/state/state'
 
 
 	let menu = [
@@ -23,12 +23,15 @@
 	let isOpen = false;
 	let isUser = true;
 	let hasName = true
+	let Shasta = true
     setTimeout(() => {
 		if (!$connectedAddress) isUser = false
 		if ($connectedAddress && !$connectedUsername) hasName = false
-		//console.log($page)
+		if ($connectedAddress && !$connectedChain) Shasta = false
+		console.log(isUser, hasName, Shasta)
 	}, 1000)
 
+	
 
     async function redirectUsername() {
         if ($page.routeId == "/username") {
@@ -38,25 +41,46 @@
         }
 
     }
+	async function redirectChess() {
+		if ($page.routeId != '/') {
+			goto('../chess')
+		} else {
+			goto('/chess')
+		}
+	}
 </script>
 
 <nav class="relative z-50 flex items-center justify-between py-8">
 	<Logo></Logo>
 	{#if !$connectedAddress && !isUser}
-    <div class="p-2 absolute z-20 max-w-10 left-1/2 -translate-x-1/2 max-w-full text-xs  
-    flex justify-center transition-opacity text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
-        <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-2 " fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-        <div class='pt-0.5'>Log into Tronlink via extension first, and switch to Shasta network before connecting.</div>
-    </div>
+		<div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm  
+		flex justify-center transition-opacity text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
+			<svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-2 " fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+			<div class='pt-0.5'>Log into Tronlink via extension first, and switch to Shasta network before connecting.</div>
+		</div>
+	{:else if $connectedAddress && !$connectedChain || $connectedAddress && $connectedUsername && !$connectedChain}
+		<div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm  
+		flex justify-center transition-opacity text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
+			<svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-2 " fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+			<div class='pt-0.5'>Please switch your network on TronLink to Shasta testnet network, and refresh the page.</div>
+		</div>
     {/if}
 
-	{#if $connectedAddress && !$connectedUsername && !hasName && $page.routeId != '/username'}
-    <div class="p-2 absolute z-20 max-w-10 left-1/2 -translate-x-1/2 max-w-full text-xs  
+	{#if $connectedAddress && !$connectedUsername && $connectedChain && !hasName && $page.routeId != '/username'}
+    <div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm
     flex justify-center transition-opacity text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
         <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-2 " fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
         <div class='pt-0.5'>Create a unique, domain username <button class='hover:scale-[1.05] transition transition-200' on:click={redirectUsername}><u>here</u></button></div>
     </div>
     {/if}
+
+	{#if $connectedAddress && $connectedUsername && $inGame && $connectedChain && $page.routeId != '/chess'}
+		<div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm
+		flex justify-center transition-opacity text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
+			<svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-2 " fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+			<div class='pt-0.5 flex-wrap'>You are currently in a game! Click <button class='hover:scale-[1.05] transition transition-200 flex-wrap' on:click={redirectChess}><u>here </u></button> to play, leave or finish it.</div>
+		</div>
+	{/if}
 	<div class="hidden lg:flex lg:items-center lg:gap-10">
 		<ul class="flex items-center gap-6 ">
 			{#each menu as item}

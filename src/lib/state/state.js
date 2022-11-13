@@ -2,16 +2,17 @@
 //  / // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / ? ?
 //  / // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / ? ?
 
-import { writable } from 'svelte/store'
-
-export const connectedAddress = writable()
+import { writable } from 'svelte/store';
+import { browser } from '$app/environment';
+export const connectedAddress = writable();
+export const connectedChain = writable(false);
 export const connectedUsername = writable()
 export const getBalance = writable() 
 
 export const createPrompt = writable()
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
-
+export const creatingGame = writable()
 // POSTGRES ENDPOINTS
 export const url0 = 'http://172.105.106.183:5001/address'
 export const url1 = 'http://172.105.106.183:5001/username'
@@ -29,11 +30,11 @@ export const chessEventListener = `https://api.shasta.trongrid.io/v1/contracts/$
 export const eventAPI = 'http://172.105.106.183:5020/api'
 
 // Chess socket.io endpoint
-export const chessWs = 'http://localhost:3001';
+export const chessWs = 'http://172.105.106.183:3001';
 export const currentState = writable('') // Saves current FEN state of chess game.
 
 let prompted = false
-export function createGameForm() { // Create game prompt state sharing between components
+export async function createGameForm() { // Create game prompt state sharing between components
     prompted = !prompted
     createPrompt.set(prompted)
 }

@@ -9,7 +9,7 @@
 
 
     //This needs to be assigned when the query parameter is actually defined. Otherwise, it will provide the parameter undefined.
-    //const url2 = `http://172.105.106.183:5001/username?addr=${$connectedAddress}`
+    //const url2 = `//172.105.106.183:5001/username?addr=${$connectedAddress}`
 
     let username 
     
@@ -114,9 +114,9 @@
             
         <div class="relative rounded-md max-w-3/4 shadow-sm -space-y-px mt-4 flex-row">
             <div class='flex items-center'>
-                <label for="username" class="sr-only">username</label>
+                <label for="trxusername" class="sr-only">username</label>
                 {#if $connectedAddress}
-                    <input bind:value={username} on:input={(e) => bounceCheckUser(username)} id="username" name="username" required class="relative px-3 py-2 
+                    <input bind:value={username} on:input={(e) => bounceCheckUser(username)} id="username" name="trxusername" required class="relative px-3 py-2 
                     border dark:bg-[#57575e] border-gray-300 placeholder-gray-500  dark:text-white dark:placeholder-gray-100 bg-gray-100 rounded-lg focus:outline-none 
                     focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm font-light" placeholder="Enter a username here!">
                 {:else}

@@ -4,8 +4,9 @@
     import { slide } from 'svelte/transition'
 	import { goto } from '$app/navigation';
     import { page } from '$app/stores'
+    import { browser } from '$app/environment'
     import { theme } from '$lib/state/Theme.svelte'
-    import { url0, url1, chessWs, inGame } from '$lib/state/state'
+    import { url0, url1, chessWs, inGame, creatingGame } from '$lib/state/state'
 
     import { io } from 'socket.io-client'
     const socket = io(chessWs)
@@ -22,10 +23,11 @@
 
 
     //This needs to be assigned when the query parameter is actually defined. Otherwise, it will provide the parameter undefined.
-    //const url2 = `http://localhost:5001/username?addr=${$connectedAddress}`
+    //const url2 = `//localhost:5001/username?addr=${$connectedAddress}`
 
     let username 
-    
+    let balanceInterval
+
     let user
     let stakeValue
     let errorHandling
@@ -38,7 +40,7 @@
     $: hasClicked
 
     let isExpanded = false
-    function selectGame() {
+    async function selectGame() {
         isExpanded = !isExpanded
     }
 
@@ -54,6 +56,9 @@
         selectedOption.set('8 Ball')
         isExpanded = !isExpanded
     }
+    let getBalanceInterval
+
+
 
     async function createGame(info) {
         // DO THIS LOGIC
@@ -105,6 +110,7 @@
                 socket.emit('createRoom', uuid, room)
                 createPrompt.set(false)
                 inGame.set(true)
+                sessionStorage.setItem('inGame', true)
                 if ($page.routeId == '/username' || $page.routeId == '/join') goto('../chess')
                 else if ($page.routeId == '/chess') goto('./')
                 else {
@@ -125,7 +131,7 @@
 
 <div id="container" class:show={$createPrompt}>
 						
-    <div id="exampleModal" class="reveal-modal border border-[#b3b2b1] text-black opacity-[98] bg-[#ECECEA] dark:bg-[#111112] dark:text-white 
+    <div id="exampleModal" class="reveal-modal border dark:border-blue-500 border-indigo-500 text-black opacity-[98] bg-[#ECECEA] dark:bg-[#111112] dark:text-white 
     shadow-xl
     rounded-lg p-6">
 
@@ -176,8 +182,8 @@
                                 <ul class='top-8 absolute z-50 inset-x-32 ml-3 border-[#b3b2b1] top-36 mt-2 bg-[#edece6] dark:bg-[#111112] rounded-lg text-black dark:text-[#edece6] pl-1 w-24 pr-1 pb-1 pt-1 border  'transition:slide>
                                     <div class='flex flex-col '>
                                         <button class="pl-1 pr-1 rounded-sm dark:hover:bg-[#2b2b36] hover:bg-[#c4c4be] hover:scale-[1.03] transition transition-200" on:click={assignChess}>Chess</button>
-                                        <button class="pl-1 pr-1 rounded-sm dark:hover:bg-[#2b2b36] hover:bg-[#c4c4be] hover:scale-[1.03] transition transition-200" on:click={assignDrawades}>Drawades</button>
-                                        <button class="pl-1 pr-1 rounded-sm dark:hover:bg-[#2b2b36] hover:bg-[#c4c4be] hover:scale-[1.03] transition transition-200" on:click={assign8Ball}>8 Ball</button>
+                                        <button class="pl-1 pr-1 rounded-sm opacity-50" on:click={assign8Ball} disabled>8 Ball</button>
+                                        <button class="pl-1 pr-1 rounded-sm opacity-50" on:click={assignDrawades} disabled>Drawades</button>
                                     </div>
                                 </ul>
                             {/if}
