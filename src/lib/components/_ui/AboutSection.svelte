@@ -68,7 +68,7 @@
 			</a>
 			</button>
 			<div>
-				<div class='text-2xl absolute flex mx-[4.4rem] mt-32 z-20 dark:text-blue-500 indigo:text-indigo-500 font-semibold'>Coming soon!</div>
+				<div class='text-2xl absolute flex mx-[7.05rem] mt-32 z-20 dark:text-blue-500 indigo:text-indigo-500 font-semibold'>Coming soon!</div>
 				<div class="flex flex-col items-center gap-4 opacity-50 animate-pulse">
 					<img src="/img/8ball.png" class="w-24 md:w-32 lg:w-36" alt="" />
 					<span class="inline-block px-6 text-center text-lg font-light text-gray-600 dark:text-gray-400">
@@ -77,7 +77,7 @@
 				</div>
 			</div>
 			<div>
-				<div class='text-2xl absolute flex mx-[4.4rem] mt-32 z-20 dark:text-blue-500 indigo:text-indigo-500 font-semibold'>Coming soon!</div>
+				<div class='text-2xl absolute flex mx-[7.05rem] mt-32 z-20 dark:text-blue-500 indigo:text-indigo-500 font-semibold'>Coming soon!</div>
 				<div class="flex flex-col items-center gap-4 opacity-40">
 					
 					<img src="/img/palette.png" class="w-24 md:w-32 lg:w-36" alt="" />
