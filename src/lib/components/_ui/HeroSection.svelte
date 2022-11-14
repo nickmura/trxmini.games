@@ -44,15 +44,9 @@
 </script>
 
 <section class="overflow-hidden">
-	<div class="mx-auto max-w-[88rem] px-4 pb-20 md:px-6">
 		<Navbar />
 		<div><CreateGame></CreateGame></div>
 		<!-- Hero -->
-		<div class="grid grid-cols-1 md:max-lg:place-items-center lg:grid-cols-2">
-			<!-- Hero - Left Side -->
-			<div
-				class="relative z-10 flex max-w-xl flex-col gap-8 pt-16 pb-20 md:max-lg:items-center md:max-lg:text-center"
-			>
 				<span class="text-lg">trxmini.games presents... </span>
 				<h1 class="text-5xl font-light">
 					<span class="font-semibold text-[#4957B0]">The First Multiplayer GameFi Arcade & Mini Games</span>
