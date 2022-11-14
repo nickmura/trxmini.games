@@ -125,7 +125,7 @@
             getBalance.set(await window.tronWeb.trx.getBalance($connectedAddress) / 1000000)
             if ($connectedAddress) {
                 console.log($connectedAddress)
-                const url2 = `http://172.105.106.183:5001/username?addr=${$connectedAddress}`
+                const url2 = `http://170.187.182.220:5001/username?addr=${$connectedAddress}`
                 const res = await fetch(url2)
                 if (!res.ok) throw new Error('null fetch')
                 if (res) user = await res.json()

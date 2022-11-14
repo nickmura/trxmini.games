@@ -1,5 +1,6 @@
 <script>
 	//@ts-nocheck
+	
 	import Navbar from '$lib/components/_ui/reusable/Navbar.svelte';
 	
 	import Theme from '$lib/state/Theme.svelte'
@@ -15,20 +16,30 @@
 	/**
 	 * @type {number}
 	 */
-	let days
-	let hours
-	let minutes
-	let seconds
-	setInterval(() => {
-		date = (Date.now() / 1000)
-		countdown = Math.floor(target - date)
+	let days = 0
+	let hours = 0
+	let minutes = 0
+	let seconds = 0
+	// setInterval(() => {
+	// 	date = (Date.now() / 1000)
+	// 	if (date != target) {
+	// 	 	countdown = Math.floor(target - date)
+	// 	} else if (date == target) {
+	// 		countdown = 0
+	// 	}
+	// 	if (countdown != 0) {
+	// 		days = Math.floor(countdown / (3600 * 24));
+	// 		hours = Math.floor((countdown % (3600 * 24)) / 3600);
+	// 		minutes = Math.floor((countdown % 3600) / 60);
+	// 		seconds = Math.floor(countdown % 60)
+	// 	} else if (countdown == 0) {
+	// 		days = 0
+	// 		hours = 0
+	// 		minutes = 0
+	// 		seconds = 0
+	// 	}
 
-		days = Math.floor(countdown / (3600 * 24));
-		hours = Math.floor((countdown % (3600 * 24)) / 3600);
-		minutes = Math.floor((countdown % 3600) / 60);
-		seconds = Math.floor(countdown % 60)
-
-	}, 1000);
+	// }, 1000);
 
 </script>
 
@@ -83,7 +94,7 @@
 					class="relative flex max-w-lg flex-col items-center gap-4 rounded-[10px] bg-gradient-to-r from-blue-500 to-blue-800 py-4 px-4 sm:px-12 md:px-16 
 					md:ml-9 lg:mr-24 hover:scale-[1.05] transition transition-200 hover:animate-pulse"
 				>
-					<span class="text-lg font-medium text-white">Our beta launches in... </span>
+					<span class="text-lg font-medium text-white">The beta has launched! Play now!</span>
 					<div class="flex items-center justify-center gap-3">
 						<div class="flex flex-col items-center text-center">
 							<div

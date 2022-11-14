@@ -9,7 +9,7 @@
 
 
     //This needs to be assigned when the query parameter is actually defined. Otherwise, it will provide the parameter undefined.
-    //const url2 = `//172.105.106.183:5001/username?addr=${$connectedAddress}`
+    //const url2 = `//170.187.182.220:5001/username?addr=${$connectedAddress}`
 
     let username 
     

@@ -50,7 +50,7 @@ async function getEndedRooms() {
 
 const io = new Server(3001, {
     cors: {
-        origin: 'https://test2.trxmini.games/',
+        origin: '*',
     }
 })
 

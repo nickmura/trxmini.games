@@ -2,13 +2,13 @@
 import express from 'express'
 import cors from 'cors';
 
-import { chessEventListener } from '../state.js';
+import { chessEventListener } from '../../state/state.js';
 
 import { createClient } from 'redis';
 const client = createClient({ url: "redis://nick:admin@172.105.106.183:6379"});
 
 const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'https://trxmini.games', 
-'//trxmini.games', 'http://localhost:5173', '//localhost:5173']
+'//trxmini.games', 'http://localhost:5173', '//localhost:5173', '//127.0.0.1:5173', '//undefined']
 const config = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) callback(null, true)
@@ -19,7 +19,7 @@ const config = {
 const app = express();
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
-app.use(cors(config));
+app.use(cors());
 
 
 let rooms // For storing the rooms for the client to fetch. 

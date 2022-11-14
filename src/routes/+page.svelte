@@ -1,4 +1,5 @@
 <script>
+	//@ts-nocheck
 	import GameSection from '$lib/components/_ui/GameSection.svelte';
 	import FaqSection from '$lib/components/_ui/FaqSection.svelte';
 	import HeroSection from '$lib/components/_ui/HeroSection.svelte';
