@@ -1,0 +1,4 @@
+@import url('./chessground.base.css');
+@import url('./chessground.board.css');
+@import url('./chessground.pieces.css');
+@import url('./chessground.coords.css');
