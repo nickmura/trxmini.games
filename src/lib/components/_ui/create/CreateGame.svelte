@@ -39,7 +39,14 @@
     let hasClicked = false
     $: hasClicked
 
-    let isExpanded = false
+
+
+    let infoExpanded = false
+    function infoDialog() {
+        infoExpanded = !infoExpanded
+    }
+
+    let isExpanded
     async function selectGame() {
         isExpanded = !isExpanded
     }
@@ -143,6 +150,17 @@
             <div class='flex justify-center h-[16rem] mt-3 '>
                 <div class='border border-[#b3b2b1] dark:border-zinc-700 
                 rounded-lg w-full'>
+                    <div class='flex p justify-end'>
+                        {#if $theme == 'dark'}
+                        <div class=' w-4 h-4 absolute tooltip m' ><img src='/img/info_dark.svg' alt='Info box. click'><div class='border border-blue-500 max-h-fit w-44 pl-2 pr-2  rounded-lg bg-[#16161d] text-xs text-center tooltipinfo'>
+                            Click the game you want to play. Then, add the stake you want to play with in TRX! Currently, we only have chess available on our protocol, but we are working hard to add larger, more multiplayer games into our protocol as soon as possible!
+                        </div></div>
+                        {:else}
+                        <div class=' w-4 h-4 absolute tooltip m' ><img src='/img/info.svg' alt='Info box. click'><div class='border border-blue-500 max-h-fit w-44 p-5 rounded-lg bg-[#EFECE6] text-xs text-center tooltipinfo z-20'>
+                            Click the game you want to play. Then, add the stake you want to play with in TRX! Currently, we only have chess available on our protocol, but we are working hard to add larger, more multiplayer games into our protocol as soon as possible!
+                        </div></div>
+                        {/if}
+                    </div>
                     <div class='flex justify-center'>
                         {#if $getBalance < stakeValue}
                             <div class='absolute text-sm text-red-400 top-[4.3rem] italic max-w-3/4 w-[15rem] text-center text-red-400 dark:hover:text-red-200' transition:slide>
@@ -286,4 +304,13 @@
     margin-top: 1rem;
     justify-content: space-between;
 } */
+
+.tooltip .tooltipinfo {
+    visibility: hidden;
+    padding: 5px 0;
+}
+
+.tooltip:hover .tooltipinfo {
+    visibility: visible;
+}
 </style>

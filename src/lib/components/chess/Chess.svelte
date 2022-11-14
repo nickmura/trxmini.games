@@ -376,6 +376,25 @@
     <div class='flex justify-between py-12'>
         {#if currentRoom}
             <div class='border rounded-lg dark:border-blue-500 border-indigo-500 h-fit w-[24rem] font-semibold'>
+                <div class='flex justify-end font-sarif'>
+                    {#if $theme == 'dark'}
+                        <div class=' w-4 h-4 absolute tooltip m z-20' ><img src='/img/info_dark.svg' alt='Info box. click'><div class='border border-blue-500 max-h-fit w-52 p-5 rounded-lg bg-[#16161d] text-xs text-center tooltipinfo z-20'>
+                            When you load into chess, the first button that is accessible for you to press is 'Avert Game'. This will allow you to cancel your game BEFORE another player joins, by invoking the escrow contract to send your money back. Then you can leave the game! 
+
+                            <div class='mt-2'>If another player joins, each of you will play until the game ends in a draw or checkmate! Once that occurs,
+                                click the selected option that is available for you, 'Collect draw', or 'Collect win'. Then, you may leave the game! Happy wagering!
+                            </div>
+                        </div></div>
+                    {:else}
+                        <div class=' w-4 h-4 absolute tooltip m z-20' ><img src='/img/info.svg' alt='Info box. click'><div class='border border-blue-500 max-h-fit w-52 p-5 rounded-lg bg-[#EFECE6] text-xs text-center tooltipinfo z-20'>
+                            When you load into chess, the first button that is accessible for you to press is 'Avert Game'. This will allow you to cancel your game BEFORE another player joins, by invoking the escrow contract to send your money back. Then you can leave the game by pressing 'Leave Game'! 
+
+                            <div class='mt-2'>If another player joins, each of you will play until the game ends in a draw or checkmate! Once that occurs,
+                                click the selected option that is available for you, 'Collect draw', or 'Collect win'. Then, you may leave the game by pressing 'Leave Game'. Happy wagering!
+                            </div>
+                        </div></div>
+                    {/if}
+                </div>
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: {host ? `${host}` : ''} {player2 ? `, ${player2}` : ``}</div>
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>
                     {#if winner}
@@ -477,7 +496,7 @@
                     }}
                     style="height: 540px; width: 540px;" 
                 />
-            {:else if $theme == 'dark' && !currentRoom || currentRoom.players.length < 2}
+            {:else if $theme == 'dark' && !currentRoom || $theme == 'dark' && currentRoom.players.length < 2}
                 <div
                 use:Chessground={{ config, initializer: init }}
                 class="blue transition transition-200 opacity-30"
@@ -489,7 +508,7 @@
                 style="height: 540px; width: 540px;" 
                 />
             {/if}
-            {#if $theme == 'light' && currentRoom}
+            {#if $theme == 'light' && currentRoom && currentRoom.players.length > 1}
                 <div
                 use:Chessground={{ config, initializer: init }}
                 class="blue transition transition-200"
@@ -500,7 +519,7 @@
                 }}
                 style="height: 540px; width: 540px;" 
                 />
-            {:else if $theme == 'light' && !currentRoom}
+            {:else if $theme == 'light' && !currentRoom || $theme == 'light' && currentRoom.players.length < 2}
                 <div
                 use:Chessground={{ config, initializer: init }}
                 class="blue transition transition-200 opacity-50"
@@ -533,3 +552,14 @@
         }
     </style>
 </main>
+
+<style>
+.tooltip .tooltipinfo {
+    visibility: hidden;
+    padding: 5px 0;
+}
+
+.tooltip:hover .tooltipinfo {
+    visibility: visible;
+}
+</style>

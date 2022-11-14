@@ -42,18 +42,23 @@
 	// }, 1000);
 
 </script>
-
 <section class="overflow-hidden">
+	<div class="mx-auto max-w-7xl px-4 pb-20 md:px-6">
 		<Navbar />
-		<div><CreateGame></CreateGame></div>
+
 		<!-- Hero -->
+		<div class="grid grid-cols-1 md:max-lg:place-items-center lg:grid-cols-2">
+			<!-- Hero - Left Side -->
+			<div
+				class="relative z-10 flex max-w-xl flex-col gap-8 pt-16 pb-20 md:max-lg:items-center md:max-lg:text-center"
+			>
 				<span class="text-lg">trxmini.games presents... </span>
 				<h1 class="text-5xl font-light">
 					<span class="font-semibold text-[#4957B0]">The First Multiplayer GameFi Arcade & Mini Games</span>
 					platform on TRON & BTTC
 				</h1>
 				<p class="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
-					trxmini.games is a new GameFi platform in beta providing and developing various
+					trxmini.games is a new multiplayer GameFi platform in beta providing and developing various
 					minigames to play against your friends and users online. Players can stake
 					and wager against each other in our turn based and upcoming real time arcade games.
 				</p>
@@ -88,7 +93,7 @@
 					class="relative flex max-w-lg flex-col items-center gap-4 rounded-[10px] bg-gradient-to-r from-blue-500 to-blue-800 py-4 px-4 sm:px-12 md:px-16 
 					md:ml-9 lg:mr-24 hover:scale-[1.05] transition transition-200 hover:animate-pulse"
 				>
-					<span class="text-lg font-medium text-white">The beta has launched! Play now!</span>
+					<span class="text-lg font-medium text-white">Our BETA has launched! Play now!</span>
 					<div class="flex items-center justify-center gap-3">
 						<div class="flex flex-col items-center text-center">
 							<div
@@ -102,7 +107,7 @@
 							<div
 								class="flex h-16 w-16 items-center justify-center rounded-[10px] border border-white text-xl font-medium text-white sm:h-20 sm:w-20 md:text-2xl"
 							>
-								{hours || hours == 0 ? hours : ''}
+								{hours  || hours == 0 ? hours : ''}
 							</div>
 							<span class="inline-block pt-1 font-medium uppercase text-white">Hours</span>
 						</div>
@@ -128,3 +133,8 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	
+
+</style>
