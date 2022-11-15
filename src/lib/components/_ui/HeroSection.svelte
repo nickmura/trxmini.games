@@ -60,7 +60,7 @@
 				<p class="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
 					trxmini.games is a new multiplayer GameFi platform in beta providing and developing various
 					minigames to play against your friends and users online. Players can stake
-					and wager against each other in our turn based and upcoming real time arcade games.
+					and wager against each other in our catalog of turn based, real time and upcoming existing games.
 				</p>
 
 				<hr class="max-w-md border-[#5079D0]" />
@@ -73,7 +73,7 @@
 					</button>
 				</div>
 				<div class="flex items-center gap-2">
-					<span>Inspired by</span>
+					<span>Inspired by and available on</span>
 					{#if $theme == 'light'}
 						<img src="/img/tron-logo.png" class="h-8 w-auto" alt="" />
 					{/if}
@@ -90,7 +90,7 @@
 					alt=""
 				/>
 				<div
-					class="relative flex max-w-lg flex-col items-center gap-4 rounded-[10px] bg-gradient-to-r from-blue-500 to-blue-800 py-4 px-4 sm:px-12 md:px-16 
+					class="absolute flex max-w-lg flex-col items-center gap-4 rounded-[10px] bg-gradient-to-r from-blue-500 to-blue-800 py-4 px-4 sm:px-12 md:px-16 
 					md:ml-9 lg:mr-24 hover:scale-[1.05] transition transition-200 hover:animate-pulse"
 				>
 					<span class="text-lg font-medium text-white">Our BETA has launched! Play now!</span>
