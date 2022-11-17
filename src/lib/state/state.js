@@ -9,7 +9,7 @@ export const connectedChain = writable(false);
 export const connectedUsername = writable()
 export const getBalance = writable() 
 
-export const createPrompt = writable()
+export const createPrompt = writable(false)
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
 export const creatingGame = writable()

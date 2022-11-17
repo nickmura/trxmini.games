@@ -20,11 +20,11 @@
         getBalance,
         urlRooms,
         urlEndedRooms,
-
         inGame
     } from '$lib/state/state'
-	import Chess from '../chess/Chess.svelte';
 
+	import Chess from '../chess/Chess.svelte';
+    
     
     let isExpanded = false
     let user

@@ -413,14 +413,15 @@
 
                 <div class='flex justify-center w-full py-4 px-2 flex-col'>
                     <div class='flex flex-row justify-center items-center mb-2'>
-                        {#if currentRoom.isCheckmate == $connectedUsername && !hasClicked && !currentRoom.redeemedStake.includes($connectedUsername)}
+
+                        {#if currentRoom.isCheckmate == $connectedUsername && !hasClicked && !currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.stake != '0'}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 dark:hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 ml-1'
                             on:click={(e)=>collectWager(currentRoom.index)}>
                             Collect win</button>
                         {:else if currentRoom.isCheckmate != $connectedUsername || hasClicked 
-                        || currentRoom.redeemedStake.includes($connectedUsername)}
+                        || currentRoom.redeemedStake.includes($connectedUsername) || currentRoom.stake == '0'}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white transition
                             transition-200 opacity-50 mr-1 '
@@ -428,7 +429,7 @@
                             Collect win</button>
                         {/if}
                         {#if isDraw && !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername) || Stalemate && 
-                        !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername)}
+                        !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.stake != '0' }
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 mr-1 '
@@ -440,7 +441,8 @@
                         {/if}
                     </div>
                     <div class='flex flex-row justify-center w-full'>
-                        {#if currentRoom.isCheckmate != $connectedUsername && currentRoom.isCheckmate || currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.redeemedStake || currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.redeemedDraw|| receivedStake}
+                        {#if currentRoom.players.length < 2 && currentRoom.stake == '0' || currentRoom.isCheckmate != $connectedUsername && currentRoom.isCheckmate || 
+                        currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.redeemedStake || currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.redeemedDraw || currentRoom.isCheckmate && currentRoom.stake == '0' || currentRoom.isDraw && currentRoom.stake == '0' || currentRoom.isStalemate && currentRoom.stake == '0' }
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 mr-1' on:click={leaveGame}>
@@ -453,11 +455,11 @@
                             Leave Game
                             </button>
                         {/if}
-                        {#if currentRoom.players.length < 2 && !hasClicked && !currentRoom.redeemedDraw.length && !currentRoom.redeemedStake.length}
+                        {#if currentRoom.players.length < 2 && !hasClicked && !currentRoom.redeemedDraw.length && !currentRoom.redeemedStake.length && currentRoom.stake != '0'}
                             <button class=' rounded-[10px] border border-zinc-500 hover:border-green-500 
                             py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 '
-                            on:click={(e)=>avertGame(currentRoom.index)}>
+                            on:click={(e)=>avertGame(currentRoom.index) }>
                             Avert Game
                             </button>
                         {:else}

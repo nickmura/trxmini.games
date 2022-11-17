@@ -2,9 +2,10 @@ import { Server } from 'socket.io'
 
 import express from 'express';
 import cors from 'cors';
-import { eventAPI } from '../../state/state.js'
+import { eventAPI, _redisPasswd } from '../state.js'
 import { createClient } from 'redis';
-const client = createClient({ url: "redis://nick:admin@172.105.106.183:6379"});
+
+const client = createClient({ url: `redis://nick:${_redisPasswd}@172.105.106.183:6379`});
 client.connect()
 
 const app = express();
@@ -62,14 +63,16 @@ io.on('connection', (socket) => {
 
         // Calls contract events from API until it gets what it needs
         let counter = 0
-        while (room.index == '' && counter < 5000 || room.index == undefined && counter < 5000) {
-            counter++
-            let events
-            const res = await fetch(eventAPI)
-            if (res) events = await res.json()
-            let event = events.data.find(event => event?.result._gameId == uuid.toString())
-            room.index = event?.result.index;
-        } 
+        if (room.stake != '0') {
+            while (room.index == '' && counter < 5000 || room.index == undefined && counter < 5000) {
+                counter++
+                let events
+                const res = await fetch(eventAPI)
+                if (res) events = await res.json()
+                let event = events.data.find(event => event?.result._gameId == uuid.toString())
+                room.index = event?.result.index;
+            } 
+        }
         console.log(counter)
         rooms.push(room)
         console.log(`ROOM ${uuid} HAS BEEN CREATED:`, room)
