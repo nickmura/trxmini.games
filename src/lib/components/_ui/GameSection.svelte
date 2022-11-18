@@ -126,6 +126,8 @@
 						<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
 					{/if}
 				{/if}
+			{:else if !$connectedUsername && $connectedAddress}
+			<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button>
 			{/if}
 		</div>
 		<CreateGame></CreateGame>

@@ -398,13 +398,13 @@
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: {host ? `${host}` : ''} {player2 ? `, ${player2}` : ``}</div>
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>
                     {#if winner}
-                        {winner} won by checkmate!
+                        <div class={$connectedUsername != winner ? 'animate-pulse' : ''}>{winner} won by checkmate!</div>
                     {:else if Stalemate || isDraw}
                         The game is a stalemate! (draw)
                     {:else if isDraw && !Stalemate}
                         The game is a draw!
                     {:else}
-                        Current Turn: {currentTurn && currentRoom ? currentTurn : 'Awaiting players...'} {$connectedUsername === currentTurn ? '(Your turn)' : ''} 
+                    <div class={$connectedUsername == currentTurn ? 'animate-pulse' : ''}>Current Turn: {currentTurn && currentRoom ? currentTurn : 'Awaiting players...'} {$connectedUsername === currentTurn ? '(Your turn)' : ''}</div>
                     {/if}
                 </div>
                 <div class='mx-4 px-2 py-4 border-b mb-8 dark:border-blue-800 border-indigo-800'>
