@@ -4,6 +4,7 @@ trxmini.games is a new GameFi platform in beta providing and developing various 
 
 Project Test Instructions:
 - Sign in to the site with Tronlink
+- Switch to Shasta testnet (retrieve testnet funds from [our group on telegram here](https://t.me/TrxGames)
 - Create or join a game with a selected stake or no stake (select your game)
 - If stake, sign a transaction to lock your stake in
 - If win or draw, retrieve stake!
