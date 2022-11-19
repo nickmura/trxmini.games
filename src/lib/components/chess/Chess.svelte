@@ -20,7 +20,8 @@
         currentState,
         inGame,
         creatingGame,
-        wagerTx
+        wagerTx,
+        theRoom
     } from '$lib/state/state'
 
     import Chat from './Chat.svelte'
@@ -83,13 +84,15 @@
                 if (!room) invalidRoom - true;
             }
                 if (room) {
+                    
                     inGame.set(true)
                     socket.emit('reconnectPlayer', room)
                     currentRoom = room
                     if (room.wagerTxs?.find(wager => wager.user == $connectedUsername)) {
                         wagerTx.set(room.wagerTxs.find(wager => wager.user == $connectedUsername).txid)
                         console.log('WagerTxid', $wagerTx)
-                    } 
+                    }
+                    
                 }
                 host = room.host
                 
@@ -311,6 +314,7 @@
             currentState.set('')
             socket.emit('deleteRoom', $connectedUsername)
             sessionStorage.removeItem('inGame')
+            wagerTx.set('')
             goto('../')
     }
 
@@ -339,7 +343,7 @@
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
-            console.log(broadcastTx.txid)
+            wagerTx.set(broadcastTx.txid)
             socket.emit('redeemedStake', $connectedUsername, broadcastTx.txid);
             receivedStake = true
             
@@ -348,10 +352,7 @@
         }
     }
 
-    socket.on('initRedeem', (wager) => {
-        wagerTx.set(wager)
-        console.log('wagerTxs', wager)
-    })
+
 
     async function collectDraw(index) {
         try {
@@ -369,8 +370,8 @@
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
-            
-            socket.emit('redeemedDraw', $connectedUsername)
+            wagerTx.set(broadcastTx.txid)
+            socket.emit('redeemedDraw', $connectedUsername, broadcastTx.txid)
             receivedStake = true
         } catch (error) {
             hasClicked = false

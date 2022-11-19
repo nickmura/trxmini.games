@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
 	import { slide } from 'svelte/transition';
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
@@ -15,7 +17,9 @@
 		connectedChain, 
 		inGame, 
 		chessContract, 
-		getBalance 
+		getBalance,
+		wagerTx,
+		theRoom
 	} from '$lib/state/state'
 
 
@@ -56,6 +60,9 @@
 			goto('/chess')
 		}
 	}
+	let wagerTxLink
+	$: wagerTxLink = `https://shasta.tronscan.org/#/transaction/${$wagerTx}`
+	if ($wagerTx) wagerTxLink = `https://shasta.tronscan.org/#/transaction/${$wagerTx}`
 </script>
 
 <nav class="relative z-50 flex items-center justify-between py-8">
@@ -89,7 +96,7 @@
     {/if}
 
 
-	
+
 	{#if $connectedAddress && $connectedUsername && $inGame && $connectedChain && $page.routeId != '/chess'}
 		<div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm
 		flex justify-center transition-opacity text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
@@ -97,6 +104,15 @@
 			<div class='pt-0.5 flex-wrap'>You are currently in a game! Click <button class='hover:scale-[1.05] transition transition-200 flex-wrap' on:click={redirectChess}><u>here </u></button> to play, leave or finish it.</div>
 		</div>
 	{/if}
+
+		{#if $page.routeId == '/chess' && $wagerTx}
+			<div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm  
+			flex justify-center transition-opacity text-green-700 bg-green-100 rounded-lg" role="alert">
+				<svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-2 " fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+				<div class='pt-0.5'>Collected wager successfully. <u><a href={wagerTxLink} target="_blank" rel='noreferrer'>Transaction Hash</a></u></div>
+			</div>
+		{/if}
+
 	<div class="hidden lg:flex lg:items-center lg:gap-10">
 		<ul class="flex items-center gap-6 ">
 			{#each menu as item}

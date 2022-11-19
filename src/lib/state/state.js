@@ -12,6 +12,7 @@ export const getBalance = writable()
 export const createPrompt = writable(false)
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
+
 export const creatingGame = writable()
 // POSTGRES ENDPOINTS
 export const url0 = 'http://170.187.182.220:5001/address'
@@ -35,6 +36,7 @@ export const eventAPI = 'http://172.105.106.183:5020/api'
 export const chessWs = 'http://172.105.106.183:3001';
 export const currentState = writable('') // Saves current FEN state of chess game.
 export const wagerTx = writable()
+export const theRoom = writable()
 
 let prompted = false
 export async function createGameForm() { // Create game prompt state sharing between components
