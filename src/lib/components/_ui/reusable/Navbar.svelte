@@ -72,7 +72,7 @@
 			<div class='pt-0.5'>Please switch your network on TronLink to Shasta testnet network, and refresh the page.</div>
 		</div>
     {/if}
-	{#if $connectedChain && $getBalance < 5000}
+	{#if $connectedChain && $getBalance < 1500}
 		<div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm  
 		flex justify-center transition-opacity text-green-700 bg-green-100 rounded-lg" role="alert">
 			<svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-2 " fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>

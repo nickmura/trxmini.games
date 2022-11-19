@@ -3,7 +3,7 @@
 	import { onDestroy } from 'svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
-	import { chessContract, connectedAddress, connectedUsername, createGameForm, urlEndedRooms, urlRooms, connectedChain, chessWs } from '$lib/state/state'
+	import { chessContract, connectedAddress, connectedUsername, createGameForm, urlEndedRooms, urlRooms, chessWs, connectedChain } from '$lib/state/state'
 	
 	import { io } from 'socket.io-client'
 	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
@@ -22,23 +22,7 @@
 
 	onDestroy(() => clearInterval(updateInterval))
 
-	const games = [
-		{
-			game: 'Chess',
-			players: 'nicky.trx',
-			stake: '10000 TRX'
-		},
-		{
-			game: '8 Ball',
-			players: 'bobby.trx, npm.trx.. ',
-			stake: '1500'
-		},
-		{
-			game: 'Drawades',
-			players: 'jimmy.trx, abcd.trx, (2 more)',
-			stake: '100 TRX'
-		}
-	];
+
 
 	async function updateRooms() {
         let room 
@@ -94,6 +78,7 @@
 		let stake
 		let i 
 		try {
+			if (room.stake != '0') {
 			throwErr = ''
 			hasClicked = true
 			stake = room.stake*1000000
@@ -110,7 +95,7 @@
 			"joinGame(uint256,address,uint256)", options, parameter, window.tronWeb.address.toHex($connectedAddress))
 			const signedTx = await tronWeb.trx.sign(tx.transaction);
 			const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx);
-
+			}
 			socket.emit('joinRoom', $connectedUsername, room.gameID)
 			if ($page.routeId == '/join') goto('../chess')
 			else goto('./chess')
@@ -128,22 +113,22 @@
 		<div class="flex flex-col items-center gap-8">
 			<h2 class="text-3xl font-medium md:text-4xl">Game Lobbies</h2>
 			{#if $connectedUsername}
-			{#if $page.routeId == '/'}
-				{#if $connectedChain}
-					<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
-				{:else if !$connectedChain}
-					<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
+				{#if $page.routeId == '/'}
+					{#if $connectedChain}
+						<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
+					{:else if !$connectedChain}
+						<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
+					{/if}
+				{:else}
+					{#if $connectedChain}
+						<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse ' on:click={createGameForm}>Create a game here!</button>
+					{:else if !$connectedChain}
+						<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
+					{/if}
 				{/if}
-			{:else}
-				{#if $connectedChain}
-					<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse ' on:click={createGameForm}>Create a game here!</button>
-				{:else if !$connectedChain}
-					<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
-				{/if}
+			{:else if !$connectedUsername && $connectedAddress}
+			<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button>
 			{/if}
-		{:else if !$connectedUsername && $connectedAddress}
-		<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button>
-		{/if}
 		</div>
 		<CreateGame></CreateGame>
 		{#if rooms}
@@ -189,12 +174,13 @@
 								<div class="text-2xl text-gray-600 font-semibold">Stake</div>
 								<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
 							</div>
-							{#if isPlayer || !$connectedAddress || !$connectedUsername}
+							{#if isPlayer || !$connectedAddress || !$connectedUsername || !$connectedChain}
 								<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
 								>Join Game</button>
 							{:else}
-								<button on:click={(e)=>joinGameExpanded(room)} class="opacity-50 whitespace-nowrap rounded-[10px] z-50 transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
+								<button class="opacity-50 whitespace-nowrap rounded-[10px] z-50 transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
 								disabled>Join Game</button>
+
 							{/if}
 						</div>
 					{/if}
@@ -230,7 +216,7 @@
 								<div class="text-2xl font-semibold">Stake</div>
 								<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
 							</div>
-							{#if isPlayer || !$connectedAddress || !$connectedUsername}
+							{#if isPlayer || !$connectedAddress || !$connectedUsername || !$connectedChain}
 								<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
 								>Join Game</button>
 							{:else}
@@ -280,7 +266,7 @@
 								transition-200" on:click={(e)=>joinGameExpanded(selectedRoom)}>Cancel</button>
 				
 								<!-- Change last and operator to selectedRoom.stake > 49 -->
-								{#if selectedRoom.stake && selectedRoom.stake < getPlayerBalance - 16 && !hasClicked && selectedRoom.stake > 9}  
+								{#if selectedRoom.stake && selectedRoom.stake < getPlayerBalance - 16 && !hasClicked && selectedRoom.stake > 9 || selectedRoom.stake == '0'}  
 									<button on:click={(e)=>joinGame(selectedRoom)} class=' rounded-[10px] border 
 										border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
 										font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
@@ -295,7 +281,7 @@
 										' disabled> 
 										Join Game
 									</button>
-								{:else if !selectedRoom.stake || selectedRoom.stake > getPlayerBalance || selectedRoom.stake > getPlayerBalance - 16 || selectedRoom.stake < 50}
+								{:else if selectedRoom.stake > getPlayerBalance || selectedRoom.stake > getPlayerBalance - 16 || selectedRoom.stake < 50}
 									<button on:click={(e)=>joinGame(selectedRoom)} class=' rounded-[10px] border border-[#b3b2b1] 
 										py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white opacity-50' disabled> 
 										Join Game

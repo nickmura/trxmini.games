@@ -1,6 +1,7 @@
 <script>
     //@ts-nocheck
     import { onMount } from 'svelte'
+    import { writable } from 'svelte/store'
     import { slide } from 'svelte/transition'
     import { goto } from '$app/navigation'
     import { browser } from '$app/environment'
@@ -9,6 +10,8 @@
 
     import { chessWs, urlRooms, urlEndedRooms } from '$lib/state/state' // ENDPOINTS
     const socket = io(chessWs)
+    const wagerTx = writable()
+
 
     import { 
         connectedAddress,
@@ -69,6 +72,11 @@
             gameEnded = true
             console.log(currentRoom)
             inGame.set(true)
+
+            if (currentRoom.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
+                wagerTx.set(currentRoom.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
+                console.log($wagerTx)
+            } 
             if (currentRoom.orientation == $connectedUsername) {
                 color = 'black'
             } else {
@@ -114,6 +122,10 @@
                     inGame.set(true)
                     socket.emit('reconnectPlayer', room)
                     currentRoom = room
+                    if (room.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
+                        wagerTx.set(room.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
+                        console.log($wagerTx)
+                    } 
                 }
                 host = room.host
                 
@@ -164,6 +176,10 @@
                 if (room) {
                     socket.emit('reconnectPlayer', room)
                     currentRoom = room
+                    if (room.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
+                        wagerTx.set(room.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
+                        console.log($wagerTx)
+                    } 
                 }
                 host = room.host
                 console.log(currentRoom)
@@ -314,14 +330,20 @@
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
-            
-            socket.emit('redeemedStake', $connectedUsername)
+            console.log(broadcastTx.txid)
+            socket.emit('redeemedStake', $connectedUsername);
             receivedStake = true
             
         } catch (error) {
             hasClicked = false
         }
     }
+
+    socket.on('initRedeem', (wager) => {
+        wagerTx.set(wager)
+        console.log('wagerTxs', wager)
+    })
+
     async function collectDraw(index) {
         try {
             hasClicked = true
@@ -398,13 +420,13 @@
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: {host ? `${host}` : ''} {player2 ? `, ${player2}` : ``}</div>
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>
                     {#if winner}
-                        {winner} won by checkmate!
+                        <div class={$connectedUsername == winner ? 'animate-pulse' : ''}>{winner} won by checkmate!</div>
                     {:else if Stalemate || isDraw}
                         The game is a stalemate! (draw)
                     {:else if isDraw && !Stalemate}
                         The game is a draw!
                     {:else}
-                        Current Turn: {currentTurn && currentRoom ? currentTurn : 'Awaiting players...'} {$connectedUsername === currentTurn ? '(Your turn)' : ''} 
+                    <div class={$connectedUsername == currentTurn ? 'animate-pulse' : ''}>Current Turn: {currentTurn && currentRoom ? currentTurn : 'Awaiting players...'} {$connectedUsername === currentTurn ? '(Your turn)' : ''}</div>
                     {/if}
                 </div>
                 <div class='mx-4 px-2 py-4 border-b mb-8 dark:border-blue-800 border-indigo-800'>
@@ -413,14 +435,15 @@
 
                 <div class='flex justify-center w-full py-4 px-2 flex-col'>
                     <div class='flex flex-row justify-center items-center mb-2'>
-                        {#if currentRoom.isCheckmate == $connectedUsername && !hasClicked && !currentRoom.redeemedStake.includes($connectedUsername)}
+
+                        {#if currentRoom.isCheckmate == $connectedUsername && !hasClicked && !currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.stake != '0'}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 dark:hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 ml-1'
                             on:click={(e)=>collectWager(currentRoom.index)}>
                             Collect win</button>
                         {:else if currentRoom.isCheckmate != $connectedUsername || hasClicked 
-                        || currentRoom.redeemedStake.includes($connectedUsername)}
+                        || currentRoom.redeemedStake.includes($connectedUsername) || currentRoom.stake == '0'}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white transition
                             transition-200 opacity-50 mr-1 '
@@ -428,7 +451,7 @@
                             Collect win</button>
                         {/if}
                         {#if isDraw && !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername) || Stalemate && 
-                        !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername)}
+                        !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.stake != '0' }
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 mr-1 '
@@ -453,11 +476,11 @@
                             Leave Game
                             </button>
                         {/if}
-                        {#if currentRoom.players.length < 2 && !hasClicked && !currentRoom.redeemedDraw.length && !currentRoom.redeemedStake.length}
+                        {#if currentRoom.players.length < 2 && !hasClicked && !currentRoom.redeemedDraw.length && !currentRoom.redeemedStake.length && currentRoom.stake != '0'}
                             <button class=' rounded-[10px] border border-zinc-500 hover:border-green-500 
                             py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 '
-                            on:click={(e)=>avertGame(currentRoom.index)}>
+                            on:click={(e)=>avertGame(currentRoom.index) }>
                             Avert Game
                             </button>
                         {:else}

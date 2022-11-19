@@ -63,14 +63,16 @@ io.on('connection', (socket) => {
 
         // Calls contract events from API until it gets what it needs
         let counter = 0
-        while (room.index == '' && counter < 5000 || room.index == undefined && counter < 5000) {
-            counter++
-            let events
-            const res = await fetch(eventAPI)
-            if (res) events = await res.json()
-            let event = events.data.find(event => event?.result._gameId == uuid.toString())
-            room.index = event?.result.index;
-        } 
+        if (room.stake != '0') {
+            while (room.index == '' && counter < 5000 || room.index == undefined && counter < 5000) {
+                counter++
+                let events
+                const res = await fetch(eventAPI)
+                if (res) events = await res.json()
+                let event = events.data.find(event => event?.result._gameId == uuid.toString())
+                room.index = event?.result.index;
+            } 
+        }
         console.log(counter)
         rooms.push(room)
         console.log(`ROOM ${uuid} HAS BEEN CREATED:`, room)
@@ -216,7 +218,7 @@ io.on('connection', (socket) => {
         let room
         if (rooms?.find(room => room.players.includes(player))) {
             room = rooms.find(room => room.players.includes(player))
-            
+            console.log(`PLAYER ${player} HAS AVERTED GAME AND TOOK THEIR FUNDS`)
             room.redeemedDraw.push(player)
     
             let jRooms = JSON.stringify(rooms)

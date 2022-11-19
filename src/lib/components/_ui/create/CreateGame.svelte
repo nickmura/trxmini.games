@@ -30,12 +30,14 @@
 
     let user
     let stakeValue
+    let isWagerless = false
+    $: console.log(isWagerless)
     let errorHandling
     let setUsername = false
     let isUnique = true
     //$: isUnique
     let init = false
-
+    
     let hasClicked = false
     $: hasClicked
 
@@ -73,46 +75,73 @@
         // FOR CHESS
         if ($selectedOption == 'Chess') {
             try {
+                let room
                 hasClicked = true
                 errorHandling = ''
                 let uuid = Math.floor(Math.random()*1000000) // gameID
-                let price = stakeValue * 1000000 // format in proper denomination
+                if (!isWagerless) {
+
+                    let price = stakeValue * 1000000 // format in proper denomination
 
 
-                // parameters for function call...
-                var parameter = [{type:'uint32',value:uuid},{type:'address', value:$connectedAddress}, {type:'uint256', value:price}]
-                var options = {
-                    feeLimit:100000000,
-                    callValue: price
-                } 
-                
-                // invoking function with parameters declared above
-                const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
-                    window.tronWeb.address.toHex(chessContract), "startGame(uint32,address,uint256)", 
-                    options, parameter, window.tronWeb.address.toHex($connectedAddress))
-                const signedTx = await tronWeb.trx.sign(tx.transaction);
-                const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
-
+                    // parameters for function call...
+                    var parameter = [{type:'uint32',value:uuid},{type:'address', value:$connectedAddress}, {type:'uint256', value:price}]
+                    var options = {
+                        feeLimit:100000000,
+                        callValue: price
+                    } 
+                    
+                    // invoking function with parameters declared above
+                    const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+                        window.tronWeb.address.toHex(chessContract), "startGame(uint32,address,uint256)", 
+                        options, parameter, window.tronWeb.address.toHex($connectedAddress))
+                    const signedTx = await tronWeb.trx.sign(tx.transaction);
+                    const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
+                }
                 // room parameters for the server to index and update server side
-                let room = {
-                    gameID: uuid, 
-                    game: 'chess', 
-                    players: [$connectedUsername], 
-                    host: `${$connectedUsername}`,
-                    player2: ``, 
-                    chat: [],
-                    orientation: ``, // For when the game ends, client can know what the orientation was.
-                    fen: '',
-                    isCheckmate: '', 
-                    isStalemate: '',
-                    isDraw: '', 
-                    stake: `${stakeValue}`, 
-                    token: 'TRX', 
-                    index: ``,
-                    currentTurn: $connectedUsername,
-                    redeemedStake: [],
-                    redeemedDraw: [],
-                } 
+                if (!isWagerless) {
+                    room = {
+                        gameID: uuid, 
+                        game: 'chess', 
+                        players: [$connectedUsername], 
+                        host: `${$connectedUsername}`,
+                        player2: ``, 
+                        chat: [],
+                        orientation: ``, // For when the game ends, client can know what the orientation was.
+                        fen: '',
+                        isCheckmate: '', 
+                        isStalemate: '',
+                        isDraw: '', 
+                        stake: `${stakeValue}`, 
+                        token: 'TRX', 
+                        index: ``,
+                        currentTurn: $connectedUsername,
+                        wagerTxs: [],
+                        redeemedStake: [],
+                        redeemedDraw: [],
+                    }
+                } else if (isWagerless) {
+                    room = {
+                        gameID: uuid, 
+                        game: 'chess', 
+                        players: [$connectedUsername], 
+                        host: `${$connectedUsername}`,
+                        player2: ``, 
+                        chat: [],
+                        orientation: ``, // For when the game ends, client can know what the orientation was.
+                        fen: '',
+                        isCheckmate: '', 
+                        isStalemate: '',
+                        isDraw: '', 
+                        stake: `0`, 
+                        token: 'TRX', 
+                        index: ``,
+                        currentTurn: $connectedUsername,
+                        wagerTxs: [],
+                        redeemedStake: [],
+                        redeemedDraw: [],
+                    }
+                }
 
                 socket.emit('createRoom', uuid, room)
                 createPrompt.set(false)
@@ -158,19 +187,20 @@
                         {:else}
                             <div class=' w-4 h-4 absolute tooltip m' ><img src='/img/info.svg' alt='Info box. click'><div class='border border-blue-500 max-h-fit w-44 p-5 rounded-lg bg-[#EFECE6] text-xs text-center tooltipinfo z-20'>
                                 Click the game you want to play. Then, add the stake you want to play with in TRX! Currently, we only have chess available on our protocol, but we are working hard to add larger, more multiplayer games into our protocol as soon as possible!
+                                <div>NOTICE: Clicking wagerless will allow you to play stakeless; A free game!</div>
                             </div></div>
                         {/if}
                     </div>
                     <div class='flex justify-center'>
-                        {#if $getBalance < stakeValue}
+                        {#if $getBalance < stakeValue && !isWagerless}
                             <div class='absolute text-sm text-red-400 top-[4.3rem] italic max-w-3/4 w-[15rem] text-center text-red-400 dark:hover:text-red-200' transition:slide>
                                 Insufficient balance for wager input.
                             </div>
-                        {:else if stakeValue > $getBalance - 16}
+                        {:else if stakeValue > $getBalance - 16 && !isWagerless}
                             <div class='absolute text-sm text-red-400 top-[4rem] italic w-[15rem] text-center text-red-400 dark:hover:text-red-200' transition:slide>
                                 Insufficient balance - you need at least 16 TRX to pay for fees.
                             </div>
-                        {:else if stakeValue < 10}
+                        {:else if stakeValue < 10 && !isWagerless}
                             <div class='absolute text-sm text-red-400 top-[4rem] italic w-[15rem] text-center text-red-400 dark:hover:text-red-200' transition:slide>
                                 Insufficient balance - minimum wager is 10 TRX
                             </div>
@@ -215,12 +245,26 @@
                         <div class='mr-2 text-[10px] text-[#b6bab7]'><i>Balance: {Math.round(100*$getBalance)/100} TRX</i></div>
                     </div>
                     <div class=' font-semibold flex justify-center py-6 px-4 '>
-                        
+                    {#if !isWagerless}
                         <div class='mt-1.5 mr-2'>Stake:</div>
                         <input bind:value={stakeValue} id="stake" min='0' name="stake" type='number' required class="relative px-3 py-1.5 
-                    border dark:bg-[#111112] bg-[#EDEDE8] w-32 border-gray-300 placeholder-gray-500 dark:text-white dark:placeholder-gray-450 bg-gray-100 rounded-lg focus:outline-none 
-                    focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-light" placeholder="Enter a wager">
-                    </div>   
+                        border dark:bg-[#111112] bg-[#EDEDE8] w-32 border-gray-300 placeholder-gray-500 dark:text-white dark:placeholder-gray-450 bg-gray-100 rounded-lg focus:outline-none 
+                        focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-light" placeholder="Enter a wager">
+
+                    {:else}
+
+                        <div class='mt-1.5 mr-2 opacity-50'>Stake:</div>
+                        <input bind:value={stakeValue} id="stake" min='0' name="stake" type='number' required class="relative px-3 py-1.5 
+                        border dark:bg-[#111112] bg-[#EDEDE8] w-32 border-gray-300 placeholder-gray-500 dark:text-white dark:placeholder-gray-450 bg-gray-100 rounded-lg focus:outline-none 
+                        focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-light opacity-50"  placeholder="Enter a wager" disabled>
+
+                    {/if} 
+
+                    </div>
+                    
+                    <div class='justify-center flex -py-2'>
+                        Wagerless:<input class='ml-2' type='checkbox' bind:checked={isWagerless}>
+                    </div>
                     
                     
                 </div>  
@@ -235,7 +279,7 @@
                 transition-200" on:click={createGameForm}>Cancel</button>
 
                 <!-- Change last and operator to stakeValue > 49 -->
-                {#if stakeValue && stakeValue < $getBalance - 16 && !hasClicked && stakeValue > 9}  
+                {#if stakeValue && stakeValue < $getBalance - 16 && !hasClicked && stakeValue > 9 || isWagerless}  
                     <button on:click={(e)=>createGame(username)} class=' rounded-[10px] border 
                         border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
                         font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
