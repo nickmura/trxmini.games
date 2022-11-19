@@ -331,7 +331,7 @@
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
             console.log(broadcastTx.txid)
-            socket.emit('redeemedStake', $connectedUsername, JSON.parse(broadcastTx.txid));
+            socket.emit('redeemedStake', $connectedUsername);
             receivedStake = true
             
         } catch (error) {

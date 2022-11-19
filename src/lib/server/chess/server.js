@@ -135,7 +135,6 @@ io.on('connection', (socket) => {
             room.currentTurn = room.host
             io.to(`${room.gameID}`).emit('emitMove', fenValue, room.host)
         }
-        
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
         // emits the fenValue to the specific room
@@ -174,29 +173,24 @@ io.on('connection', (socket) => {
         
     })
 
-    // (BUSINESS LOGIC)
-    // Fetched wager stake < !------! > < !------! > < !------!> 
-    socket.on('redeemedStake', (player, txid) => {
+    // Fetched wager stake <!------ !> <!------ !> <!------ !> (BUSINESS LOGIC)
+    socket.on('redeemedStake', (player) => {
         let room
         if (rooms?.find(room => room.players.includes(player))) {
             room = rooms.find(room => room.players.includes(player))
             room.redeemedStake.push(player)
-            room.wagerTxs.push({player: player, txid: txid})
-            io.to(`${room.gameID}`).emit('initRedeem', room.wagerTxs.find(wager => wager.player = player));
             console.log('getRooms - redeemedStake', room)
+
             let jRooms = JSON.stringify(rooms)
             client.set('ROOMS', jRooms)
            
         } else if (endedRooms?.find(room => room.players.includes(player))) {
             room = endedRooms.find(room => room.players.includes(player))
             room.redeemedStake.push(player)
-            room.wagerTxs.push({player: player, txid: txid})
-            io.to(`${room.gameID}`).emit('initRedeem', room.wagerTxs.find(wager => wager.player = player));
             console.log('getEndedRooms - redeemedStake', room)
 
             let jEndedRooms = JSON.stringify(endedRooms)
             client.set('ENDEDROOMS', jEndedRooms)
-            
         }
         console.log(`PLAYER ${player} IN ROOM ${room.gameID} HAS REDEEMED THEIR STAKE`)
     })
@@ -224,7 +218,7 @@ io.on('connection', (socket) => {
         let room
         if (rooms?.find(room => room.players.includes(player))) {
             room = rooms.find(room => room.players.includes(player))
-            
+            console.log(`PLAYER ${player} HAS AVERTED GAME AND TOOK THEIR FUNDS`)
             room.redeemedDraw.push(player)
     
             let jRooms = JSON.stringify(rooms)
