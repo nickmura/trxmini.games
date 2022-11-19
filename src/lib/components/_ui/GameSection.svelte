@@ -3,7 +3,7 @@
 	import { onDestroy } from 'svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
-	import { chessContract, connectedAddress, connectedUsername, createGameForm, urlEndedRooms, urlRooms, chessWs, connectedChain } from '$lib/state/state'
+	import { chessContract, connectedAddress, connectedUsername, createGameForm, urlEndedRooms, urlRooms, chessWs, connectedChain, inGame } from '$lib/state/state'
 	
 	import { io } from 'socket.io-client'
 	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
@@ -60,6 +60,12 @@
 
 	let isExpanded = false
 	
+
+	let letTimeout = false
+
+	setTimeout(() => {
+		letTimeout = true
+	}, 1600)
 	async function joinGameExpanded(room) {
 		if (room.game == 'chess' || room.game == 'Chess') {
 			try {
@@ -112,10 +118,12 @@
 		
 		<div class="flex flex-col items-center gap-8">
 			<h2 class="text-3xl font-medium md:text-4xl">Game Lobbies</h2>
-			{#if $connectedUsername}
+			{#if $connectedUsername && letTimeout}
 				{#if $page.routeId == '/'}
-					{#if $connectedChain}
+					{#if $connectedChain && !$inGame}
 						<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
+					{:else if $connectedChain && $inGame}
+					<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are currently in a game! Click <a href={$page.routeId == '/' ? '/chess' : $page.routeId == '/join' ? '../chess' : '/chess'}>&nbsp;<u> here to join back/leave.</u></a></button>
 					{:else if !$connectedChain}
 						<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
 					{/if}
@@ -126,7 +134,7 @@
 						<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
 					{/if}
 				{/if}
-			{:else if !$connectedUsername && $connectedAddress}
+			{:else if !$connectedUsername && $connectedAddress && letTimeout}
 			<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button>
 			{/if}
 		</div>

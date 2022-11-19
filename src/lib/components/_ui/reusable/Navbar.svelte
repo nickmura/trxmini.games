@@ -34,9 +34,10 @@
     setTimeout(() => {
 		if (!$connectedAddress) isUser = false
 		if ($connectedAddress && !$connectedUsername) hasName = false
-		if ($connectedAddress && !$connectedChain) Shasta = false
+		if ($connectedAddress && !$connectedChain) Shasta = true
 		console.log(isUser, hasName, Shasta)
-	},700)
+	
+	},3000)
 
 	
 
@@ -87,6 +88,8 @@
     </div>
     {/if}
 
+
+	
 	{#if $connectedAddress && $connectedUsername && $inGame && $connectedChain && $page.routeId != '/chess'}
 		<div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm
 		flex justify-center transition-opacity text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">

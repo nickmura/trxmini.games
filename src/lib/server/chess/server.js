@@ -174,19 +174,23 @@ io.on('connection', (socket) => {
     })
 
     // Fetched wager stake <!------ !> <!------ !> <!------ !> (BUSINESS LOGIC)
-    socket.on('redeemedStake', (player) => {
+    socket.on('redeemedStake', (player, tx) => {
         let room
         if (rooms?.find(room => room.players.includes(player))) {
             room = rooms.find(room => room.players.includes(player))
             room.redeemedStake.push(player)
-            console.log('getRooms - redeemedStake', room)
+            room.wagerTxs.push({user: player, txid: tx})
 
+            
+            console.log('getRooms - redeemedStake', room)
             let jRooms = JSON.stringify(rooms)
             client.set('ROOMS', jRooms)
            
         } else if (endedRooms?.find(room => room.players.includes(player))) {
             room = endedRooms.find(room => room.players.includes(player))
             room.redeemedStake.push(player)
+            room.wagerTxs.push({user: player, txid: tx})
+
             console.log('getEndedRooms - redeemedStake', room)
 
             let jEndedRooms = JSON.stringify(endedRooms)

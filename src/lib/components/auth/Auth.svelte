@@ -29,30 +29,33 @@
     let isExpanded = false
     let user
     let rooms
-    let currentRoom
 
+    let currentRoom
+    
     async function check() { 
         try {
             if (browser) {
                 const res = await window.tronLink
                 console.log(res)
-                let ifChain = await res.tronWeb.trx.getContract(chessContract)
-                if (ifChain.name) { connectedChain.set(true) }
-                console.log(ifChain.name)
-                //console.log($connectedChain)
-                if (res.tronWeb == undefined || res.tronWeb === false) { 
-                    connectedAddress.set()
-                } if (res.tronWeb) {
-                    connectedAddress.set(res.tronWeb.defaultAddress.base58)
-                    sessionStorage.setItem('connectedAddr', res.tronWeb.defaultAddress.base58)
-
+                if (res) {
+                    if (res.tronWeb == undefined || res.tronWeb === false) { 
+                        connectedAddress.set()
+                    } if (res.tronWeb) {
+                        connectedAddress.set(res.tronWeb.defaultAddress.base58)
+                        let ifChain = await res.tronWeb.trx.getContract(chessContract)
+                        if (ifChain.name) { 
+                            console.log('name of contract', ifChain.name)
+                            connectedChain.set(true)
+                        }
+                        console.log('name of contract', ifChain.name)
+                    }
                 }
             }
         } catch (error) {
             console.log(error)
         }
-    } check()
-    setTimeout(check, 450)
+    } 
+    setTimeout(check, 200)
     
     
     async function updateRooms() {
@@ -61,8 +64,8 @@
 		if (!res.ok) return res.text().then(text => { throw new Error(text) })
 		else rooms = JSON.parse(await res.json())
 
-        console.log($connectedUsername)
-        if ($connectedUsername) { //This is not runing because $connectedUsername isn't before this component via Auth.svelte
+        
+        
             if (rooms != null) room = rooms.find(room => room.players.includes($connectedUsername))
                 if (room) { 
                     inGame.set(true)
@@ -71,10 +74,12 @@
                     inGame.set(false)
                     currentRoom = false
                 }
-        }       
+            console.log('inGame', $inGame)
+              
         
-    } setTimeout(updateRooms, 500)
-
+    } setTimeout(() => {
+        if ($connectedAddress && $connectedUsername) updateRooms()
+    }, 1500)
 
 
 
@@ -139,7 +144,7 @@
                 }
             }
         }   
-    } setTimeout(checkUser, 700)
+    } setTimeout(checkUser, 300)
       
 
     async function connectTronlink() {

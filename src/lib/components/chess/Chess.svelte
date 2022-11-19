@@ -10,7 +10,7 @@
 
     import { chessWs, urlRooms, urlEndedRooms } from '$lib/state/state' // ENDPOINTS
     const socket = io(chessWs)
-    const wagerTx = writable()
+    
 
 
     import { 
@@ -20,6 +20,7 @@
         currentState,
         inGame,
         creatingGame,
+        wagerTx
     } from '$lib/state/state'
 
     import Chat from './Chat.svelte'
@@ -55,52 +56,15 @@
 
     
 
-    async function getEndedRoom() { // Checks if currentRoom has already ended (host or someone left, etc)
-       let room
-       const res = await fetch(urlEndedRooms)
-       if (!res.ok) return res.text().then(text => { throw new Error(text) })
-       rooms = JSON.parse(await res.json())
 
-        //@ts-ignore
-        if (rooms?.find(room => room.players.includes($connectedUsername))) {
-            currentRoom = rooms?.find(room => room.players.includes($connectedUsername))
-            
-            if (currentRoom.host) host = currentRoom.host
-            if (currentRoom.player2) player2 = currentRoom.player2
-            currentState.set(currentRoom.fen)
-            fullGame = true
-            gameEnded = true
-            console.log(currentRoom)
-            inGame.set(true)
-
-            if (currentRoom.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
-                wagerTx.set(currentRoom.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
-                console.log($wagerTx)
-            } 
-            if (currentRoom.orientation == $connectedUsername) {
-                color = 'black'
-            } else {
-                color = 'white'
-            }
-            if (currentRoom.isCheckmate) {
-                winner = currentRoom.isCheckmate
-            }
-            if (currentRoom.isStalemate == 'true') {
-                Stalemate = true
-            }
-            if (currentRoom.isDraw == 'true') {
-                isDraw = true;
-            }
-        }
-       
-    } setTimeout(getEndedRoom, 1000)
 
     async function updateRooms() {
+        console.log($connectedUsername)
         let room
 		const res = await fetch(urlRooms)
 		if (!res.ok) return res.text().then(text => { throw new Error(text) })
 		rooms = JSON.parse(await res.json())
-        console.log($connectedUsername)
+        //console.log($connectedUsername)
         //console.log($connectedUsername)
         //Make condition to call endedRooms if rooms.find fails TODO 
         
@@ -122,9 +86,9 @@
                     inGame.set(true)
                     socket.emit('reconnectPlayer', room)
                     currentRoom = room
-                    if (room.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
-                        wagerTx.set(room.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
-                        console.log($wagerTx)
+                    if (room.wagerTxs?.find(wager => wager.user == $connectedUsername)) {
+                        wagerTx.set(room.wagerTxs.find(wager => wager.user == $connectedUsername).txid)
+                        console.log('WagerTxid', $wagerTx)
                     } 
                 }
                 host = room.host
@@ -156,46 +120,33 @@
             }
         } 
 
-    } setTimeout(updateRooms, 1000)
+    } 
 
-    async function updateRooms2() {
-        let room
-		const res = await fetch(urlRooms)
-		if (!res.ok) throw new Error(res)
-		else rooms = JSON.parse(await res.json())
+    async function getEndedRoom() { // Checks if currentRoom has already ended (host or someone left, etc)
+       let room
+       const res = await fetch(urlEndedRooms)
+       if (!res.ok) return res.text().then(text => { throw new Error(text) })
+       rooms = JSON.parse(await res.json())
 
-        //Make condition to call endedRooms if rooms.find fails TODO 
-        if ($connectedUsername ) { //This is not runing because $connectedUsername  isn't before this component via Auth.svelte
-            if (rooms != null) room = rooms.find(room => room.players.includes($connectedUsername ))
-            while (!room) {
-                const res = await fetch(urlRooms)
-		        if (!res.ok) throw new Error(res)
-		        rooms = JSON.parse(await res.json())
-                room = rooms?.find(room => room.players.includes($connectedUsername ))
-            }
-                if (room) {
-                    socket.emit('reconnectPlayer', room)
-                    currentRoom = room
-                    if (room.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
-                        wagerTx.set(room.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
-                        console.log($wagerTx)
-                    } 
-                }
-                host = room.host
-                console.log(currentRoom)
-
-            }
-        
-
-        if (room && room.players.length > 1) {
-            socket.emit('reconnectPlayer', room) //No reason to grab state before game starts.
-            currentRoom = room
-            player2 = room.player2
+        //@ts-ignore
+        if (rooms?.find(room => room.players.includes($connectedUsername))) {
+            currentRoom = rooms?.find(room => room.players.includes($connectedUsername))
+            
+            if (currentRoom.host) host = currentRoom.host
+            if (currentRoom.player2) player2 = currentRoom.player2
+            currentState.set(currentRoom.fen)
             fullGame = true
-            currentState.set(room.fen)
-            if (player2 == $connectedUsername ){
+            gameEnded = true
+            console.log(currentRoom)
+            inGame.set(true)
+            console.log(currentRoom.wagerTxs)
+            if (currentRoom.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
+                wagerTx.set(currentRoom.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
+                console.log($wagerTx)
+            } 
+            if (currentRoom.orientation == $connectedUsername) {
                 color = 'black'
-            } else if (host == $connectedUsername ) {
+            } else {
                 color = 'white'
             }
             if (currentRoom.isCheckmate) {
@@ -207,10 +158,68 @@
             if (currentRoom.isDraw == 'true') {
                 isDraw = true;
             }
-            console.log(Stalemate)
-        } 
+        }
+       
+    } 
 
-    } updateRooms2()
+
+    onMount(() => {
+        setTimeout(updateRooms, 1200)
+        setTimeout(getEndedRoom, 1200)
+    })
+    // async function updateRooms2() {
+    //     let room
+	// 	const res = await fetch(urlRooms)
+	// 	if (!res.ok) throw new Error(res)
+	// 	else rooms = JSON.parse(await res.json())
+
+    //     //Make condition to call endedRooms if rooms.find fails TODO 
+    //     if ($connectedUsername ) { //This is not runing because $connectedUsername  isn't before this component via Auth.svelte
+    //         if (rooms != null) room = rooms.find(room => room.players.includes($connectedUsername ))
+    //         while (!room) {
+    //             const res = await fetch(urlRooms)
+	// 	        if (!res.ok) throw new Error(res)
+	// 	        rooms = JSON.parse(await res.json())
+    //             room = rooms?.find(room => room.players.includes($connectedUsername ))
+    //         }
+    //             if (room) {
+    //                 socket.emit('reconnectPlayer', room)
+    //                 currentRoom = room
+    //                 if (room.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
+    //                     wagerTx.set(room.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
+    //                     console.log($wagerTx)
+    //                 } 
+    //             }
+    //             host = room.host
+    //             console.log(currentRoom)
+
+    //         }
+        
+
+    //     if (room && room.players.length > 1) {
+    //         socket.emit('reconnectPlayer', room) //No reason to grab state before game starts.
+    //         currentRoom = room
+    //         player2 = room.player2
+    //         fullGame = true
+    //         currentState.set(room.fen)
+    //         if (player2 == $connectedUsername ){
+    //             color = 'black'
+    //         } else if (host == $connectedUsername ) {
+    //             color = 'white'
+    //         }
+    //         if (currentRoom.isCheckmate) {
+    //             winner = currentRoom.isCheckmate
+    //         }
+    //         if (currentRoom.isStalemate == 'true') {
+    //             Stalemate = true
+    //         }
+    //         if (currentRoom.isDraw == 'true') {
+    //             isDraw = true;
+    //         }
+    //         console.log(Stalemate)
+    //     } 
+
+    // } updateRooms2()
 
     function redirectJoin() {
         goto('../join')
@@ -331,7 +340,7 @@
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
             console.log(broadcastTx.txid)
-            socket.emit('redeemedStake', $connectedUsername);
+            socket.emit('redeemedStake', $connectedUsername, broadcastTx.txid);
             receivedStake = true
             
         } catch (error) {
