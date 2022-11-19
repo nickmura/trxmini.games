@@ -38,7 +38,7 @@
                 console.log(res)
                 let ifChain = await res.tronWeb.trx.getContract(chessContract)
                 if (ifChain.name) { connectedChain.set(true) }
-                //console.log(ifChain.name)
+                console.log(ifChain.name)
                 //console.log($connectedChain)
                 if (res.tronWeb == undefined || res.tronWeb === false) { 
                     connectedAddress.set()
@@ -52,7 +52,7 @@
             console.log(error)
         }
     } check()
-    setTimeout(check, 100)
+    setTimeout(check, 450)
     
     
     async function updateRooms() {
@@ -75,6 +75,10 @@
         
     } setTimeout(updateRooms, 500)
 
+
+
+
+    
     async function getEndedRoom() { // Checks if currentRoom has already ended (host or someone left, etc)
        let room
        const res = await fetch(urlEndedRooms)
@@ -135,7 +139,7 @@
                 }
             }
         }   
-    } setTimeout(checkUser, 200)
+    } setTimeout(checkUser, 700)
       
 
     async function connectTronlink() {

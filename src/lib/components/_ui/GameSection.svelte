@@ -3,7 +3,7 @@
 	import { onDestroy } from 'svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
-	import { chessContract, connectedAddress, connectedUsername, createGameForm, urlEndedRooms, urlRooms, chessWs } from '$lib/state/state'
+	import { chessContract, connectedAddress, connectedUsername, createGameForm, urlEndedRooms, urlRooms, connectedChain, chessWs } from '$lib/state/state'
 	
 	import { io } from 'socket.io-client'
 	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
@@ -127,13 +127,23 @@
 		
 		<div class="flex flex-col items-center gap-8">
 			<h2 class="text-3xl font-medium md:text-4xl">Game Lobbies</h2>
-			{#if connectedUsername}
-				{#if $page.routeId == '/'}
+			{#if $connectedUsername}
+			{#if $page.routeId == '/'}
+				{#if $connectedChain}
 					<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
-				{:else}
+				{:else if !$connectedChain}
+					<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
+				{/if}
+			{:else}
+				{#if $connectedChain}
 					<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse ' on:click={createGameForm}>Create a game here!</button>
+				{:else if !$connectedChain}
+					<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
 				{/if}
 			{/if}
+		{:else if !$connectedUsername && $connectedAddress}
+		<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button>
+		{/if}
 		</div>
 		<CreateGame></CreateGame>
 		{#if rooms}

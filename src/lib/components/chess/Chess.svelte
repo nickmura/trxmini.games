@@ -440,7 +440,7 @@
                         {/if}
                     </div>
                     <div class='flex flex-row justify-center w-full'>
-                        {#if currentRoom.isCheckmate != $connectedUsername && currentRoom.isCheckmate || currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.redeemedStake || currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.redeemedDraw|| receivedStake}
+                        {#if currentRoom.isCheckmate != $connectedUsername && currentRoom.isCheckmate || currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.redeemedStake || currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.redeemedDraw || receivedStake}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 mr-1' on:click={leaveGame}>
