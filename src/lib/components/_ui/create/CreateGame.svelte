@@ -116,6 +116,7 @@
                         token: 'TRX', 
                         index: ``,
                         currentTurn: $connectedUsername,
+                        wagerTxs: [],
                         redeemedStake: [],
                         redeemedDraw: [],
                     }
@@ -136,6 +137,7 @@
                         token: 'TRX', 
                         index: ``,
                         currentTurn: $connectedUsername,
+                        wagerTxs: [],
                         redeemedStake: [],
                         redeemedDraw: [],
                     }

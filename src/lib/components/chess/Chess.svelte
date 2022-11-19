@@ -1,6 +1,7 @@
 <script>
     //@ts-nocheck
     import { onMount } from 'svelte'
+    import { writable } from 'svelte/store'
     import { slide } from 'svelte/transition'
     import { goto } from '$app/navigation'
     import { browser } from '$app/environment'
@@ -9,6 +10,8 @@
 
     import { chessWs, urlRooms, urlEndedRooms } from '$lib/state/state' // ENDPOINTS
     const socket = io(chessWs)
+    const wagerTx = writable()
+
 
     import { 
         connectedAddress,
@@ -69,6 +72,11 @@
             gameEnded = true
             console.log(currentRoom)
             inGame.set(true)
+
+            if (currentRoom.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
+                wagerTx.set(currentRoom.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
+                console.log($wagerTx)
+            } 
             if (currentRoom.orientation == $connectedUsername) {
                 color = 'black'
             } else {
@@ -114,6 +122,10 @@
                     inGame.set(true)
                     socket.emit('reconnectPlayer', room)
                     currentRoom = room
+                    if (room.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
+                        wagerTx.set(room.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
+                        console.log($wagerTx)
+                    } 
                 }
                 host = room.host
                 
@@ -164,6 +176,10 @@
                 if (room) {
                     socket.emit('reconnectPlayer', room)
                     currentRoom = room
+                    if (room.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
+                        wagerTx.set(room.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
+                        console.log($wagerTx)
+                    } 
                 }
                 host = room.host
                 console.log(currentRoom)
@@ -314,14 +330,20 @@
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
-            
-            socket.emit('redeemedStake', $connectedUsername)
+            console.log(broadcastTx.txid)
+            socket.emit('redeemedStake', $connectedUsername, JSON.parse(broadcastTx.txid));
             receivedStake = true
             
         } catch (error) {
             hasClicked = false
         }
     }
+
+    socket.on('initRedeem', (wager) => {
+        wagerTx.set(wager)
+        console.log('wagerTxs', wager)
+    })
+
     async function collectDraw(index) {
         try {
             hasClicked = true
@@ -398,7 +420,7 @@
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: {host ? `${host}` : ''} {player2 ? `, ${player2}` : ``}</div>
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>
                     {#if winner}
-                        <div class={$connectedUsername != winner ? 'animate-pulse' : ''}>{winner} won by checkmate!</div>
+                        <div class={$connectedUsername == winner ? 'animate-pulse' : ''}>{winner} won by checkmate!</div>
                     {:else if Stalemate || isDraw}
                         The game is a stalemate! (draw)
                     {:else if isDraw && !Stalemate}
