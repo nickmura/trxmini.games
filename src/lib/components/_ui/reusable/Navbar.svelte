@@ -36,7 +36,7 @@
 		if ($connectedAddress && !$connectedUsername) hasName = false
 		if ($connectedAddress && !$connectedChain) Shasta = false
 		console.log(isUser, hasName, Shasta)
-	}, 700)
+	},700)
 
 	
 
