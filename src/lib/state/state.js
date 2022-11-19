@@ -32,7 +32,7 @@ export const chessEventListener = `https://api.shasta.trongrid.io/v1/contracts/$
 export const eventAPI = 'http://172.105.106.183:5020/api'
  
 // Chess socket.io endpoint
-export const chessWs = 'http://localhost:3001';
+export const chessWs = 'http://172.105.106.183:3001';
 export const currentState = writable('') // Saves current FEN state of chess game.
 
 let prompted = false
