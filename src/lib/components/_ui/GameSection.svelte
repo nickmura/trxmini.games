@@ -47,14 +47,18 @@
 		if (!res.ok) throw new Error(res)
 		endedRooms = JSON.parse(await res.json())
         if (endedRooms != null && endedRooms.length && endedRooms != undefined) {
-			console.log(rooms)
+			
 			room = endedRooms?.find(room => room.players.includes($connectedUsername))
+			console.log($connectedUsername, room)
 			if (room) {
 				hasRoom = room
+				inGame.set(true)
 				isPlayer = true
 			}
 		}
-	} getEndedRoom()
+	} setTimeout(() => {
+		getEndedRoom()
+	}, 1200)
 
 
 
@@ -122,7 +126,7 @@
 				{#if $page.routeId == '/'}
 					{#if $connectedChain && !$inGame}
 						<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
-					{:else if $connectedChain && $inGame}
+					{:else if $inGame}
 					<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are currently in a game! Click <a href={$page.routeId == '/' ? '/chess' : $page.routeId == '/join' ? '../chess' : '/chess'}>&nbsp;<u> here to join back/leave.</u></a></button>
 					{:else if !$connectedChain}
 						<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>

@@ -79,7 +79,7 @@
         
     } setTimeout(() => {
         if ($connectedAddress && $connectedUsername) updateRooms()
-    }, 1500)
+    }, 1000)
 
 
 
@@ -93,37 +93,17 @@
         //@ts-ignore
         if (rooms?.find(room => room.players.includes($connectedUsername))) {
             currentRoom = rooms?.find(room => room.players.includes($connectedUsername))
-            if (currentRoom) { 
-                    inGame.set(true)
-                    currentRoom = true
-                } else {
-                    inGame.set(false)
-                    currentRoom = false
-                }
-            if (currentRoom.host) host = currentRoom.host
-            if (currentRoom.player2) player2 = currentRoom.player2
-            currentState.set(currentRoom.fen)
-            fullGame = true
-            gameEnded = true
-            console.log(currentRoom)
-            inGame.set(true)
-            if (currentRoom.orientation == $connectedUsername) {
-                color = 'black'
+            if (room) { 
+                inGame.set(true)
+                currentRoom = true
             } else {
-                color = 'white'
+                inGame.set(false)
+                currentRoom = false
             }
-            if (currentRoom.isCheckmate) {
-                winner = currentRoom.isCheckmate
-            }
-            if (currentRoom.isStalemate == 'true') {
-                Stalemate = true
-            }
-            if (currentRoom.isDraw == 'true') {
-                isDraw = true;
-            }
+            
         }
        
-    } setTimeout(getEndedRoom, 1000)
+    } setTimeout(getEndedRoom, 1100)
 
 
     async function checkUser() {
@@ -168,8 +148,11 @@
                 if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
                 return res
             }
-            //let ifChain = await res.tronWeb.trx.getContract(chessContract)
-            //if (ifChain.name) connectedChain.set(true)
+            let ifChain = await res.tronWeb.trx.getContract(chessContract)
+                if (ifChain.name) { 
+                    console.log('name of contract', ifChain.name)
+                    connectedChain.set(true)
+                }
 
             submitData(url0)
                 .then(res => console.log(res))

@@ -370,7 +370,9 @@
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
+
             wagerTx.set(broadcastTx.txid)
+            
             socket.emit('redeemedDraw', $connectedUsername, broadcastTx.txid)
             receivedStake = true
         } catch (error) {
@@ -394,8 +396,10 @@
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
+
+            wagerTx.set(broadcastTx.txid);
             
-            socket.emit('avertGame', $connectedUsername)
+            socket.emit('avertGame', $connectedUsername, broadcastTx.txid)
             receivedStake = true
         } catch (error) {
             hasClicked = false

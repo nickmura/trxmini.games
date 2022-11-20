@@ -179,16 +179,18 @@ io.on('connection', (socket) => {
         if (rooms?.find(room => room.players.includes(player))) {
             room = rooms.find(room => room.players.includes(player))
             room.redeemedStake.push(player)
-            room.wagerTxs.push({user: player, txid: tx})
 
+            room.wagerTxs.push({user: player, txid: tx})
             
             console.log('getRooms - redeemedStake', room)
+
             let jRooms = JSON.stringify(rooms)
             client.set('ROOMS', jRooms)
            
         } else if (endedRooms?.find(room => room.players.includes(player))) {
             room = endedRooms.find(room => room.players.includes(player))
             room.redeemedStake.push(player)
+
             room.wagerTxs.push({user: player, txid: tx})
 
             console.log('getEndedRooms - redeemedStake', room)
@@ -199,12 +201,14 @@ io.on('connection', (socket) => {
         console.log(`PLAYER ${player} IN ROOM ${room.gameID} HAS REDEEMED THEIR STAKE`)
     })
 
-    socket.on('redeemedDraw', (player) => { 
+    socket.on('redeemedDraw', (player, tx) => { 
         let room
         if (rooms?.find(room => room.players.includes(player))) {
             room = rooms.find(room => room.players.includes(player))
             room.redeemedDraw.push(player)
-    
+
+            room.wagerTxs.push({user: player, txid: tx})
+
             let jRooms = JSON.stringify(rooms)
             client.set('ROOMS', jRooms)
             
@@ -212,19 +216,26 @@ io.on('connection', (socket) => {
             room = endedRooms.find(room => room.players.includes(player))
             room.redeemedDraw.push(player)
 
+            room.wagerTxs.push({user: player, txid: tx})
+
             let jEndedRooms = JSON.stringify(endedRooms)
             client.set('ENDEDROOMS', jEndedRooms)
         }
         console.log(`(DRAW) PLAYER ${player} IN ROOM ${room.gameID} HAS REDEEMED HALF THE STAKE`)
     })
 
-    socket.on('avertGame', (player) => {
+
+
+    socket.on('avertGame', (player, tx) => {
         let room
         if (rooms?.find(room => room.players.includes(player))) {
             room = rooms.find(room => room.players.includes(player))
-            console.log(`PLAYER ${player} HAS AVERTED GAME AND TOOK THEIR FUNDS`)
             room.redeemedDraw.push(player)
-    
+
+            room.wagerTxs.push({user: player, txid: tx})
+
+            console.log(`PLAYER ${player} HAS AVERTED GAME AND TOOK THEIR FUNDS`)
+
             let jRooms = JSON.stringify(rooms)
             client.set('ROOMS', jRooms)
         }
@@ -240,6 +251,7 @@ io.on('connection', (socket) => {
 
             const index = rooms.findIndex(room => room.players.includes(player)) // gets rid of room from active rooms
             const findPlayer = room.players.findIndex(disconnected => disconnected == player) // Removes player from the game so player who leaves
+            
             if (findPlayer > -1) room.players.splice(findPlayer, 1) // doesn't retrieve game state from endedRooms
 
             if (room.host == player) room.host = '' 
