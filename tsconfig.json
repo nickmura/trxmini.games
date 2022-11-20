@@ -1,4 +1,5 @@
 {
+
 	"outDir": ".svelte-kit",
 	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
