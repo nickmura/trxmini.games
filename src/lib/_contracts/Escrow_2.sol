@@ -1,12 +1,13 @@
 //SPDX-License-Identifier: MIT
 // Chess Escrow
 pragma solidity ^0.8.7;
-    
+
 contract Trxmini_Games_Escrow {
     uint32 id;
     event GameIndex(uint32 indexed _gameId, uint indexed index);
-    
     event GameEnd(uint gameId, bool draw);
+
+
     struct Game { 
         uint32 gameId;
         address playerOne;

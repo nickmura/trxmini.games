@@ -10,7 +10,7 @@
 
 
     import { theme } from '$lib/state/Theme.svelte'
-    import { createPrompt, url0, url1 } from '$lib/state/state'
+    import { createPrompt, tipPlayerForm, tipPrompt, url0, url1 } from '$lib/state/state'
     import { 
         connectedAddress, 
         connectedUsername,
@@ -190,7 +190,7 @@
     }
 
     async function tipPlayer() {
-        // COMING SOON
+        // NOW IMPORTED AS tipPlayerForm
     }
 
 
@@ -258,8 +258,8 @@
                     <button class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                     dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50' disabled>Join Game</button>
                 {/if}
-                <button on:click={tipPlayer} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50 border-opacity-50' disabled>Tip</button>
+                <button on:click={tipPlayerForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                dark:bg-[#16161e]  z-20 p-2 text-xs '>Tip</button>
             </div>
         </div>
     {/if}
@@ -297,7 +297,7 @@
                 
                 <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50 border-opacity-50' disabled>Join Game</button>
-                <button on:click={tipPlayer} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                <button on:click={tipPlayerForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50 border-opacity-50' disabled>Tip</button>
             </div>
         </div>

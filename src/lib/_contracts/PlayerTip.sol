@@ -1,13 +1,11 @@
-//SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
+    //SPDX-License-Identifier: MIT
+    pragma solidity ^0.8.7;
 
-contract TrxMini_Player_Tip {
-    event Transfer(address from, uint amount, address to);
-
-
-    function tip(uint256 amount, address payable to) public payable {
-        require(tx.origin != msg.sender && msg.sender != to, "Tip needs to be from a EOA, not a contract / Recipient cannot be sender");
-        to.transfer(amount);
-        emit Transfer(msg.sender, amount/1000000, to);
+    contract TrxMini_Player_Tip {
+        event Transfer(address from, uint amount, address to);
+        
+        function tip(uint256 amount, address payable to) public payable {
+            to.transfer(amount);
+            emit Transfer(msg.sender, amount/1000000, to);
+        }
     }
-}

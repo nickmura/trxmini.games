@@ -7,6 +7,7 @@
 	
 	import { io } from 'socket.io-client'
 	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
+	import Tip from '$lib/components/_ui/create/Tip.svelte';
 	const socket = io(chessWs)
 
 
@@ -142,7 +143,9 @@
 			<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button>
 			{/if}
 		</div>
+		<Tip></Tip>
 		<CreateGame></CreateGame>
+		
 		{#if rooms}
 		<div class="relative mt-12 divide-bottom divide-gray-200 rounded-[10px] border border-blue-400 border-opacity-100 px-6 md:px-10 opacity-100">
 			<!-- <div class='absolute font-bold z-20 opacity-100 text-[#4957B0] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
