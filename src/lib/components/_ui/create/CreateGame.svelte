@@ -72,6 +72,16 @@
     async function createGame(info) {
         // DO THIS LOGIC
 
+        // FOR 8 BALL 
+        if ($selectedOption == '8 Ball') {
+            isWagerless = true
+            if ($page.routeId == '/username' || $page.routeId == '/join') goto('../8ball')
+                else if ($page.routeId == '/8ball') goto('./')
+                else {
+                    goto('./8ball')
+                    
+                }
+        }
         // FOR CHESS
         if ($selectedOption == 'Chess') {
             try {
@@ -230,8 +240,8 @@
                                 <ul class='top-8 absolute z-50 inset-x-32 ml-3 border-[#b3b2b1] top-36 mt-2 bg-[#edece6] dark:bg-[#111112] rounded-lg text-black dark:text-[#edece6] pl-1 w-24 pr-1 pb-1 pt-1 border  'transition:slide>
                                     <div class='flex flex-col '>
                                         <button class="pl-1 pr-1 rounded-sm dark:hover:bg-[#2b2b36] hover:bg-[#c4c4be] hover:scale-[1.03] transition transition-200" on:click={assignChess}>Chess</button>
-                                        <button class="pl-1 pr-1 rounded-sm opacity-50" on:click={assign8Ball} disabled>8 Ball</button>
-                                        <button class="pl-1 pr-1 rounded-sm opacity-50" on:click={assignDrawades} disabled>Drawades</button>
+                                        <button class="pl-1 pr-1 rounded-sm " on:click={assign8Ball}>8 Ball</button>
+                                        <button class="pl-1 pr-1 rounded-sm opacity-50 " on:click={assignDrawades} disabled>Drawades</button>
                                     </div>
                                 </ul>
                             {/if}
@@ -245,7 +255,7 @@
                         <div class='mr-2 text-[10px] text-[#b6bab7]'><i>Balance: {Math.round(100*$getBalance)/100} TRX</i></div>
                     </div>
                     <div class=' font-semibold flex justify-center py-6 px-4 '>
-                    {#if !isWagerless}
+                    {#if !isWagerless && $selectedOption != '8 Ball'}
                         <div class='mt-1.5 mr-2'>Stake:</div>
                             <input bind:value={stakeValue} id="stake" min='0' name="stake" type='number' required class="relative px-3 py-1.5 
                             border dark:bg-[#111112] bg-[#EDEDE8] w-32 border-gray-300 placeholder-gray-500 dark:text-white dark:placeholder-gray-450 bg-gray-100 rounded-lg focus:outline-none 
@@ -261,11 +271,15 @@
                     {/if} 
 
                     </div>
-                    
-                    <div class='justify-center flex -py-2'>
-                        Wagerless:<input class='ml-2' type='checkbox' bind:checked={isWagerless}>
-                    </div>
-                    
+                    {#if $selectedOption != '8 Ball'}
+                        <div class='justify-center flex -py-2'>
+                            Wagerless:<input class='ml-2' type='checkbox' bind:checked={isWagerless}>
+                        </div>
+                    {:else if $selectedOption == '8 Ball'}
+                        <div class='justify-center flex -py-2 opacity-50'>
+                            Wagerless:<input class='ml-2' type='checkbox' bind:checked={isWagerless} disabled>
+                        </div>
+                    {/if}
                     
                 </div>  
                 
@@ -279,7 +293,7 @@
                 transition-200" on:click={createGameForm}>Cancel</button>
 
                 <!-- Change last and operator to stakeValue > 49 -->
-                {#if stakeValue && stakeValue < $getBalance - 16 && !hasClicked && stakeValue > 9 || isWagerless}  
+                {#if stakeValue && stakeValue < $getBalance - 16 && !hasClicked && stakeValue > 9 || isWagerless || $selectedOption == '8 Ball'}  
                     <button on:click={(e)=>createGame(username)} class=' rounded-[10px] border 
                         border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
                         font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
