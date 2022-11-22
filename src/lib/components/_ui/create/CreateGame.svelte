@@ -247,9 +247,9 @@
                     <div class=' font-semibold flex justify-center py-6 px-4 '>
                     {#if !isWagerless}
                         <div class='mt-1.5 mr-2'>Stake:</div>
-                        <input bind:value={stakeValue} id="stake" min='0' name="stake" type='number' required class="relative px-3 py-1.5 
-                        border dark:bg-[#111112] bg-[#EDEDE8] w-32 border-gray-300 placeholder-gray-500 dark:text-white dark:placeholder-gray-450 bg-gray-100 rounded-lg focus:outline-none 
-                        focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-light" placeholder="Enter a wager">
+                            <input bind:value={stakeValue} id="stake" min='0' name="stake" type='number' required class="relative px-3 py-1.5 
+                            border dark:bg-[#111112] bg-[#EDEDE8] w-32 border-gray-300 placeholder-gray-500 dark:text-white dark:placeholder-gray-450 bg-gray-100 rounded-lg focus:outline-none 
+                            focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-light" placeholder="Enter a wager">
 
                     {:else}
 

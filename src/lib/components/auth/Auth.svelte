@@ -222,7 +222,7 @@
     </button>
     {#if isExpanded}
         <div class='absolute justify-center right-12 rounded-[10px] border border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-        dark:bg-[#16161e] max-h-2/4 w-[16rem] z-100 pt-3 pl-6 pr-6 pb-3 mt-48 text-sm' transition:slide>
+        dark:bg-[#16161e] bg-[#f2f0eb] max-h-2/4 w-[16rem] z-100 pt-3 pl-6 pr-6 pb-3 mt-48 text-sm' transition:slide>
             <i><div>{$connectedUsername}'s account</div></i>
             <div class='flex-row'>
                 <div class='flex wrap text-gray-400 hover:text-gray-500'>
@@ -270,7 +270,7 @@
     </button>
     {#if isExpanded}
         <div class='absolute justify-center right-12 rounded-[10px] border border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-        dark:bg-[#16161e]  max-h-2/4 w-[16rem] z-20 pt-3 pl-6 pr-6 pb-3 mt-48 text-sm' transition:slide>
+        dark:bg-[#16161e] bg-[#f2f0eb]  max-h-2/4 w-[16rem] z-20 pt-3 pl-6 pr-6 pb-3 mt-48 text-sm' transition:slide>
             <i><div class='animate-pulse'>{$connectedAddress.substring(0,5)}...{$connectedAddress.substring(29,34)}'s account</div></i>
             <div class='flex-row'>
                 <div class='flex wrap text-gray-400 hover:text-gray-500'>
@@ -298,7 +298,7 @@
                 <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50 border-opacity-50' disabled>Join Game</button>
                 <button on:click={tipPlayerForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50 border-opacity-50' disabled>Tip</button>
+                dark:bg-[#16161e]  z-20 p-2 text-xs '>Tip</button>
             </div>
         </div>
     {/if}
