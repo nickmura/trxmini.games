@@ -27,7 +27,7 @@ export const urlEndedRooms = 'http://172.105.106.183:5020/endedrooms'
 
 
 // chess contract, aswell as endpoint that Listens for contract events via trongrid.io API, such as the index which is a nessescary parameter to invoke the relevant struct.
-export const tipContract = 'TCujGY8cfgssDkN2tEkw24v1gc1tUVW1JW';
+export const tipContract = 'TBPL4jVJMwnMLUjmX9GDTgXcC8y3T5zVgD';
 export const chessContract = 'TMGBGionnPs1TFRHxNrZRiGneZaDi6zkBh'
 export const _chessContract  = 'TQyY41mqbHVWWHWt5Zq1pPL5rYd7HgM2kE'
 

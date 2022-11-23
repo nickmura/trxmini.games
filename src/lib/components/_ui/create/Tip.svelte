@@ -45,8 +45,22 @@
     const bounceCheckUser = debounce(checkUniqueUser, 250) // Debounce user input to querying database.
 
 
-    function tipPlayer() {
+    async function tipPlayer(amount, recipient) {
+        hasClicked = true
+        let uuid = Math.floor(Math.random()*1000000) // gameID
 
+        let sun = amount*1000000
+        var parameter = [{type:'uint32',value:uuid}, {type:'uint64', value:sun}, {type:'address', value:recipient}]
+        var options = {
+            feeLimit: 100000000,
+        }
+
+        // invoking contract function
+        const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+            window.tronWeb.address.toHex(tipContract), "tip(uint256)",
+            options, parameter, window.tronWeb.address.toHex($connectedAddress))
+        const signedTx = await tronWeb.trx.sign(tx.transaction);
+        const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
     }
 
 

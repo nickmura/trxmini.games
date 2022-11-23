@@ -64,6 +64,19 @@ app.get('/username', async (req, res) => {
     })
 })
 
+app.get('/getaddr', async (req, res) => {
+    let username = req.query.username
+    let address
+    const select = `SELECT address FROM usernames WHERE username = ($1)`
+    const values = [`${username}`]
+    post.query(select, values, (err, result) => {
+        if (!err) {
+            console.log('Selected query', result.rows[0])
+            if (result.rows != undefined) address = {address: result.rows[0].address, username: username}
+            if (address) return res.json(address)
+        } else console.log(err)
+    })
+})
 app.post('/unique', async (req, res) => {
     let username = req.query.user
     console.log(username)
@@ -79,9 +92,9 @@ app.post('/unique', async (req, res) => {
         } else console.log(err)
 
     })
-
-
 })
+
+
 
 
 console.log('Listening on port 5001')
