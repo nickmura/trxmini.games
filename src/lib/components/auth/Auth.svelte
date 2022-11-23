@@ -111,9 +111,10 @@
             
             const res = await window.tronLink 
             if (res.tronWeb) connectedAddress.set(res.tronWeb.defaultAddress.base58)
+            console.log(res.tronWeb)
             getBalance.set(await window.tronWeb.trx.getBalance($connectedAddress) / 1000000)
             if ($connectedAddress) {
-                console.log($connectedAddress)
+                
                 const url2 = `http://170.187.182.220:5001/username?addr=${$connectedAddress}`
                 const res = await fetch(url2)
                 if (!res.ok) throw new Error('null fetch')

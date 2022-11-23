@@ -158,11 +158,14 @@
         display: flex;
         justify-content: center;
     }
+
+
     /* .between {
         display: flex;
         margin-top: 1rem;
         justify-content: space-between;
     } */
+    
     
     /* .tooltip .tooltipinfo {
         visibility: hidden;

@@ -295,11 +295,9 @@
                 <!-- Change last and operator to stakeValue > 49 -->
                 {#if stakeValue && stakeValue < $getBalance - 16 && !hasClicked && stakeValue > 9 || isWagerless || $selectedOption == '8 Ball'}  
                     <button on:click={(e)=>createGame(username)} class=' rounded-[10px] border 
-                        border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
-                        font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
-                        transition-200'> 
-                        Create Game
-                    </button>
+                        border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500
+                        py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
+                        transition-200'>Create Game</button>
                 
                 {:else if hasClicked}
                     <button on:click={(e)=>createGame(username)} class=' rounded-[10px] 
