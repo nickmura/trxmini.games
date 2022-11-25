@@ -10,7 +10,7 @@ export const connectedUsername = writable()
 export const getBalance = writable() 
 
 export const createPrompt = writable(false)
-export const tipPrompt = writable(false)
+export const tipPrompt = writable(true)
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
 
@@ -18,7 +18,7 @@ export const creatingGame = writable()
 // POSTGRES ENDPOINTS
 export const url0 = 'http://170.187.182.220:5001/address'
 export const url1 = 'http://170.187.182.220:5001/username'
-
+export const url2 = 'http://170.187.182.220:5001/getaddr?username='
 // REDIS ENDPOINTS
 
 export const urlRooms = 'http://172.105.106.183:5020/rooms'

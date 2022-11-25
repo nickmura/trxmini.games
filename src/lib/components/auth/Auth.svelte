@@ -10,7 +10,7 @@
 
 
     import { theme } from '$lib/state/Theme.svelte'
-    import { createPrompt, tipPlayerForm, tipPrompt, url0, url1 } from '$lib/state/state'
+    import { createPrompt, tipPlayerForm, tipPrompt, url0, url1, url2 } from '$lib/state/state'
     import { 
         connectedAddress, 
         connectedUsername,
@@ -60,12 +60,12 @@
     
     async function updateRooms() {
         let room
+        let testaddr
 		const res = await fetch(urlRooms)
 		if (!res.ok) return res.text().then(text => { throw new Error(text) })
 		else rooms = JSON.parse(await res.json())
+        
 
-        
-        
             if (rooms != null) room = rooms.find(room => room.players.includes($connectedUsername))
                 if (room) { 
                     inGame.set(true)
@@ -141,6 +141,7 @@
             let user = JSON.stringify({address: accounts.tronWeb.defaultAddress.base58})
             
             const submitData = async (url) => { //sending address to express and postgres
+                console.log('test123')
                 const res = await fetch(url, {
                     method: 'post',
                     headers: {'Content-Type': 'application/json'},
@@ -149,17 +150,17 @@
                 if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
                 return res
             }
+            submitData(url0)
+                .then(res => console.log(res))
+                .catch(err => console.error(err))
+                
+            setTimeout(checkUser, 1500)
+            console.log(res)
             let ifChain = await res.tronWeb.trx.getContract(chessContract)
                 if (ifChain.name) { 
                     console.log('name of contract', ifChain.name)
                     connectedChain.set(true)
                 }
-
-            submitData(url0)
-                .then(res => console.log(res))
-                .catch(err => console.error(err))
-            setTimeout(checkUser, 1500) 
-
         
 
 			if (res.code === 4001) {
