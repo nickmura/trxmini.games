@@ -261,7 +261,7 @@
                     dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50' disabled>Join Game</button>
                 {/if}
                 <button on:click={tipPlayerForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs '>Tip</button>
+                dark:bg-[#16161e]  z-20 p-2 text-xs border-opacity-50 opacity-50 ' disabled>Tip</button>
             </div>
         </div>
     {/if}
@@ -300,7 +300,7 @@
                 <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50 border-opacity-50' disabled>Join Game</button>
                 <button on:click={tipPlayerForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs '>Tip</button>
+                dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50 border-opacity-50' disabled>Tip</button>
             </div>
         </div>
     {/if}

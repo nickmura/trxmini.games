@@ -10,7 +10,7 @@ export const connectedUsername = writable()
 export const getBalance = writable() 
 
 export const createPrompt = writable(false)
-export const tipPrompt = writable(true)
+export const tipPrompt = writable(false)
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
 
