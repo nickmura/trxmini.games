@@ -24,13 +24,18 @@ app.use(cors(config))
 
 let rooms 
 
-app.post('/address', (req, res) => {
+app.post('/address', async (req, res) => {
     let user = req.body
 
     let insert = `insert into usernames("address") values($1)`
     const values = [`${user.address}`]
-    post.query(insert, values, (err, result) => {
+    await post.query(insert, values, (err, result) => {
         if (!err) console.log('Insertion was successful')
+    })
+    let update = `UPDATE usernames SET games_played=0,has_played=false,games_won=0 WHERE address=($1)`
+    const values = [`${user.address}`]
+    await post.query(update, values, (err, result) => {
+        if (!err) console.log('Updated values was successful (games_played, has_played, games_won)')
     })
 })
 
