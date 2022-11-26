@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
 
 const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'https://trxmini.games', 
-'//trxmini.games', 'http://localhost:5173', '//localhost:5173']
+'//trxmini.games', 'http://localhost:5173', '//localhost:5173', 'http://localhost:5500', '*']
 const config = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) callback(null, true)
@@ -31,6 +31,43 @@ app.post('/address', (req, res) => {
     const values = [`${user.address}`]
     post.query(insert, values, (err, result) => {
         if (!err) console.log('Insertion was successful')
+    })
+})
+
+app.get('/gameplayed', async (req, res) => {
+    let user = req.query.addr
+    let insert 
+    let values
+    console.log(user)
+    if (user) {
+        insert = `UPDATE usernames SET games_played=games_played+1,has_played=true WHERE address=($1)`
+        values = [`${user}`]
+    } else {
+        insert = `UPDATE usernames SET games_played=games_played+1,has_played=true WHERE username=($1)`
+        values = [`${user.name}`]
+    }
+    post.query(insert, values, (err, result) => {
+        if (!err) { 
+            console.log('Game played set to player', user) 
+            
+        }
+        else console.log(err)
+    })
+})
+app.post('/gamewon', async (req, res) => {
+    let user = req.body
+    let insert 
+    let values
+    if (!user.name) {
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true WHERE address=($1)`
+        values = [`${user.address}`]
+    } else {
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true WHERE username=($1)`
+        values = [`${user.name}`]
+    }
+    post.query(insert, values, (err, result) => {
+        if (!err) console.log('Game played & won set to player', user)
+        else console.log(err)
     })
 })
 
@@ -70,7 +107,7 @@ app.get('/getaddr', async (req, res) => {
     const values = [`${username}`]
     post.query(select, values, (err, result) => {
         if (!err) {
-            console.log('Selected query', result.rows[0])
+            console.log('Selected query', result)
             if (result.rows != undefined) address = {address: result.rows[0].address, username: username}
             if (address) return res.json(address)
         } else console.log(err)

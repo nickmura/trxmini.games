@@ -6,10 +6,10 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     
-    import { tipContract, tipPlayerForm, tipPrompt, connectedAddress, connectedUsername, getBalance } from '$lib/state/state'
+    import { tipContract, tipPlayerForm, tipPrompt, connectedAddress, connectedUsername, getBalance, url2 } from '$lib/state/state'
     
     let throwErr
-    let hasClicked
+    let hasClicked = false
     let tip
     let recip
     let userExists = null
@@ -27,7 +27,7 @@
                 if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
                 return res
             }
-        const res = await submitData(url3)
+            const res = await submitData(url3)
             const json = await res.json()
             console.log(json.unique)
             if (json.unique == false) userExists = true
@@ -47,23 +47,34 @@
 
 
     let isExpanded = false
-    async function tipPlayerExpanded(amount, recipient) {
-        le
+    async function tipPlayerExpanded() {
+        isExpanded = !isExpanded
     }
     async function tipPlayer(amount, recipient) {
         try {
+            let recipAddr
+            
+            async function getAddress() {
+                const test = await fetch(url2+recipient)
+	            if (!test.ok) return test.text().then(text => { throw new Error(text) })
+	            recipAddr = await test.json()
+                recipAddr = recipAddr.address
+                console.log(recipAddr)
+            } await getAddress()
             hasClicked = true
-            let uuid = Math.floor(Math.random()*1000000) // gameID
+            let uuid = Math.floor(Math.random()*1000000) //gameID
 
             let sun = amount*1000000
-            var parameter = [{type:'uint32',value:uuid}, {type:'uint64', value:sun}, {type:'address', value:recipient}]
+            console.log(uuid, sun, recipAddr)
+            var parameter = [{type:'uint32',value:uuid}, {type:'uint64',value:sun}, {type:'address',value:recipAddr}]
             var options = {
+                callValue: sun,
                 feeLimit: 100000000,
             }
 
-            // invoking contract function
+            //invoking contract function
             const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
-                window.tronWeb.address.toHex(tipContract), "tip(uint256)",
+                window.tronWeb.address.toHex(tipContract), "tip(uint32,uint64,address)",
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx);
@@ -80,8 +91,8 @@
         	
         <div id="exampleModal" class="absolute reveal-modal overflow-hidden bottom-[8rem] border border-[#b3b2b1] text-black opacity-[98] bg-[#ECECEA] dark:bg-[#16161d] dark:text-white 
         shadow-xl rounded-lg">
-        <button class='absolute flex justify-end w-full' on:click={tipPlayerForm}>
-            <span class='p-1 hover:scale-[1.15] transition transition-200'><img alt='cancel' src='/img/cancel.svg' class='w-4 h-4'></span>
+        <button class='absolute flex justify-end w-full ' on:click={tipPlayerForm}>
+            <span class='p-1 hover:scale-[1.15] transition transition-200 hover:bg-green'><img alt='cancel' src='/img/cancel.svg' class='w-4 h-4 '></span>
         </button>	
         <div class='mt-4 py-2 w-full'>
             <h2 class='title font-semibold'>Tip another player TRX</h2>
@@ -117,19 +128,19 @@
                 {#if recip && tip}
                     <div class='pt-6'>
                         <div class='flex justify-center'></div>
-                        <div class='flex justify-center'>Fee: 2.5 TRX</div>
+                        <div class='flex justify-center'>Fee: 3 TRX</div>
                     </div>
                 {/if}
                 <div class='flex justify-center'>
-                    {#if tip - 15 < $getBalance && userExists && tip > 10 && !hasClicked}  
-                        <button on:click={(e)=>tipPlayer(tip, recip)} class=' rounded-[10px] border 
+                    {#if tip - 15 < $getBalance && userExists && tip > 10}  
+                        <button on:click={tipPlayerExpanded} class=' rounded-[10px] border 
                             border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
                             font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
                             transition-200'> 
                             Tip Player
                         </button>
                     {:else}
-                        <button on:click={(e)=>tipPlayer(tip, recip)} class=' rounded-[10px] border 
+                        <button class=' rounded-[10px] border 
                             border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
                             font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
                             transition-200 opacity-50 border-opacity-50' disabled> 
@@ -137,12 +148,38 @@
                         </button>
                     {/if}
                 </div>
-                {#if isExpanded}
-                
-                {/if}
+
             </div>
+        {#if isExpanded}
+            <div class='absolute border rounded-lg w-[420px] h-48 mb-2 dark:bg-[#16161d] bg-[#ECECEA] z-20 '>
+                <h1 class='flex justify-center px-4 py-4 text-center'>Are you sure you want to tip {recip}.trx {tip} TRX ? You cannot undo the transaction
+                once you sign it!</h1>
+                <div  class='absolute inset-x-0 bottom-0 mb-4 ml-4 mr-[1.5rem] flex justify-between'>
+                    <button on:click={tipPlayerExpanded} class='rounded-[10px] border py-1.5 px-6 text-lg 
+                    font-medium border-red-500 hover:border-red-600 text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
+                    transition-200'>Cancel</button>
+                    {#if !hasClicked}
+                        <button on:click={(e)=> tipPlayer(tip, `${recip}.trx`)} class='rounded-[10px] border 
+                            border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
+                            font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
+                            transition-200'> 
+                            Send
+                        </button>
+                    {:else}
+                        <button class='rounded-[10px] border 
+                            border-emerald-500  dark:border-emerald-500  py-1.5 px-6 text-lg 
+                            font-medium text-[#3C1272] dark:text-white transition 
+                            transition-200 opacity-50 border-opacity-50' disabled> 
+                            Send
+                        </button>
+                    {/if}
+                </div>
+            </div>
+        {/if}
         </div>
+
     </div>
+
 </main>
 
 

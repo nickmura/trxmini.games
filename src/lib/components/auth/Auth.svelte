@@ -49,6 +49,7 @@
                         }
                         console.log('name of contract', ifChain.name)
                     }
+                    
                 }
             }
         } catch (error) {
@@ -140,8 +141,7 @@
 			connectedAddress.set(accounts.tronWeb.defaultAddress.base58)
             let user = JSON.stringify({address: accounts.tronWeb.defaultAddress.base58})
             
-            const submitData = async (url) => { //sending address to express and postgres
-                console.log('test123')
+            const submitData = async (url) => { // sending address to express and postgres
                 const res = await fetch(url, {
                     method: 'post',
                     headers: {'Content-Type': 'application/json'},
@@ -169,6 +169,16 @@
 		} catch (error) { console.log(error) }
     }
 
+    // async function makeQuery() {
+    //         const tron = await tronWeb
+    //         let user
+            
+    //         user = tron.trx.tronWeb.defaultAddress.base58
+    //         const res = await fetch(`http://170.187.182.220:5001/gameplayed?addr=${user}`)
+    //         if (!res.ok) throw new Error('null fetch')
+    //         if (res) await res.json()
+            
+    // }
     async function myProfile() {
         isExpanded = !isExpanded
     }

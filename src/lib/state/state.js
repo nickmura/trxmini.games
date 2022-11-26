@@ -10,7 +10,7 @@ export const connectedUsername = writable()
 export const getBalance = writable() 
 
 export const createPrompt = writable(false)
-export const tipPrompt = writable(false)
+export const tipPrompt = writable(true)
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
 
@@ -22,6 +22,7 @@ export const url2 = 'http://170.187.182.220:5001/getaddr?username='
 // REDIS ENDPOINTS
 
 export const urlRooms = 'http://172.105.106.183:5020/rooms'
+
 export const urlEndedRooms = 'http://172.105.106.183:5020/endedrooms'
 
 
