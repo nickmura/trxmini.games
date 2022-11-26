@@ -29,12 +29,12 @@ app.post('/address', async (req, res) => {
 
     let insert = `insert into usernames("address") values($1)`
     const values = [`${user.address}`]
-    await post.query(insert, values, (err, result) => {
+    post.query(insert, values, (err, result) => {
         if (!err) console.log('Insertion was successful')
     })
     let update = `UPDATE usernames SET games_played=0,has_played=false,games_won=0 WHERE address=($1)`
-    const values = [`${user.address}`]
-    await post.query(update, values, (err, result) => {
+    const values2 = [`${user.address}`]
+    post.query(update, values2, (err, result) => {
         if (!err) console.log('Updated values was successful (games_played, has_played, games_won)')
     })
 })
