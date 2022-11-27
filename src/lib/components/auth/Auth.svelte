@@ -10,7 +10,7 @@
 
 
     import { theme } from '$lib/state/Theme.svelte'
-    import { createPrompt, tipPlayerForm, tipPrompt, url0, url1, url2 } from '$lib/state/state'
+    import { createPrompt, tipPlayerForm, tipPrompt, url0, url1, url2, tipSocket } from '$lib/state/state'
     import { 
         connectedAddress, 
         connectedUsername,
@@ -82,7 +82,7 @@
         if ($connectedAddress && $connectedUsername) updateRooms()
     }, 1000)
 
-
+    
 
     
     async function getEndedRoom() { // Checks if currentRoom has already ended (host or someone left, etc)
@@ -169,16 +169,7 @@
 		} catch (error) { console.log(error) }
     }
 
-    // async function makeQuery() {
-    //         const tron = await tronWeb
-    //         let user
-            
-    //         user = tron.trx.tronWeb.defaultAddress.base58
-    //         const res = await fetch(`http://170.187.182.220:5001/gameplayed?addr=${user}`)
-    //         if (!res.ok) throw new Error('null fetch')
-    //         if (res) await res.json()
-            
-    // }
+
     async function myProfile() {
         isExpanded = !isExpanded
     }

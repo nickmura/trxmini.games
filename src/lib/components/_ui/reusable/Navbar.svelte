@@ -1,10 +1,11 @@
 <script>
 // @ts-nocheck
-
 	import { slide } from 'svelte/transition';
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 
+	import { io } from 'socket.io-client'
+	
 	import { theme } from '$lib/state/Theme.svelte'
 
 	import Theme from '$lib/state/Theme.svelte'

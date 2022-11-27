@@ -26,8 +26,8 @@ let rooms
 
 app.post('/address', async (req, res) => {
     let user = req.body
-
     let insert = `insert into usernames("address") values($1)`
+    
     const values = [`${user.address}`]
     post.query(insert, values, (err, result) => {
         if (!err) console.log('Insertion was successful')

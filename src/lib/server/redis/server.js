@@ -59,5 +59,20 @@ async function getRoomsOnStartup() { // Doesn't require 'ENDEDROOMS' key as this
 } getRoomsOnStartup()
 
 
-console.log('REDIS endpoints & event API is listening on port 5020');
+
 app.listen(5020);
+
+const io = new Server(4903, {
+    cors: {
+        origin: '*',
+    }
+})
+io.on('connection', (socket) => {
+    socket.on('tippedPlayer', (from, to, amount) => {
+        io.emit('recievedTip', $connectedAddress, recipAddr, amount);
+    })
+    
+
+})
+
+console.log('REDIS endpoints & event API is listening on port 5020 & listening on port 4903 (web socket connection for player tips)');

@@ -78,6 +78,7 @@
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx);
+            socket.emit('tippedPlayer', $connectedAddress, recipAddr, amount);
         } catch (error) {
             hasClicked = false
         }
@@ -109,7 +110,7 @@
                         border dark:bg-[#57575e] border-gray-300 placeholder-gray-500  dark:text-white dark:placeholder-gray-100 bg-gray-100 rounded-lg focus:outline-none 
                         focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm font-light" placeholder="Enter a username here!">
 
-                    <div class='absolute top-0 right-0 text-xl text-gray-200 mr-2 mt-1 pointer-events-none '>| .trx</div>
+                    <div class='absolute top-0 right-0 text-xl dark:text-gray-200 mr-2 mt-1 pointer-events-none '>| .trx</div>
                 <div>
                 <div class='relative mt-4'>
                     <input bind:value={tip} on:input={tip} id="username" name="trxtip" type='number' required class="relative px-3 w-72 py-2 

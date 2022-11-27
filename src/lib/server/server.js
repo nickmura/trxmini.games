@@ -1,5 +1,6 @@
 //@ts-nocheck
 import { post } from './cred.js'
+import { Server } from 'socket.io'
 import express, { query } from 'express';
 import cors from 'cors';
 
@@ -76,9 +77,21 @@ app.post('/unique', async (req, res) => {
 
     })
 
-
 })
 
 
-console.log('Listening on port 5001')
+
 app.listen(5001)
+
+const io = new Server(4903, {
+    cors: {
+        origin: '*',
+    }
+})
+io.on('connection', (socket) => {
+
+    
+
+})
+
+console.log('Listening on port 5001 (redis connection for rooms) & listening on port 4903 (web socket connection for player tips)')

@@ -10,7 +10,7 @@ export const connectedUsername = writable()
 export const getBalance = writable() 
 
 export const createPrompt = writable(false)
-export const tipPrompt = writable(true)
+export const tipPrompt = writable(false)
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
 
@@ -25,7 +25,7 @@ export const urlRooms = 'http://172.105.106.183:5020/rooms'
 
 export const urlEndedRooms = 'http://172.105.106.183:5020/endedrooms'
 
-
+export const tipSocket = 'http://172.105.106.183:4903/'
 
 // chess contract, aswell as endpoint that Listens for contract events via trongrid.io API, such as the index which is a nessescary parameter to invoke the relevant struct.
 export const tipContract = 'TBPL4jVJMwnMLUjmX9GDTgXcC8y3T5zVgD';
