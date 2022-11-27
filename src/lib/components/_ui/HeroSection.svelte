@@ -6,7 +6,7 @@
 	import Theme from '$lib/state/Theme.svelte'
 	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
 	import { theme } from '$lib/state/Theme.svelte'
-
+	import TipNotification from "$lib/components/_ui/create/TipNotification.svelte"
 
 	let date
 	let target = 1668373200
@@ -43,6 +43,7 @@
 
 </script>
 <section class="overflow-hidden">
+
 	<div class="mx-auto max-w-7xl px-4 pb-20 md:px-6">
 		<Navbar />
 

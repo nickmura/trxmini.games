@@ -220,12 +220,12 @@
 
 {:else if $connectedAddress && $connectedUsername}
     <button on:click={myProfile} class='relative rounded-[10px] border border-indigo-500 dark:border-blue-500 py-1.5 px-6 
-    text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition transition-200'>
+    text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition transition-200 z-10 '>
     {$connectedUsername}
     </button>
     {#if isExpanded}
         <div class='absolute justify-center right-12 rounded-[10px] border border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-        dark:bg-[#16161e] bg-[#f2f0eb] max-h-2/4 w-[16rem] z-100 pt-3 pl-6 pr-6 pb-3 mt-48 text-sm' transition:slide>
+        dark:bg-[#16161e] bg-[#f2f0eb] max-h-2/4 w-[16rem] z-60 pt-3 pl-6 pr-6 pb-3 mt-48 text-sm' transition:slide>
             <i><div>{$connectedUsername}'s account</div></i>
             <div class='flex-row'>
                 <div class='flex wrap text-gray-400 hover:text-gray-500'>
@@ -262,7 +262,7 @@
                     dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50' disabled>Join Game</button>
                 {/if}
                 <button on:click={tipPlayerForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs border-opacity-50 opacity-50 ' disabled>Tip</button>
+                dark:bg-[#16161e]  z-20 p-2 text-xs '>Tip</button>
             </div>
         </div>
     {/if}

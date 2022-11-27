@@ -1,11 +1,11 @@
 // REDIS configuration and endpoints for client to fetch, aswell as event listener for smart contract.
 import express from 'express'
 import cors from 'cors';
-
-import { chessEventListener } from '../../state/state.js';
+import { Server } from 'socket.io'
+import { chessEventListener, _redisPasswd } from '../state.js';
 
 import { createClient } from 'redis';
-const client = createClient({ url: "redis://nick:admin@172.105.106.183:6379"});
+const client = createClient({ url: `redis://nick:${_redisPasswd}@172.105.106.183:6379`});
 
 const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'https://trxmini.games', 
 '//trxmini.games', 'http://localhost:5173', '//localhost:5173', '//127.0.0.1:5173', '//undefined']
@@ -60,19 +60,19 @@ async function getRoomsOnStartup() { // Doesn't require 'ENDEDROOMS' key as this
 
 
 
-app.listen(5020);
 
 const io = new Server(4903, {
     cors: {
         origin: '*',
     }
 })
-io.on('connection', (socket) => {
-    socket.on('tippedPlayer', (from, to, amount) => {
-        io.emit('recievedTip', $connectedAddress, recipAddr, amount);
-    })
-    
 
+io.on('connection', (socket) => {
+    socket.on('tippedPlayer', (from, to, amount, txid) => {
+        console.log(`${from} HAS SENT ${to} ${amount} TRX`)
+        io.emit('recievedTip', from, to, amount, txid);
+    })
 })
+app.listen(5020);
 
 console.log('REDIS endpoints & event API is listening on port 5020 & listening on port 4903 (web socket connection for player tips)');

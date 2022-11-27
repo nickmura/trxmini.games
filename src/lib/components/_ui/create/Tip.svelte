@@ -5,9 +5,12 @@
     import { slide } from 'svelte/transition'
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    
-    import { tipContract, tipPlayerForm, tipPrompt, connectedAddress, connectedUsername, getBalance, url2 } from '$lib/state/state'
-    
+    import { io } from 'socket.io-client'
+    import { tipContract, tipPlayerForm, tipPrompt, connectedAddress, connectedUsername, getBalance, url2, tipSocket } from '$lib/state/state'
+
+    const socket = io(tipSocket)
+
+
     let throwErr
     let hasClicked = false
     let tip
@@ -78,7 +81,11 @@
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx);
-            socket.emit('tippedPlayer', $connectedAddress, recipAddr, amount);
+            if (!$connectedUsername) socket.emit('tippedPlayer', $connectedAddress, recipAddr, amount, broadcastTx.txid);
+            if ($connectedUsername) socket.emit('tippedPlayer', $connectedUsername, recipAddr, amount, broadcastTx.txid);
+            hasClicked =
+            isExpanded = !isExpanded
+            tipPrompt.set(false)
         } catch (error) {
             hasClicked = false
         }

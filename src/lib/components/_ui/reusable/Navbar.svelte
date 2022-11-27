@@ -11,6 +11,7 @@
 	import Theme from '$lib/state/Theme.svelte'
 	import Logo from '$lib/components/_ui/reusable/Logo.svelte'
 	import Auth from '$lib/components/auth/Auth.svelte'
+	import TipNotification from '../create/TipNotification.svelte';
 
 	import { 
 		connectedAddress, 
@@ -66,7 +67,7 @@
 	if ($wagerTx) wagerTxLink = `https://shasta.tronscan.org/#/transaction/${$wagerTx}`
 </script>
 
-<nav class="relative z-50 flex items-center justify-between py-8">
+<nav class="relative z-50 flex items-center justify-between py-8 absolute">
 	<Logo></Logo>
 	{#if !$connectedAddress && !isUser}
 		<div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm  
@@ -141,6 +142,7 @@
 				<Theme></Theme>
 			</div>
 		</div>
+		
 	</div>
 	<button on:click={() => (isOpen = !isOpen)} class="inline-block p-2 lg:hidden">
 		<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -207,5 +209,7 @@
 				<Theme></Theme>
 			</div>
 		</div>
+		
 	{/if}
+	
 </nav>
