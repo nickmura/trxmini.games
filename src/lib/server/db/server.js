@@ -12,8 +12,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
 
-const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'https://trxmini.games', 
-'//trxmini.games', 'http://localhost:5173', '//localhost:5173', 'http://localhost:5500', '*']
+const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'http://trxmini.games', 
+'http://www.trxmini.games', 'http://localhost:5173', '//localhost:5173', 'http://localhost:5500', '*']
 const config = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) callback(null, true)
@@ -59,6 +59,22 @@ app.get('/gameplayed', async (req, res) => {
         else console.log(err)
     })
 })
+app.post('/gamewon8ball', async (req, res) => {
+    let user = req.body
+    let insert 
+    let values
+    if (!user.name) {
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true WHERE address=($1)`
+        values = [`${user.address}`]
+    } else {
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true WHERE username=($1)`
+        values = [`${user.name}`]
+    }
+    post.query(insert, values, (err, result) => {
+        if (!err) console.log('Game played & won set to player', user)
+        else console.log(err)
+    })
+})
 app.post('/gamewon', async (req, res) => {
     let user = req.body
     let insert 
@@ -92,13 +108,13 @@ app.get('/username', async (req, res) => {
     let userAddress = req.query.addr
     let user 
     
-    const select = `SELECT username FROM usernames WHERE address = ($1)`
+    const select = `SELECT username,has_won_8ball FROM usernames WHERE address = ($1)`
     const values = [`${userAddress}`]
     post.query(select, values, (err, result) => {
         //if (!err) user = {address: userAddress, username: result.rows[0]}
         if (!err) {
             console.log('Selected query', result.rows[0])
-            if (result.rows[0] != undefined) user = {address: userAddress, username: result.rows[0].username}
+            if (result.rows[0] != undefined) user = {address: userAddress, username: result.rows[0].username, hasWon8Ball: result.rows[0].has_won_8ball}
             if (user) return res.json(user)
         }
         else console.log(err)

@@ -1,7 +1,12 @@
 <script>
 
-	import { createGameForm } from "$lib/state/state";
+	import { createGameForm, selectedOption, createPrompt } from "$lib/state/state";
 
+
+	function play8Ball() {
+		selectedOption.set('8 Ball')
+		createPrompt.set(true)
+	}
 </script>
 <section id="about">
 	<div class="mx-auto max-w-7xl px-4 py-20 md:px-6">
@@ -67,15 +72,27 @@
 			</div>
 			</a>
 			</button>
-			<div>
-				<div class='text-2xl absolute flex mx-[7.05rem] mt-32 z-20 dark:text-blue-500 indigo:text-indigo-500 font-semibold'>Coming soon!</div>
-				<div class="flex flex-col items-center gap-4 opacity-50 animate-pulse">
-					<img src="/img/8ball.png" class="w-24 md:w-32 lg:w-36" alt="" />
-					<span class="inline-block px-6 text-center text-lg font-light text-gray-600 dark:text-gray-400">
-						Beat our AI at 8 ball and get future exclusive features and a badge!
-					</span>
-				</div>
-			</div>
+			
+				<!-- <button class='' on:click={createGameForm}><a href='/#'>
+					<div class="flex flex-col items-center gap-4 hover:scale-[1.10] transition transition-300">
+						<img src="/img/8ball.png" class="w-24 md:w-32 lg:w-36" alt="" />
+						<span class="inline-block px-6 text-center text-lg font-light text-gray-600 dark:text-gray-400">
+							Beat our AI at 8 ball and get future exclusive features and a badge!
+						</span>
+					</div>
+					</a>
+				</button> -->
+				<button on:click={play8Ball} class='hover:scale-[1.10] transition transition-200'><a href="/#">
+					<div class="flex flex-col items-center justify-center gap-6 animate-pulse hover:scale[1.1]">
+						
+							<img src="/img/8ball.png" class="w-24 md:w-32 lg:w-36 flex justify-center items-center" alt="" />
+							<span class="inline-block px-6 text-center text-lg font-light text-gray-600 dark:text-gray-400">
+								Beat our AI at 8 ball and get future exclusive features and a badge!
+							</span>
+					</div>
+				</a>
+				</button>
+			
 			<div>
 				<div class='text-2xl absolute flex mx-[7.05rem] mt-32 z-20 dark:text-blue-500 indigo:text-indigo-500 font-semibold'>Coming soon!</div>
 				<div class="flex flex-col items-center gap-4 opacity-40">

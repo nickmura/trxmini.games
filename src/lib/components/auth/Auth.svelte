@@ -27,9 +27,10 @@
     
     
     let isExpanded = false
+    
     let user
     let rooms
-
+    let medal8Ball = false
     let currentRoom
     
     async function check() { 
@@ -121,6 +122,9 @@
                 if (!res.ok) throw new Error('null fetch')
                 if (res) user = await res.json()
                 if (user) {
+                    if (user.has_won_8ball) {
+                        medal8Ball = true
+                    }
                     console.log($connectedAddress, user)
                     connectedUsername.set(user.username)
                 }
@@ -219,50 +223,72 @@
 
 
 {:else if $connectedAddress && $connectedUsername}
+    
     <button on:click={myProfile} class='relative rounded-[10px] border border-indigo-500 dark:border-blue-500 py-1.5 px-6 
     text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition transition-200 z-10 '>
     {$connectedUsername}
     </button>
     {#if isExpanded}
+
         <div class='absolute justify-center right-12 rounded-[10px] border border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-        dark:bg-[#16161e] bg-[#f2f0eb] max-h-2/4 w-[16rem] z-60 pt-3 pl-6 pr-6 pb-3 mt-48 text-sm' transition:slide>
-            <i><div>{$connectedUsername}'s account</div></i>
-            <div class='flex-row'>
-                <div class='flex wrap text-gray-400 hover:text-gray-500'>
-                        {#if !copied}
-                            <p class=' '>Address: {$connectedAddress.substring(0,5)}...{$connectedAddress.substring(29,34)}</p>
-                        {:else if copied}
-                            <p class=' '>Address: <i>Copied!</i></p>
-                        {/if}
-                            
-                        
-                        <button class=''on:click={copyClipboard}>
-                            {#if $theme == 'dark'}
-                                    <img class='ml-3' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
-                            {:else if $theme == 'light'}
-                                    <img class='ml-3' src='/img/copy-light.svg' width='10px' height='10px' alt='Copy to clipboard'>
-                            {/if}
-                        </button>
-                </div>    
-                <div class='text-gray-400'>Balance: {Math.round(100*$getBalance)/100} TRX</div>
+        dark:bg-[#16161e] bg-[#f2f0eb] max-h-2/4 w-[16rem] z-60  mt-48 text-sm' transition:slide>
+            <div class='absolute flex justify-end w-full'>
+                <!-- <img src='/img/8ball_medal.png' alt='medal' class='w-8 h-8 mt-1 mr-1'> -->
+                
+                {#if $theme == 'dark'}
+                    <div class='absolute tooltip m w-8 w-8 mt-1 mr-1' ><img src='/img/8ball_medal.png' alt='medal' class=' mt-1 mr-1'><div class='border border-blue-500 max-h-fit w-44 pl-2 pr-2 z-50 rounded-lg bg-[#16161d] text-xs text-center tooltipinfo'>
+                        <div><b><u>8 Ball Medal</u></b></div>
+                        This badge is a certification for beating our AI at 8ball. Thank you for participating in the challenge.
+                        <div class='text-bold'><b>This badge certifies you for exclusive future rewards and benefits on our platform! Thanks for being a supporter!</b></div>
+                    </div></div>
+                {:else}
+                    <div class='absolute tooltip m w-8 w-8 mt-1 mr-1' ><img src='/img/8ball_medal.png' alt='medal' class=' mt-1 mr-1'><div class='border border-blue-500 max-h-fit w-44 p-5 z-50 rounded-lg bg-[#EFECE6] text-xs text-center tooltipinfo z-20'>
+                        This badge is a certification for beating our AI at 8ball. Thank you for participating in the challenge.
+                        <div class='text-bold'><b>This badge certifies you for exclusive future rewards and benefits on our platform! Thanks for being a supporter!</b></div>
+                    </div></div>
+                {/if}
             </div>
-            <div class='flex wrap mt-3'>
-                {#if !$inGame}
-                <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
-                {:else if currentRoom && $inGame || !$connectedChain}
-                    <button class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                    dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50' disabled>Create Game</button>
-                {/if}
-                {#if !$inGame}
-                    <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                    dark:bg-[#16161e]  z-20 p-2 text-xs  hover:scale-[1.05] transition transition-200 '>Join Game</button>
-                {:else if $inGame || !$connectedChain}
-                    <button class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                    dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50' disabled>Join Game</button>
-                {/if}
-                <button on:click={tipPlayerForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs '>Tip</button>
+            <div class='pl-6 pr-6 pt-3  pb-3'>
+                <i><div class=''>{$connectedUsername}'s account</div></i>
+
+                <div class='flex-row '>
+                    <div class='flex wrap text-gray-400 hover:text-gray-500'>
+                        
+                            {#if !copied}
+                                <p class=' '>Address: {$connectedAddress.substring(0,5)}...{$connectedAddress.substring(29,34)}</p>
+                            {:else if copied}
+                                <p class=' '>Address: <i>Copied!</i></p>
+                            {/if}
+                                
+                            
+                            <button class=''on:click={copyClipboard}>
+                                {#if $theme == 'dark'}
+                                        <img class='ml-3' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
+                                {:else if $theme == 'light'}
+                                        <img class='ml-3' src='/img/copy-light.svg' width='10px' height='10px' alt='Copy to clipboard'>
+                                {/if}
+                            </button>
+                    </div>    
+                    <div class='text-gray-400'>Balance: {Math.round(100*$getBalance)/100} TRX</div>
+                </div>
+                <div class='flex wrap mt-3 '>
+                    {#if !$inGame}
+                    <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                    dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
+                    {:else if currentRoom && $inGame || !$connectedChain}
+                        <button class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                        dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50' disabled>Create Game</button>
+                    {/if}
+                    {#if !$inGame}
+                        <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                        dark:bg-[#16161e]  z-20 p-2 text-xs  hover:scale-[1.05] transition transition-200 '>Join Game</button>
+                    {:else if $inGame || !$connectedChain}
+                        <button class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                        dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50' disabled>Join Game</button>
+                    {/if}
+                    <button on:click={tipPlayerForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                    dark:bg-[#16161e]  z-20 p-2 text-xs '>Tip</button>
+                </div>
             </div>
         </div>
     {/if}
@@ -306,3 +332,13 @@
         </div>
     {/if}
 {/if}
+<style>
+    .tooltip .tooltipinfo {
+    visibility: hidden;
+    padding: 5px 0;
+}
+
+.tooltip:hover .tooltipinfo {
+    visibility: visible;
+}
+</style>
