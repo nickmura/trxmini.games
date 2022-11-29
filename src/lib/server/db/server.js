@@ -6,6 +6,7 @@ import express, { query } from 'express';
 import cors from 'cors';
 
 
+
 post.connect();
 const app = express();
 
@@ -36,6 +37,66 @@ app.post('/address', async (req, res) => {
     const values2 = [`${user.address}`]
     post.query(update, values2, (err, result) => {
         if (!err) console.log('Updated values was successful (games_played, has_played, games_won)')
+    })
+})
+
+
+app.post('/username', (req, res) => {
+    let user = req.body
+    console.log(user)
+    let insert = `UPDATE usernames SET username = ($1) WHERE address = ($2)`;
+    const values = [`${user.name}.trx`, `${user.address}`]
+    console.log(values)
+    post.query(insert, values, (err, result) => {
+        if (!err) console.log('Username insertion was successful')
+        else console.log(error)
+    })
+})
+
+app.get('/username', async (req, res) => {
+    let userAddress = req.query.addr
+    let user 
+    
+    const select = `SELECT username,has_won_8ball,xp FROM usernames WHERE address = ($1)`
+    const values = [`${userAddress}`]
+    post.query(select, values, (err, result) => {
+        //if (!err) user = {address: userAddress, username: result.rows[0]}
+        if (!err) {
+            console.log('Selected query', result.rows[0])
+            if (result.rows[0] != undefined) user = {address: userAddress, username: result.rows[0].username, xp: result.rows[0].xp, hasWon8Ball: result.rows[0].has_won_8ball}
+            if (user) return res.json(user)
+        }
+        else console.log(err)
+    })
+})
+
+app.get('/getaddr', async (req, res) => {
+    let username = req.query.username
+    let address
+    const select = `SELECT address FROM usernames WHERE username = ($1)`
+    const values = [`${username}`]
+    post.query(select, values, (err, result) => {
+        if (!err) {
+            console.log('Selected query', result)
+            if (result.rows != undefined) address = {address: result.rows[0].address, username: username}
+            if (address) return res.json(address)
+        } else console.log(err)
+    })
+})
+app.post('/unique', async (req, res) => {
+    let username = req.query.user
+    console.log(username)
+
+    const select = `SELECT COUNT(*) FROM usernames WHERE username = ($1)`
+    const value = [`${username}`]
+
+    post.query(select, value, (err, result) => {
+        if (!err) {
+            console.log('Selected query', result.rows[0].count)
+            if (result.rows[0].count == 0) return res.json({unique: true}) 
+            if (result.rows[0].count == 1) return res.json({unique: false}) 
+        } else console.log(err)
+
     })
 })
 
@@ -92,66 +153,21 @@ app.post('/gamewon', async (req, res) => {
     })
 })
 
-app.post('/username', (req, res) => {
-    let user = req.body
-    console.log(user)
-    let insert = `UPDATE usernames SET username = ($1) WHERE address = ($2)`;
-    const values = [`${user.name}.trx`, `${user.address}`]
-    console.log(values)
+app.get('/getxp', async (req, res) => {
+    let user = req.query.user
+    let insert = `SELECT xp FROM usernames WHERE username = ($1)`
+    let values = [`${user}`]
+
     post.query(insert, values, (err, result) => {
-        if (!err) console.log('Username insertion was successful')
-        else console.log(error)
-    })
-})
-
-app.get('/username', async (req, res) => {
-    let userAddress = req.query.addr
-    let user 
-    
-    const select = `SELECT username,has_won_8ball FROM usernames WHERE address = ($1)`
-    const values = [`${userAddress}`]
-    post.query(select, values, (err, result) => {
-        //if (!err) user = {address: userAddress, username: result.rows[0]}
         if (!err) {
-            console.log('Selected query', result.rows[0])
-            if (result.rows[0] != undefined) user = {address: userAddress, username: result.rows[0].username, hasWon8Ball: result.rows[0].has_won_8ball}
-            if (user) return res.json(user)
+            console.log(`Select xp from user ${user}`)
+            return res.json({user: user, xp: result.rows[0].xp})
+        
         }
-        else console.log(err)
+        if (err) console.log(err)
     })
+
 })
-
-app.get('/getaddr', async (req, res) => {
-    let username = req.query.username
-    let address
-    const select = `SELECT address FROM usernames WHERE username = ($1)`
-    const values = [`${username}`]
-    post.query(select, values, (err, result) => {
-        if (!err) {
-            console.log('Selected query', result)
-            if (result.rows != undefined) address = {address: result.rows[0].address, username: username}
-            if (address) return res.json(address)
-        } else console.log(err)
-    })
-})
-app.post('/unique', async (req, res) => {
-    let username = req.query.user
-    console.log(username)
-
-    const select = `SELECT COUNT(*) FROM usernames WHERE username = ($1)`
-    const value = [`${username}`]
-
-    post.query(select, value, (err, result) => {
-        if (!err) {
-            console.log('Selected query', result.rows[0].count)
-            if (result.rows[0].count == 0) return res.json({unique: true}) 
-            if (result.rows[0].count == 1) return res.json({unique: false}) 
-        } else console.log(err)
-
-    })
-})
-
-
 
 
 console.log('Listening on port 5001')

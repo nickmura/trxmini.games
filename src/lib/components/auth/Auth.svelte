@@ -10,21 +10,22 @@
 
 
     import { theme } from '$lib/state/Theme.svelte'
-    import { createPrompt, tipPlayerForm, tipPrompt, url0, url1, url2, tipSocket } from '$lib/state/state'
+    import { urlRooms, urlEndedRooms, url0, url1, url2, tipSocket, getXp } from '$lib/state/state'
     import { 
         connectedAddress, 
         connectedUsername,
         connectedChain,
+        createPrompt, 
+        tipPrompt, 
+        tipPlayerForm,
         chessContract,
         createGameForm,
         getBalance,
-        urlRooms,
-        urlEndedRooms,
-        inGame
+        inGame,
+        getLevel
     } from '$lib/state/state'
 
 	import Chess from '../chess/Chess.svelte';
-    
     
     let isExpanded = false
     
@@ -122,7 +123,9 @@
                 if (!res.ok) throw new Error('null fetch')
                 if (res) user = await res.json()
                 if (user) {
-                    if (user.has_won_8ball) {
+                    let level = await getLevel(user.xp);
+                    console.log(level)
+                    if (user.hasWon8Ball == true) {
                         medal8Ball = true
                     }
                     console.log($connectedAddress, user)
@@ -234,18 +237,19 @@
         dark:bg-[#16161e] bg-[#f2f0eb] max-h-2/4 w-[16rem] z-60  mt-48 text-sm' transition:slide>
             <div class='absolute flex justify-end w-full'>
                 <!-- <img src='/img/8ball_medal.png' alt='medal' class='w-8 h-8 mt-1 mr-1'> -->
-                
-                {#if $theme == 'dark'}
-                    <div class='absolute tooltip m w-8 w-8 mt-1 mr-1' ><img src='/img/8ball_medal.png' alt='medal' class=' mt-1 mr-1'><div class='border border-blue-500 max-h-fit w-44 pl-2 pr-2 z-50 rounded-lg bg-[#16161d] text-xs text-center tooltipinfo'>
-                        <div><b><u>8 Ball Medal</u></b></div>
-                        This badge is a certification for beating our AI at 8ball. Thank you for participating in the challenge.
-                        <div class='text-bold'><b>This badge certifies you for exclusive future rewards and benefits on our platform! Thanks for being a supporter!</b></div>
-                    </div></div>
-                {:else}
-                    <div class='absolute tooltip m w-8 w-8 mt-1 mr-1' ><img src='/img/8ball_medal.png' alt='medal' class=' mt-1 mr-1'><div class='border border-blue-500 max-h-fit w-44 p-5 z-50 rounded-lg bg-[#EFECE6] text-xs text-center tooltipinfo z-20'>
-                        This badge is a certification for beating our AI at 8ball. Thank you for participating in the challenge.
-                        <div class='text-bold'><b>This badge certifies you for exclusive future rewards and benefits on our platform! Thanks for being a supporter!</b></div>
-                    </div></div>
+                {#if medal8Ball}
+                    {#if $theme == 'dark'}
+                        <div class='absolute tooltip m w-8 w-8 mt-1 mr-1' ><img src='/img/8ball_medal.png' alt='medal' class=' mt-1 mr-1'><div class='border border-blue-500 max-h-fit w-44 pl-2 pr-2 z-50 rounded-lg bg-[#16161d] text-xs text-center tooltipinfo'>
+                            <div><b><u>8 Ball Medal</u></b></div>
+                            This badge is a certification for beating our AI at 8ball. Thank you for participating in the challenge.
+                            <div class='text-bold'><b>This badge certifies you for exclusive future rewards and benefits on our platform! Thanks for being a supporter!</b></div>
+                        </div></div>
+                    {:else}
+                        <div class='absolute tooltip m w-8 w-8 mt-1 mr-1' ><img src='/img/8ball_medal.png' alt='medal' class=' mt-1 mr-1'><div class='border border-blue-500 max-h-fit w-44 p-5 z-50 rounded-lg bg-[#EFECE6] text-xs text-center tooltipinfo z-20'>
+                            This badge is a certification for beating our AI at 8ball. Thank you for participating in the challenge.
+                            <div class='text-bold'><b>This badge certifies you for exclusive future rewards and benefits on our platform! Thanks for being a supporter!</b></div>
+                        </div></div>
+                    {/if}
                 {/if}
             </div>
             <div class='pl-6 pr-6 pt-3  pb-3'>

@@ -242,7 +242,7 @@
                                 <ul class='top-8 absolute z-50 inset-x-32 ml-3 border-[#b3b2b1] top-36 mt-2 bg-[#edece6] dark:bg-[#111112] rounded-lg text-black dark:text-[#edece6] pl-1 w-24 pr-1 pb-1 pt-1 border  'transition:slide>
                                     <div class='flex flex-col '>
                                         <button class="pl-1 pr-1 rounded-sm dark:hover:bg-[#2b2b36] hover:bg-[#c4c4be] hover:scale-[1.03] transition transition-200" on:click={assignChess}>Chess</button>
-                                        <button class="pl-1 pr-1 rounded-sm opacity-50" on:click={assign8Ball} disabled>8 Ball</button>
+                                        <button class="pl-1 pr-1 rounded-sm" on:click={assign8Ball} >8 Ball</button>
                                         <button class="pl-1 pr-1 rounded-sm opacity-50 " on:click={assignDrawades} disabled>Drawades</button>
                                     </div>
                                 </ul>
