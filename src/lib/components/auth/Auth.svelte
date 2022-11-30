@@ -125,7 +125,6 @@
                 if (res) user = await res.json()
                 if (user) {
                     userLevel = await getLevel(user.xp);
-                    console.log(userLevel)
                     if (user.hasWon8Ball == true) {
                         medal8Ball = true
                         if (!localStorage.getItem('hasSeenMedal')) {
