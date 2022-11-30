@@ -1,7 +1,7 @@
 <script>
 //@ts-nocheck
 import { slide} from 'svelte/transition'
-import { connectedAddress, connectedUsername, getBalance, tipSocket } from '$lib/state/state'
+import { connectedAddress, connectedUsername, getBalance, tipSocket, medalAlert, authPrompt } from '$lib/state/state'
 import { io } from 'socket.io-client'
 
 const socket = io(tipSocket)
@@ -33,6 +33,14 @@ function seenNotification() {
 function seenSentNotification() {
     hasSent = !hasSent
 }
+
+function openAuth() {
+    authPrompt.set(!$authPrompt)
+}
+function medalAlertOff() {
+    localStorage.setItem('hasSeenMedal', true)
+    medalAlert.set(false)
+}
 </script>
 
 <main>
@@ -54,6 +62,18 @@ function seenSentNotification() {
                 <img src='/img/noti.svg' alt='notification-alert' class='w-6 h-6 mr-2 animate-pulse'>
                 <div class='text-sm mt-0.5'><a href={txid} target='_blank' rel='noreferrer'><u>Transaction sent.</u></a> </div>
                 <button on:click={seenSentNotification} class='hover:scale-[1.1] transition transition-200'>
+                    <img src='/img/cancel.svg' alt='notification-alert' class='w-4 h-4 ml-2'>
+                </button>
+            </div>
+        </div>
+    {/if}
+    {#if $medalAlert}
+        <div class='fixed right-52 noti ' transition:slide>
+            <div class='noti border border-blue-400 bg-blue-500 text-white dark:bg-blue-500 mt-8 rounded-lg px-3 py-3 flex justify-between
+            hover:scale-[1.05] transition transition-200 '>
+                <img src='/img/noti.svg' alt='notification-alert' class='w-6 h-6 mr-2 animate-pulse'>
+                <div class='text-sm mt-0.5'><a href={txid} target='_blank' rel='noreferrer'><button class='text-underline' on:click={openAuth}><u>You got a medal</u></button> for participating and winning the 8 Ball Challenge! Congratulations!</a> </div>
+                <button on:click={medalAlertOff} class='hover:scale-[1.1] transition transition-200'>
                     <img src='/img/cancel.svg' alt='notification-alert' class='w-4 h-4 ml-2'>
                 </button>
             </div>

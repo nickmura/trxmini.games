@@ -14,10 +14,10 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json());
 
 const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'http://trxmini.games', 
-'http://www.trxmini.games', 'http://localhost:5173', '//localhost:5173', 'http://localhost:5500', '*']
+'http://www.trxmini.games', 'http://localhost:5173', '//localhost:5173', 'http://localhost:5500', 'http://172.105.106.183:3001']
 const config = {
     origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1) callback(null, true)
+        if (!origin || whitelist.indexOf(origin) !== -1) callback(null, true)
         else callback(new Error(`CORS Policy denied, origin is unexpected origin ${origin}`))
     }
 }
@@ -27,17 +27,15 @@ let rooms
 
 app.post('/address', async (req, res) => {
     let user = req.body
-    let insert = `insert into usernames("address") values($1)`
+    let insert = `insert into usernames("address","games_played", "has_played", "games_won", "has_won_8ball", "xp") 
+    values($1, $2, $3, $4, $5, $6)`
     
-    const values = [`${user.address}`]
+    const values = [`${user.address}`, 0, false, 0, false, 0]
     post.query(insert, values, (err, result) => {
         if (!err) console.log('Insertion was successful')
+        if (err) console.log(err)
     })
-    let update = `UPDATE usernames SET games_played=0,has_played=false,games_won=0 WHERE address=($1)`
-    const values2 = [`${user.address}`]
-    post.query(update, values2, (err, result) => {
-        if (!err) console.log('Updated values was successful (games_played, has_played, games_won)')
-    })
+
 })
 
 
@@ -100,16 +98,34 @@ app.post('/unique', async (req, res) => {
     })
 })
 
-app.get('/gameplayed', async (req, res) => {
-    let user = req.query.addr
+
+app.post('/gamewon8ball', async (req, res) => {
+    let user = req.body
     let insert 
     let values
-    console.log(user)
-    if (user) {
-        insert = `UPDATE usernames SET games_played=games_played+1,has_played=true WHERE address=($1)`
+    if (!user.name) {
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true,xp=xp+1000 WHERE address=($1)`
+        values = [`${user.address}`]
+    } else {
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true,xp=xp+1000 WHERE username=($1)`
+        values = [`${user.name}`]
+    }
+    post.query(insert, values, (err, result) => {
+        if (!err) console.log('Game played & won set to player', user)
+        else console.log(err)
+    })
+})
+
+app.post('/gameplayed', async (req, res) => {
+    let user = req.body
+    let insert 
+    let values
+
+    if (!user.name) {
+        insert = `UPDATE usernames SET games_played=games_played+1,has_played=true,xp=xp+350 WHERE address=($1)`
         values = [`${user}`]
     } else {
-        insert = `UPDATE usernames SET games_played=games_played+1,has_played=true WHERE username=($1)`
+        insert = `UPDATE usernames SET games_played=games_played+1,has_played=true,xp=xp+350 WHERE username=($1)`
         values = [`${user.name}`]
     }
     post.query(insert, values, (err, result) => {
@@ -120,31 +136,16 @@ app.get('/gameplayed', async (req, res) => {
         else console.log(err)
     })
 })
-app.post('/gamewon8ball', async (req, res) => {
-    let user = req.body
-    let insert 
-    let values
-    if (!user.name) {
-        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true WHERE address=($1)`
-        values = [`${user.address}`]
-    } else {
-        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true WHERE username=($1)`
-        values = [`${user.name}`]
-    }
-    post.query(insert, values, (err, result) => {
-        if (!err) console.log('Game played & won set to player', user)
-        else console.log(err)
-    })
-})
+
 app.post('/gamewon', async (req, res) => {
     let user = req.body
     let insert 
     let values
     if (!user.name) {
-        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true WHERE address=($1)`
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,xp=xp+1000 WHERE address=($1)`
         values = [`${user.address}`]
     } else {
-        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true WHERE username=($1)`
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,xp=xp+1000 WHERE username=($1)`
         values = [`${user.name}`]
     }
     post.query(insert, values, (err, result) => {
@@ -168,7 +169,6 @@ app.get('/getxp', async (req, res) => {
     })
 
 })
-
 
 console.log('Listening on port 5001')
 app.listen(5001)

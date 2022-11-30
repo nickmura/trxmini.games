@@ -11,7 +11,7 @@ client.connect()
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+app.use(cors())
 const whitelist = ['//test2.trxmini.games', '//test2.trxmini.games', '//trxmini.games', 
 '//trxmini.games', '//localhost:5173', '//localhost:5173']
 const config = {
@@ -146,12 +146,68 @@ io.on('connection', (socket) => {
     })
 
     // Game outcomes (checkmate, stalemate, draw... etc) <!------ !>
-    socket.on('isCheckmate', (winner) => {
+    socket.on('isCheckmate', async (winner) => {
         let room = rooms?.find(room => room.players.includes(winner))
         room.isCheckmate = winner
         console.log(`CHECKMATE by ${winner} in ROOM ${room.gameID}`)
+        
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
+
+
+        let loser = room.players?.find(player => player != winner)
+        let winnerObject
+        let loserObject
+        
+
+
+        
+        if (winner.includes('.trx')) { // Checks if winner is an address or a username
+            winnerObject = JSON.stringify({address: '', name: winner})
+        } else {
+            winnerObject = JSON.stringify({address: winner})
+        }
+
+
+        if (loser.includes('.trx')) { // Checks if loser is an address or a username
+            loserObject = JSON.stringify({address: '', name: loser})
+        } else {
+            loserObject = JSON.stringify({address: loser})
+        }
+
+
+        const winUrl = 'http://170.187.182.220:5001/gamewon'
+        const lossUrl = 'http://170.187.182.220:5001/gameplayed'
+
+        // Gives xp to the winner
+        const submitWinnerData = async (url) => { // sending address to express and postgres
+            const res = await fetch(url, {
+                method: 'post',
+                headers: {'Content-Type': 'application/json'},
+                body: winnerObject,
+            })
+            if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+            return res
+        } 
+        submitWinnerData(winUrl)
+            .then(res => console.log(res))
+            .catch(err => console.error(err))
+        
+
+
+        const submitLoserData = async (url) => { // sending address to express and postgres
+                const res = await fetch(url, {
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'},
+                    body: loserObject,
+                })
+                if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+                return res
+            } 
+        submitLoserData(lossUrl)
+                .then(res => console.log(res))
+                .catch(err => console.error(err))
+        
     })
 
     socket.on('isStalemate', (player) => {

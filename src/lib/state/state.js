@@ -13,7 +13,8 @@ export const createPrompt = writable(false)
 export const tipPrompt = writable(false)
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
-
+export const authPrompt = writable(false)
+export const medalAlert = writable(false)
 export const creatingGame = writable()
 // POSTGRES ENDPOINTS
 export const url0 = 'http://170.187.182.220:5001/address'
@@ -21,6 +22,7 @@ export const url1 = 'http://170.187.182.220:5001/username'
 export const url2 = 'http://170.187.182.220:5001/getaddr?username='
 export const getXp = 'http://170.187.182.220:5001/getxp?user=' // May not need this.
 // REDIS ENDPOINTS
+
 
 export const urlRooms = 'http://172.105.106.183:5020/rooms'
 
@@ -56,12 +58,8 @@ export async function tipPlayerForm() {
     tipPrompt.set(isTipExpanded)
 }
 
-export async function getLevel(xp) {
-    // const res = await fetch(url)
-    // if (!res.ok) return res.text().then(text => { throw new Error(text) })
-    // let xp = await res.json()
 
-    let userLevel = xp/1000
-    return userLevel
+let authExpanded = false
+export function myProfile() {
+    authPrompt.set(!authPrompt)
 }
-
