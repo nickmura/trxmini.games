@@ -16,6 +16,7 @@
     import { 
         connectedAddress,
         connectedUsername,
+        userID,
         chessContract,
         currentState,
         inGame,
@@ -34,6 +35,9 @@
 	import { theme } from '$lib/state/Theme.svelte'
 
 
+
+    let isHostAddress = false
+    let isTwoAddress = false
 
     let rooms
     let currentRoom
@@ -60,18 +64,16 @@
 
 
     async function updateRooms() {
-        console.log($connectedUsername)
+        console.log($userID)
         let room
 		const res = await fetch(urlRooms)
 		if (!res.ok) return res.text().then(text => { throw new Error(text) })
 		rooms = JSON.parse(await res.json())
-        //console.log($connectedUsername)
-        //console.log($connectedUsername)
-        //Make condition to call endedRooms if rooms.find fails TODO 
+
         
         
-        if ($connectedUsername) { //This is not runing because $connectedUsername isn't before this component via Auth.svelte
-            if (rooms != null) room = rooms?.find(room => room.players.includes($connectedUsername))
+        if ($userID) { //This is not runing because $userID isn't before this component via Auth.svelte
+            if (rooms != null) room = rooms?.find(room => room.players.includes($userID))
             console.log(room)
             let counter = 0
             while (!room && counter < 300) {
@@ -79,7 +81,7 @@
                 const res = await fetch(urlRooms)
 		        if (!res.ok) throw new Error(res)
 		        rooms = JSON.parse(await res.json())
-                room = rooms?.find(room => room.players.includes($connectedUsername))
+                room = rooms?.find(room => room.players.includes($userID))
                 if (room) invalidRoom = false;
                 if (!room) invalidRoom - true;
             }
@@ -88,13 +90,16 @@
                     inGame.set(true)
                     socket.emit('reconnectPlayer', room)
                     currentRoom = room
-                    if (room.wagerTxs?.find(wager => wager.user == $connectedUsername)) {
-                        wagerTx.set(room.wagerTxs.find(wager => wager.user == $connectedUsername).txid)
+                    if (room.wagerTxs?.find(wager => wager.user == $userID)) {
+                        wagerTx.set(room.wagerTxs.find(wager => wager.user == $userID).txid)
                         console.log('WagerTxid', $wagerTx)
                     }
                     
                 }
                 host = room.host
+                if (window.tronWeb.isAddress(host)) {
+                    isHostAddress = true
+                }
                 
 
             }
@@ -107,9 +112,9 @@
             fullGame = true
             currentTurn = room.currentTurn
             currentState.set(room.fen)
-            if (player2 == $connectedUsername){
+            if (player2 == $userID){
                 color = 'black'
-            } else if (host == $connectedUsername) {
+            } else if (host == $userID) {
                 color = 'white'
             }
             if (currentRoom.isCheckmate) {
@@ -120,6 +125,9 @@
             }
             if (currentRoom.isDraw == 'true') {
                 isDraw = true;
+            }
+            if (window.tronWeb.isAddress(player2)) {
+                isTwoAddress = true
             }
         } 
 
@@ -132,8 +140,8 @@
        rooms = JSON.parse(await res.json())
 
         //@ts-ignore
-        if (rooms?.find(room => room.players.includes($connectedUsername))) {
-            currentRoom = rooms?.find(room => room.players.includes($connectedUsername))
+        if (rooms?.find(room => room.players.includes($userID))) {
+            currentRoom = rooms?.find(room => room.players.includes($userID))
             
             if (currentRoom.host) host = currentRoom.host
             if (currentRoom.player2) player2 = currentRoom.player2
@@ -143,11 +151,11 @@
             console.log(currentRoom)
             inGame.set(true)
             console.log(currentRoom.wagerTxs)
-            if (currentRoom.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
-                wagerTx.set(currentRoom.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
+            if (currentRoom.wagerTxs?.find(wager => wager.player == $userID)) {
+                wagerTx.set(currentRoom.wagerTxs.find(wager => wager.player == $userID).txid)
                 console.log($wagerTx)
             } 
-            if (currentRoom.orientation == $connectedUsername) {
+            if (currentRoom.orientation == $userID) {
                 color = 'black'
             } else {
                 color = 'white'
@@ -170,59 +178,7 @@
         setTimeout(updateRooms, 1200)
         setTimeout(getEndedRoom, 1200)
     })
-    // async function updateRooms2() {
-    //     let room
-	// 	const res = await fetch(urlRooms)
-	// 	if (!res.ok) throw new Error(res)
-	// 	else rooms = JSON.parse(await res.json())
 
-    //     //Make condition to call endedRooms if rooms.find fails TODO 
-    //     if ($connectedUsername ) { //This is not runing because $connectedUsername  isn't before this component via Auth.svelte
-    //         if (rooms != null) room = rooms.find(room => room.players.includes($connectedUsername ))
-    //         while (!room) {
-    //             const res = await fetch(urlRooms)
-	// 	        if (!res.ok) throw new Error(res)
-	// 	        rooms = JSON.parse(await res.json())
-    //             room = rooms?.find(room => room.players.includes($connectedUsername ))
-    //         }
-    //             if (room) {
-    //                 socket.emit('reconnectPlayer', room)
-    //                 currentRoom = room
-    //                 if (room.wagerTxs?.find(wager => wager.player == $connectedUsername)) {
-    //                     wagerTx.set(room.wagerTxs.find(wager => wager.player == $connectedUsername).txid)
-    //                     console.log($wagerTx)
-    //                 } 
-    //             }
-    //             host = room.host
-    //             console.log(currentRoom)
-
-    //         }
-        
-
-    //     if (room && room.players.length > 1) {
-    //         socket.emit('reconnectPlayer', room) //No reason to grab state before game starts.
-    //         currentRoom = room
-    //         player2 = room.player2
-    //         fullGame = true
-    //         currentState.set(room.fen)
-    //         if (player2 == $connectedUsername ){
-    //             color = 'black'
-    //         } else if (host == $connectedUsername ) {
-    //             color = 'white'
-    //         }
-    //         if (currentRoom.isCheckmate) {
-    //             winner = currentRoom.isCheckmate
-    //         }
-    //         if (currentRoom.isStalemate == 'true') {
-    //             Stalemate = true
-    //         }
-    //         if (currentRoom.isDraw == 'true') {
-    //             isDraw = true;
-    //         }
-    //         console.log(Stalemate)
-    //     } 
-
-    // } updateRooms2()
 
     function redirectJoin() {
         goto('../join')
@@ -279,14 +235,14 @@
         Stalemate = chess.in_stalemate()
         currentTurn = turnColor(chess)
 
-        socket.emit('chessMove', $connectedUsername, chess.fen())  /** Emits that a client has made a move to the other room */
+        socket.emit('chessMove', $userID, chess.fen())  /** Emits that a client has made a move to the other room */
         currentTurnPlayer = currentTurn === 'white' ? player2 : host;
         if (isCheckmate) {
             socket.emit('isCheckmate', currentTurnPlayer)
         } if (Stalemate && isDraw) {
-            socket.emit('isStalemate', $connectedUsername)
+            socket.emit('isStalemate', $userID)
         } if (isDraw && !Stalemate && !isCheckmate) {
-            socket.emit('isDraw', $connectedUsername)
+            socket.emit('isDraw', $userID)
         }
     }
 
@@ -312,7 +268,7 @@
 
     async function leaveGame() {
             currentState.set('')
-            socket.emit('deleteRoom', $connectedUsername)
+            socket.emit('deleteRoom', $userID)
             sessionStorage.removeItem('inGame')
             wagerTx.set('')
             goto('../')
@@ -344,7 +300,7 @@
             const signedTx = await tronWeb.trx.sign(tx.transaction);
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
             wagerTx.set(broadcastTx.txid)
-            socket.emit('redeemedStake', $connectedUsername, broadcastTx.txid);
+            socket.emit('redeemedStake', $userID, broadcastTx.txid);
             receivedStake = true
             
         } catch (error) {
@@ -373,7 +329,7 @@
 
             wagerTx.set(broadcastTx.txid)
             
-            socket.emit('redeemedDraw', $connectedUsername, broadcastTx.txid)
+            socket.emit('redeemedDraw', $userID, broadcastTx.txid)
             receivedStake = true
         } catch (error) {
             hasClicked = false
@@ -399,7 +355,7 @@
 
             wagerTx.set(broadcastTx.txid);
             
-            socket.emit('avertGame', $connectedUsername, broadcastTx.txid)
+            socket.emit('avertGame', $userID, broadcastTx.txid)
             receivedStake = true
         } catch (error) {
             hasClicked = false
@@ -431,16 +387,16 @@
                         </div></div>
                     {/if}
                 </div>
-                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: {host ? `${host}` : ''} {player2 ? `, ${player2}` : ``}</div>
+                <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>Players: {host && isHostAddress ? `${host.substring(0,5)}...${host.substring(29,34)}` : host && !isHostAddress ? `${host}` :''} {player2 && isTwoAddress ? `, ${player2.substring(0,5)}...${player2.substring(29,34)}` : player2 && !isTwoAddress ? `${player2}` : ``}</div>
                 <div class='mx-4 px-2 py-4 border-b dark:border-blue-800 border-indigo-800'>
                     {#if winner}
-                        <div class={$connectedUsername == winner ? 'animate-pulse' : ''}>{winner} won by checkmate!</div>
+                        <div class={$userID == winner ? 'animate-pulse' : ''}>{winner} won by checkmate!</div>
                     {:else if Stalemate || isDraw}
                         The game is a stalemate! (draw)
                     {:else if isDraw && !Stalemate}
                         The game is a draw!
                     {:else}
-                    <div class={$connectedUsername == currentTurn ? 'animate-pulse' : ''}>Current Turn: {currentTurn && currentRoom ? currentTurn : 'Awaiting players...'} {$connectedUsername === currentTurn ? '(Your turn)' : ''}</div>
+                    <div class={$userID == currentTurn ? 'animate-pulse' : ''}>Current Turn: {currentTurn && currentRoom ? currentTurn : 'Awaiting players...'} {$userID === currentTurn ? '(Your turn)' : ''}</div>
                     {/if}
                 </div>
                 <div class='mx-4 px-2 py-4 border-b mb-8 dark:border-blue-800 border-indigo-800'>
@@ -450,36 +406,36 @@
                 <div class='flex justify-center w-full py-4 px-2 flex-col'>
                     <div class='flex flex-row justify-center items-center mb-2'>
 
-                        {#if currentRoom.isCheckmate == $connectedUsername && !hasClicked && !currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.stake != '0'}
+                        {#if currentRoom.isCheckmate == $userID && !hasClicked && !currentRoom.redeemedStake.includes($userID) && currentRoom.stake != '0'}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 dark:hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 ml-1'
                             on:click={(e)=>collectWager(currentRoom.index)}>
                             Collect win</button>
-                        {:else if currentRoom.isCheckmate != $connectedUsername || hasClicked 
-                        || currentRoom.redeemedStake.includes($connectedUsername) || currentRoom.stake == '0'}
+                        {:else if currentRoom.isCheckmate != $userID || hasClicked 
+                        || currentRoom.redeemedStake.includes($userID) || currentRoom.stake == '0'}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white transition
                             transition-200 opacity-50 mr-1 '
                             disabled>
                             Collect win</button>
                         {/if}
-                        {#if isDraw && !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername) || Stalemate && 
-                        !hasClicked && !currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.stake != '0' }
+                        {#if isDraw && !hasClicked && !currentRoom.redeemedDraw.includes($userID) || Stalemate && 
+                        !hasClicked && !currentRoom.redeemedDraw.includes($userID) && currentRoom.stake != '0' }
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 mr-1 '
                             on:click={(e)=>collectDraw(currentRoom.index)}>Collect draw </button>
-                        {:else if hasClicked || !isDraw && !Stalemate || currentRoom.redeemedDraw.includes($connectedUsername)}
+                        {:else if hasClicked || !isDraw && !Stalemate || currentRoom.redeemedDraw.includes($userID)}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] mr-1 dark:text-white opacity-50'
                             disabled>Collect draw</button>
                         {/if}
                     </div>
                     <div class='flex flex-row justify-center w-full'>
-                        {#if currentRoom.isCheckmate != $connectedUsername && currentRoom.isCheckmate || 
-                        currentRoom.redeemedStake.includes($connectedUsername) && currentRoom.redeemedStake || 
-                        currentRoom.redeemedDraw.includes($connectedUsername) && currentRoom.redeemedDraw || 
+                        {#if currentRoom.isCheckmate != $userID && currentRoom.isCheckmate || 
+                        currentRoom.redeemedStake.includes($userID) && currentRoom.redeemedStake || 
+                        currentRoom.redeemedDraw.includes($userID) && currentRoom.redeemedDraw || 
                         receivedStake || currentRoom.players.length < 2 && currentRoom.stake == '0' || currentRoom.stake == '0' && 
                         currentRoom.isCheckmate || currentRoom.stake == '0' && currentRoom.isStalemate || currentRoom.stake == '0' && currentRoom.isDraw}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 

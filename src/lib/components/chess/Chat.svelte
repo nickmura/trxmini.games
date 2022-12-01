@@ -1,6 +1,6 @@
 <script>
     //@ts-nocheck
-    import { connectedAddress, connectedUsername } from '$lib/state/state'
+    import { connectedAddress, connectedUsername, userID } from '$lib/state/state'
     import { urlRooms, urlEndedRooms, chessWs } from '$lib/state/state';
     import Auth from '$lib/components/auth/Auth.svelte'
     
@@ -19,8 +19,8 @@
         if (!res.ok) throw new Error(res)
         let rooms = JSON.parse(await res.json())
 
-        if (rooms?.find(room => room.players.includes($connectedUsername))) {
-            room = rooms.find(room => room.players.includes($connectedUsername))
+        if (rooms?.find(room => room.players.includes($userID))) {
+            room = rooms.find(room => room.players.includes($userID))
             
             if (room.chat.length) {
                 console.log(getMsgs)
@@ -37,8 +37,8 @@
 
         let rooms = JSON.parse(await res.json())
 
-        if (rooms?.find(room => room.players.includes($connectedUsername))) {
-            room = rooms?.find(room => room.players.includes($connectedUsername))
+        if (rooms?.find(room => room.players.includes($userID))) {
+            room = rooms?.find(room => room.players.includes($userID))
             if (room.chat != []) {
                 getMsgs = room.chat
             }
@@ -47,7 +47,7 @@
 
 
     async function sendMsg(msg) {
-        let _msg = {user: $connectedUsername, msg: msg}
+        let _msg = {user: $userID, msg: msg}
         socket.emit('sendMessage', _msg)
         msg = undefined
         message = undefined

@@ -15,7 +15,8 @@
 
 	import { 
 		connectedAddress, 
-		connectedUsername, 
+		connectedUsername,
+		userID,
 		connectedChain, 
 		inGame, 
 		chessContract, 
@@ -42,6 +43,7 @@
 		if ($connectedAddress && !$connectedUsername) hasName = false
 		if ($connectedAddress && !$connectedChain) Shasta = true
 		console.log(isUser, hasName, Shasta)
+		console.log($connectedAddress)
 	
 	},3000)
 
@@ -96,8 +98,6 @@
         <div class='pt-0.5'>Create a unique, domain username <button class='hover:scale-[1.05] transition transition-200' on:click={redirectUsername}><u>here</u></button></div>
     </div>
     {/if}
-
-
 
 	{#if $connectedAddress && $connectedUsername && $inGame && $connectedChain && $page.routeId != '/chess'}
 		<div class="p-2 absolute z-20 max-w-16 left-1/2 -translate-x-1/2 max-w-full text-sm

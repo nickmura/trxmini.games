@@ -3,7 +3,7 @@
 	import { onDestroy } from 'svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
-	import { chessContract, connectedAddress, connectedUsername, createGameForm, urlEndedRooms, urlRooms, chessWs, connectedChain, inGame } from '$lib/state/state'
+	import { chessContract, connectedAddress, connectedUsername, userID, createGameForm, urlEndedRooms, urlRooms, chessWs, connectedChain, inGame } from '$lib/state/state'
 	
 	import { io } from 'socket.io-client'
 	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
@@ -34,7 +34,7 @@
 		rooms = JSON.parse(json)
         if (rooms != null && rooms.length && rooms != undefined) {
 			//console.log(rooms)
-			room = rooms?.find(room => room.players.includes($connectedUsername))
+			room = rooms?.find(room => room.players.includes($userID))
 			if (room) {
 				hasRoom = room
 				isPlayer = true
@@ -49,8 +49,8 @@
 		endedRooms = JSON.parse(await res.json())
         if (endedRooms != null && endedRooms.length && endedRooms != undefined) {
 			
-			room = endedRooms?.find(room => room.players.includes($connectedUsername))
-			console.log($connectedUsername, room)
+			room = endedRooms?.find(room => room.players.includes($userID))
+			console.log($userID, room)
 			if (room) {
 				hasRoom = room
 				inGame.set(true)
@@ -125,10 +125,10 @@
 			<h2 class="text-3xl font-medium md:text-4xl">Game Lobbies</h2>
 			{#if $connectedUsername && letTimeout}
 				{#if $page.routeId == '/'}
-					{#if $connectedChain && !$inGame}
+					{#if $connectedChain && !$inGame && $connectedAddress}
 						<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
 					{:else if $inGame}
-					<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are currently in a game! Click <a href={$page.routeId == '/' ? '/chess' : $page.routeId == '/join' ? '../chess' : '/chess'}>&nbsp;<u> here to join back/leave.</u></a></button>
+						<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are currently in a game! Click <a href={$page.routeId == '/' ? '/chess' : $page.routeId == '/join' ? '../chess' : '/chess'}>&nbsp;<u> here to join back/leave.</u></a></button>
 					{:else if !$connectedChain}
 						<button class='flex absolute text-bold mt-10 opacity-100 text-red-300 animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
 					{/if}
@@ -139,9 +139,11 @@
 						<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You are not on the correct chain! Connect to Shasta testnet on TronLink!</button>
 					{/if}
 				{/if}
-			{:else if !$connectedUsername && $connectedAddress && letTimeout}
-			<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button>
+				
+			<!-- {:else if !$connectedUsername && $connectedAddress && letTimeout}
+			<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button> -->
 			{/if}
+			<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
 		</div>
 		<Tip></Tip>
 		<CreateGame></CreateGame>

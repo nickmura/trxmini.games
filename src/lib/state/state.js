@@ -5,8 +5,14 @@
 import { writable } from 'svelte/store';
 
 export const connectedAddress = writable();
-export const connectedChain = writable(false);
 export const connectedUsername = writable()
+
+export const isHostAddress = writable()
+export const isTwoAddress = writable()
+
+export const userID = writable(); // Allows users to play with their address or username. If no username, assigns address. 
+export const connectedChain = writable(false);
+
 export const getBalance = writable() 
 
 export const createPrompt = writable(false)
@@ -43,7 +49,6 @@ export const chessWs = 'http://172.105.106.183:3001';
 export const currentState = writable('') // Saves current FEN state of chess game.
 export const wagerTx = writable()
 export const theRoom = writable()
-
 let prompted = false
 export async function createGameForm() { // Create game prompt state sharing between components
     prompted = !prompted

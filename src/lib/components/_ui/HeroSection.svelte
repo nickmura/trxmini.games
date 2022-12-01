@@ -20,26 +20,7 @@
 	let hours = 0
 	let minutes = 0
 	let seconds = 0
-	// setInterval(() => {
-	// 	date = (Date.now() / 1000)
-	// 	if (date != target) {
-	// 	 	countdown = Math.floor(target - date)
-	// 	} else if (date == target) {
-	// 		countdown = 0
-	// 	}
-	// 	if (countdown != 0) {
-	// 		days = Math.floor(countdown / (3600 * 24));
-	// 		hours = Math.floor((countdown % (3600 * 24)) / 3600);
-	// 		minutes = Math.floor((countdown % 3600) / 60);
-	// 		seconds = Math.floor(countdown % 60)
-	// 	} else if (countdown == 0) {
-	// 		days = 0
-	// 		hours = 0
-	// 		minutes = 0
-	// 		seconds = 0
-	// 	}
 
-	// }, 1000);
 
 </script>
 <section class="overflow-hidden">
@@ -55,7 +36,7 @@
 			>
 				<span class="text-lg">trxmini.games presents... </span>
 				<h1 class="text-5xl font-light">
-					<span class="font-semibold text-[#4957B0]">The First Multiplayer GameFi Arcade & Mini Games</span>
+					<span class="font-semibold text-[#4957B0]">The First Multiplayer GameFi Mini Games/eSports</span>
 					platform on TRON & BTTC
 				</h1>
 				<p class="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">

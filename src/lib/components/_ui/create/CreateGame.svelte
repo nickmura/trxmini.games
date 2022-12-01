@@ -15,6 +15,7 @@
     import { 
         connectedAddress, 
         connectedUsername, 
+        userID,
         createPrompt, 
         selectedOption, 
         createGameForm,
@@ -23,8 +24,6 @@
     } from '$lib/state/state'
 
 
-    //This needs to be assigned when the query parameter is actually defined. Otherwise, it will provide the parameter undefined.
-    //const url2 = `//localhost:5001/username?addr=${$connectedAddress}`
 
     let username 
     let balanceInterval
@@ -91,7 +90,6 @@
                 errorHandling = ''
                 let uuid = Math.floor(Math.random()*1000000) // gameID
                 if (!isWagerless) {
-
                     let price = stakeValue * 1000000 // format in proper denomination
 
 
@@ -114,8 +112,8 @@
                     room = {
                         gameID: uuid, 
                         game: 'chess', 
-                        players: [$connectedUsername], 
-                        host: `${$connectedUsername}`,
+                        players: [$userID], 
+                        host: `${$userID}`,
                         player2: ``, 
                         chat: [],
                         orientation: ``, // For when the game ends, client can know what the orientation was.
@@ -126,7 +124,7 @@
                         stake: `${stakeValue}`, 
                         token: 'TRX', 
                         index: ``,
-                        currentTurn: $connectedUsername,
+                        currentTurn: $userID,
                         wagerTxs: [],
                         redeemedStake: [],
                         redeemedDraw: [],
@@ -135,8 +133,8 @@
                     room = {
                         gameID: uuid, 
                         game: 'chess', 
-                        players: [$connectedUsername], 
-                        host: `${$connectedUsername}`,
+                        players: [$userID], 
+                        host: `${$userID}`,
                         player2: ``, 
                         chat: [],
                         orientation: ``, // For when the game ends, client can know what the orientation was.
@@ -147,7 +145,7 @@
                         stake: `0`, 
                         token: 'TRX', 
                         index: ``,
-                        currentTurn: $connectedUsername,
+                        currentTurn: $userID,
                         wagerTxs: [],
                         redeemedStake: [],
                         redeemedDraw: [],
@@ -215,6 +213,18 @@
                         {:else if stakeValue < 10 && !isWagerless}
                             <div class='absolute text-sm text-red-400 top-[4rem] italic w-[15rem] text-center text-red-400 dark:hover:text-red-200' transition:slide>
                                 Insufficient balance - minimum wager is 10 TRX
+                            </div>
+                        {:else if $selectedOption == '8 Ball' && !$connectedUsername}
+                            <div class='absolute text-sm text-red-400 top-[4rem] italic w-[15rem] text-center text-red-400' transition:slide>
+                                You need to create a TRX username first to play 8 Ball. <a href='/username' class='hover:text-red-200 hover:scale-[1.05] underline'> Click here</a>
+                            </div>
+                        {:else if $selectedOption == 'Chess' && !isWagerless && hasClicked}
+                            <div class='absolute text-sm text-red-400 top-[4rem] italic w-[15rem] text-center text-green-400' transition:slide>
+                                Creating a wagered chess game for {stakeValue} TRX...
+                            </div>
+                        {:else if $selectedOption == 'Chess' && isWagerless && hasClicked}
+                            <div class='absolute text-sm text-red-400 top-[4rem] italic w-[15rem] text-center text-green-400' transition:slide>
+                                Creating a wagerless chess game ...
                             </div>
                         {:else}
                             <div ></div>
@@ -295,7 +305,7 @@
                 transition-200" on:click={createGameForm}>Cancel</button>
 
                 <!-- Change last and operator to stakeValue > 49 -->
-                {#if stakeValue && stakeValue < $getBalance - 16 && !hasClicked && stakeValue > 9 || isWagerless || $selectedOption == '8 Ball'}  
+                {#if stakeValue && stakeValue < $getBalance - 16 && !hasClicked && stakeValue > 9 || isWagerless || $selectedOption == '8 Ball' && $connectedUsername}  
                     <button on:click={(e)=>createGame(username)} class=' rounded-[10px] border 
                         border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500
                         py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
@@ -308,7 +318,7 @@
                         ' disabled> 
                         Create Game
                     </button>
-                {:else if !stakeValue || stakeValue > $getBalance || stakeValue > $getBalance - 16 || stakeValue < 50}
+                {:else if !stakeValue || stakeValue > $getBalance || stakeValue > $getBalance - 16 || stakeValue < 50 }
                     <button on:click={(e)=>createGame(username)} class=' rounded-[10px] border border-[#b3b2b1] 
                         py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white opacity-50' disabled> 
                         Create Game

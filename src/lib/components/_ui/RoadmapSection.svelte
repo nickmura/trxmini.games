@@ -3,31 +3,31 @@
 		{
 			title: 'Release beta & gain feedback',
 			description:
-				`We will release the beta of our platform by November 13th, and will continue to stay 
-				involved with the community and project over the course of the judging period. Your opinion
-				is important to us -  We love to hear feedback, suggestions, etc. A governance system
+				`We released our project on November 13th, and we are constantly working on developing and releasing updates. We are also
+				consantly involved with the community -  we love to hear feedback, suggestions, etc. We will continue to optimize our code as much as
+				we can, be on the constant alert with bugs, faults, etc. A governance system
 				will be set in place soon as possible for users to vote and discuss new features.`,
 			image: '/img/makes-icon-1.webp'
 		},
 		{
 			title: 'Create new real time games & expand',
 			description:
-				`Onboarding new developers onto the team will be the next step after the beta releases, end of
-				Q4 2022. Our output of releasing new features & apps to our platform will increase exponentionally, which not only
-				includes creating new real time games, and more involved personalization features to our players. Creating an immersive
-				experience for anyone, anywhere is a goal not far away!`,
+				`After the judging period ends, an audit & refactor will be in place across all infrastructure, to ensure the integrity & security of
+				our protocols is at the best it can be. After we can ensure our protocol is secure, we will release on main-net by end of December or January!  
+				Our output of releasing new features & apps to our platform will increase exponentionally, which not onlyincludes creating new real time games, and more involved personalization features to our players, such as a marketplace, and NFTs across various
+				platforms. Creating an immersive experience for anyone, with a vibrant community, anywhere is a goal not far away!`,
 			image: '/img/makes-icon-2.webp'
 		},
 		{
 			title: 'Create oracle network for existing games',
 			description:
-				`In Spring 2023, we intend to scale a new oracle network on TRON & launching a desktop
-				application, for wagering/staking on various competitive esports, casual, and sandbox games
-				such as Fortnite, PUBG, Counter Strike, Garry's Mod, etc. Players will be able to create esports
-				like competitions in their favorite games! Our long term goal is to make trxmini.games
+				`Soon as we have a catalog of games and vibrant features we will start onboarding to existing casual, competitive and esports
+				games such as Fortnite, PUBG, Counter Strike, Garry's Mod, etc. Players will be able to coordinate and create esports
+				like competitions/ in their favorite games! Our long term goal is to make trxmini.games
 				a conventional choice for esports wagering on a large or small scale, and continue to 
 				bring in new users to the ecosystem, while still providing a full and great support to
-				a catalog of casual games.`,
+				a catalog of casual games. This creates an exceptional high value propsition as it will bring in many demographics of users 
+				to TRON and its ecosystem.`,
 			image: '/img/makes-icon-3.webp'
 		}
 	];
@@ -46,16 +46,22 @@
 					new apps & features for players, by players.
 				</h2>
 				<p class="text-lg font-light leading-relaxed text-blue-200">
-					We consistently look to implement and create experiences our players
-					love - we hold the community interests at the heart of our project's
-					future.
+					Everyday, we strive to create and implement experiences our players love - we hold the community
+					interests at the heart of our projects future.
 				</p>
 
 				<p class='text-lg font-light leading-relaxed text-blue-200'>
-					Our our community deserves to receive the best support and content we can provide. 
-					We will push the envelope for what trxmini.games represents, and
-					can accomplish for GameFi.
+					Everyone on our platform deserves to receive the best experience they can - we will push the limits to what
+					trxmini.games accomplish for the ecosystem. Soon, our platform will reach new heights for onboarding users to our ecosystem.
 				</p>
+
+				<div class='text-lg font-light leading-relaxed text-blue-200'>
+					We have a notion development board, showcasing the current project management and what is being developed currently. 
+					You can find it here, at
+					<div class='hover:scale-[1.05] transition transition-200'>
+						<a href='https://trxmini.notion.site' target="_blank" rel="noreferrer" class='underline'>trxmini.notion.site</a>!
+					</div>
+				</div>
 			</div>
 			<div class="flex flex-col">
 				{#each roadmaps as item}

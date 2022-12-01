@@ -14,6 +14,7 @@
     import { 
         connectedAddress, 
         connectedUsername,
+        userID,
         connectedChain,
         createPrompt, 
         tipPrompt, 
@@ -59,7 +60,7 @@
             console.log(error)
         }
     } 
-    setTimeout(check, 200)
+    setTimeout(check, 250)
     
     
     async function updateRooms() {
@@ -132,9 +133,15 @@
                             
                         }
                     }
-                    console.log($connectedAddress, user)
+                    
                     connectedUsername.set(user.username)
+                    if ($connectedUsername) {
+                        userID.set($connectedUsername)
+                    } else {
+                        userID.set($connectedAddress)
+                    }
                 }
+                console.log($userID)
             }
         }   
     } setTimeout(checkUser, 300)
@@ -329,9 +336,8 @@
                 <div class='text-gray-400'>Balance: {Math.round(100*$getBalance)/100} TRX</div>
             </div>
             <div class='flex wrap mt-3'>
-                <button on:click={redirectUsername} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                dark:bg-[#16161e]  z-20 p-2 text-xs  animate-pulse hover:scale-[1.16] transition transition-500' style='font-size:"2px;"'>Create Name</button>
-                
+                <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                    dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
                 <button on:click={redirectJoin} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                 dark:bg-[#16161e]  z-20 p-2 text-xs  opacity-50 border-opacity-50' disabled>Join Game</button>
                 <button on:click={tipPlayerForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
