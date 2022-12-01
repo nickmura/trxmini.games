@@ -123,7 +123,7 @@
 		
 		<div class="flex flex-col items-center gap-8">
 			<h2 class="text-3xl font-medium md:text-4xl">Game Lobbies</h2>
-			{#if $connectedUsername && letTimeout}
+			{#if $connectedAddress && letTimeout}
 				{#if $page.routeId == '/'}
 					{#if $connectedChain && !$inGame && $connectedAddress}
 						<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
@@ -143,7 +143,7 @@
 			<!-- {:else if !$connectedUsername && $connectedAddress && letTimeout}
 			<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button> -->
 			{/if}
-			<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
+			
 		</div>
 		<Tip></Tip>
 		<CreateGame></CreateGame>
