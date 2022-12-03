@@ -107,7 +107,7 @@
 			const signedTx = await tronWeb.trx.sign(tx.transaction);
 			const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx);
 			}
-			socket.emit('joinRoom', $connectedUsername, room.gameID)
+			socket.emit('joinRoom', $userID, room.gameID)
 			if ($page.routeId == '/join') goto('../chess')
 			else goto('./chess')
 		} catch (error) {
