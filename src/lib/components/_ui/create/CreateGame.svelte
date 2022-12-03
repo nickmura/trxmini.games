@@ -6,7 +6,7 @@
     import { page } from '$app/stores'
     import { browser } from '$app/environment'
     import { theme } from '$lib/state/Theme.svelte'
-    import { url0, url1, chessWs, inGame, creatingGame } from '$lib/state/state'
+    import { url0, url1, url8BallRooms, chessWs, inGame, creatingGame } from '$lib/state/state'
 
     import { io } from 'socket.io-client'
     const socket = io(chessWs)
@@ -75,14 +75,19 @@
         // FOR 8 BALL 
         if ($selectedOption == '8 Ball') {
             isWagerless = true
+            console.log('test')
+
             if ($page.routeId == '/username' || $page.routeId == '/join') goto('../8ball')
+            
                 else if ($page.routeId == '/8ball') goto('./')
                 else {
                     goto('./8ball')
                     
                 }
+            // const res = await fetch('http://172.105.106.183:5020/make8ballroom?user=nick.trx')
+            // if (!res.ok) throw new Error('null fetch')
         }
-        // FOR CHESS
+        //FOR CHESS
         if ($selectedOption == 'Chess') {
             try {
                 let room

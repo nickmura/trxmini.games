@@ -233,9 +233,9 @@
 								<div class="text-2xl font-semibold">Stake</div>
 								<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
 							</div>
-							{#if isPlayer || !$connectedAddress || !$connectedUsername || !$connectedChain}
+							{#if isPlayer || !$connectedAddress || !$connectedChain || room.game == '8 Ball'}
 								<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
-								>Join Game</button>
+								disabled>Join Game</button>
 							{:else}
 								<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px] z-50 hover:scale-[1.075] transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
 								>Join Game</button>

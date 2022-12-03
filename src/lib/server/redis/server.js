@@ -23,7 +23,7 @@ app.use(cors());
 
 
 let rooms // For storing the rooms for the client to fetch. 
-
+let rooms8ball
 
 client.connect()
 .then(async () => {
@@ -44,6 +44,32 @@ client.connect()
         const data = await response.json();
         return res.json(data);
     });
+
+    app.get('/make8ballroom', async (req, res) => {
+
+        let user = req.query.user
+        let hasRoom = rooms?.find(room => room.players.includes(user) && room.game == '8 Ball')
+        if (!hasRoom) {
+            console.log('CREATING 8 BALL ROOM')
+
+            let room8Ball = {game: '8 Ball', players: [user, '(Singleplayer)'], stake:'0'}
+            rooms.push(room8Ball)
+
+            let jRooms = JSON.stringify(rooms)
+            await client.set('ROOMS', jRooms)
+
+            setTimeout(async () => {
+                const find8BallGame = rooms?.findIndex(room => room.game == '8 Ball')
+                if (find8BallGame > -1) rooms.splice(find8BallGame, 1)
+
+                let jRooms = JSON.stringify(rooms)
+                await client.set('ROOMS', jRooms)
+
+                console.log('REMOVING 8BALL ROOM')
+            }, 450000)
+            
+        } else console.log('PLAYER ALREADY HAS 8 BALL ROOM')
+    })
 });
 
 
