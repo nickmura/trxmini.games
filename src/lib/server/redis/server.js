@@ -23,7 +23,7 @@ app.use(cors());
 
 
 let rooms // For storing the rooms for the client to fetch. 
-let rooms8ball
+let ballRooms = []
 
 client.connect()
 .then(async () => {
@@ -45,7 +45,7 @@ client.connect()
         return res.json(data);
     });
 
-    app.get('/make8ballroom', async (req, res) => {
+    app.get('/makeballroom', async (req, res) => {
 
         let user = req.query.user
         let hasRoom = rooms?.find(room => room.players.includes(user) && room.game == '8 Ball')
@@ -53,10 +53,19 @@ client.connect()
             console.log('CREATING 8 BALL ROOM')
 
             let room8Ball = {game: '8 Ball', players: [user, '(Singleplayer)'], stake:'0'}
-            rooms.push(room8Ball)
+            ballRooms.push(room8Ball)
 
-            let jRooms = JSON.stringify(rooms)
+            let jBallRooms = JSON.stringify(rooms)
+            await client.set('BALLROOMS', jBallRooms)
+
+
+
+            let roomPlaceholder = {place: 'holder'}
+            rooms.push(roomPlaceholder)
+
+            let jRooms = JSON.stringify(roomPlaceholder)
             await client.set('ROOMS', jRooms)
+
 
             setTimeout(async () => {
                 const find8BallGame = rooms?.findIndex(room => room.game == '8 Ball')
@@ -66,13 +75,17 @@ client.connect()
                 await client.set('ROOMS', jRooms)
 
                 console.log('REMOVING 8BALL ROOM')
-            }, 450000)
+            }, 1200000)
             
         } else console.log('PLAYER ALREADY HAS 8 BALL ROOM')
     })
 });
 
-
+app.get('/getballrooms', async (req, res) => {
+    client.get('BALLROOMS').then(ballrooms => {
+        res.json(ballrooms);
+    })
+})
 async function getRoomsOnStartup() { // Doesn't require 'ENDEDROOMS' key as this is only grabbing
     if (await client.get('ROOMS') != null) {
         rooms =  await client.get('ROOMS')

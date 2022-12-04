@@ -30,8 +30,10 @@ export const getXp = 'http://170.187.182.220:5001/getxp?user=' // May not need t
 // REDIS ENDPOINTS
 
 
+export const makeBallRoom = 'http://172.105.106.183:5020/makeballroom?user='
+export const getBallRoomsUrl = 'http://172.105.106.183:5020/getballrooms'
+
 export const urlRooms = 'http://172.105.106.183:5020/rooms'
-export const url8BallRooms = 'http://172.105.106.183:5020/make8ballroom?user='
 export const urlEndedRooms = 'http://172.105.106.183:5020/endedrooms'
 
 export const tipSocket = 'http://172.105.106.183:4903/'

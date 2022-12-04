@@ -3,7 +3,19 @@
 	import { onDestroy } from 'svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
-	import { chessContract, connectedAddress, connectedUsername, userID, createGameForm, urlEndedRooms, urlRooms, chessWs, connectedChain, inGame } from '$lib/state/state'
+	import { chessContract, 
+			connectedAddress, 
+			connectedUsername, 
+			userID,
+
+			createGameForm, 
+			urlEndedRooms, 
+			urlRooms,
+			getBallRoomsUrl,
+			chessWs, 
+			connectedChain, 
+			inGame, 
+		} from '$lib/state/state'
 	
 	import { io } from 'socket.io-client'
 	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
@@ -13,6 +25,9 @@
 
 	let endedRooms
 	let rooms
+	let ballRooms
+
+	let ballRoomIndex // Gets assigned rooms.length
 	let hasRoom
 	let selectedRoom
 	let isPlayer
@@ -21,7 +36,10 @@
 	let hasClicked
 
 
-	onDestroy(() => clearInterval(updateInterval))
+	onDestroy(() => {
+		clearInterval(updateInterval)
+		// clearInterval(ballRoomInterval)
+	})
 
 
 
@@ -41,6 +59,15 @@
 			}
 		}
     } const updateInterval = setInterval(updateRooms, 1000)
+
+
+	async function getBallRooms() {
+		const res = await fetch(getBallRoomsUrl)
+		if (!res.ok) throw new Error(res)
+		let json = await res.json()
+		ballRooms = JSON.parse(json)
+
+	} const ballRoomInterval = setInterval(getBallRooms, 10000) 
 
 	async function getEndedRoom() {
 		let room
@@ -159,89 +186,89 @@
 					<div class='flex justify-center w-full py-6 font-semibold text-2xl'>No games available!</div>
 				{/if}
 				{#each rooms as room, index}
-				{#if room.players.length > 1}
-						<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
-							<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-								<div class="relative self-start">
-									<span
-										class="absolute -top-2 -right-2 block h-8 w-8 rounded-full bg-gradient-to-r from-blue-500/90 to-blue-600/50"
-									/>
-									<span class="relative text-5xl font-medium md:text-6xl">0{index+1}</span>
+					{#if room.players.length > 1}
+							<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
+								<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
+									<div class="relative self-start">
+										<span
+											class="absolute -top-2 -right-2 block h-8 w-8 rounded-full bg-gradient-to-r from-blue-500/90 to-blue-600/50"
+										/>
+										<span class="relative text-5xl font-medium md:text-6xl">0{index+1}</span>
+									</div>
+									<div>
+										<div class="text-2xl text-gray-600 font-semibold">Game</div>
+										<span class="text-xl font-light text-gray-600">{room.game}</span>
+									</div>
 								</div>
+
+								<!-- Separator -->
+								<div class="hidden h-16 w-px bg-gray-500 md:block" />
+
 								<div>
-									<div class="text-2xl text-gray-600 font-semibold">Game</div>
-									<span class="text-xl font-light text-gray-600">{room.game}</span>
+									<div class="text-2xl text-gray-600 font-semibold">Players</div>
+									<span class="text-xl font-light text-gray-600">
+										{room.players}
+									</span>
 								</div>
-							</div>
 
-							<!-- Separator -->
-							<div class="hidden h-16 w-px bg-gray-500 md:block" />
+								<!-- Separator -->
+								<div class="hidden h-16 w-px bg-gray-600 md:block" />
 
-							<div>
-								<div class="text-2xl text-gray-600 font-semibold">Players</div>
-								<span class="text-xl font-light text-gray-600">
-									{room.players}
-								</span>
-							</div>
-
-							<!-- Separator -->
-							<div class="hidden h-16 w-px bg-gray-600 md:block" />
-
-							<div>
-								<div class="text-2xl text-gray-600 font-semibold">Stake</div>
-								<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
-							</div>
-							{#if isPlayer || !$connectedAddress || !$connectedUsername || !$connectedChain}
-								<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
-								>Join Game</button>
-							{:else}
-								<button class="opacity-50 whitespace-nowrap rounded-[10px] z-50 transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
-								disabled>Join Game</button>
-
-							{/if}
-						</div>
-					{/if}
-					{#if room.players.length < 2}
-						<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
-							<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-								<div class="relative self-start">
-									<span
-										class="absolute -top-2 -right-2 block h-8 w-8 rounded-full bg-gradient-to-r from-blue-500/90 to-blue-600/50"
-									/>
-									<span class="relative text-5xl font-medium md:text-6xl">0{index+1}</span>
-								</div>
 								<div>
-									<div class="text-2xl font-semibold">Game</div>
-									<span class="text-xl font-light text-gray-600">{room.game}</span>
+									<div class="text-2xl text-gray-600 font-semibold">Stake</div>
+									<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
 								</div>
+								{#if isPlayer || !$connectedAddress || !$connectedUsername || !$connectedChain}
+									<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
+									>Join Game</button>
+								{:else}
+									<button class="opacity-50 whitespace-nowrap rounded-[10px] z-50 transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
+									disabled>Join Game</button>
+
+								{/if}
 							</div>
+						{/if}
+						{#if room.players.length < 2}
+							<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
+								<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
+									<div class="relative self-start">
+										<span
+											class="absolute -top-2 -right-2 block h-8 w-8 rounded-full bg-gradient-to-r from-blue-500/90 to-blue-600/50"
+										/>
+										<span class="relative text-5xl font-medium md:text-6xl">0{index+1}</span>
+									</div>
+									<div>
+										<div class="text-2xl font-semibold">Game</div>
+										<span class="text-xl font-light text-gray-600">{room.game}</span>
+									</div>
+								</div>
 
-							<!-- Separator -->
-							<div class="hidden h-16 w-px bg-gray-200 md:block" />
+								<!-- Separator -->
+								<div class="hidden h-16 w-px bg-gray-200 md:block" />
 
-							<div>
-								<div class="text-2xl font-semibold">Players</div>
-								<span class="text-xl font-light text-gray-600">
-									{room.players}
-								</span>
+								<div>
+									<div class="text-2xl font-semibold">Players</div>
+									<span class="text-xl font-light text-gray-600">
+										{room.players}
+									</span>
+								</div>
+
+								<!-- Separator -->
+								<div class="hidden h-16 w-px bg-gray-200 md:block" />
+
+								<div>
+									<div class="text-2xl font-semibold">Stake</div>
+									<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
+								</div>
+								{#if isPlayer || !$connectedAddress || !$connectedChain || room.game == '8 Ball'}
+									<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
+									disabled>Join Game</button>
+								{:else}
+									<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px] z-50 hover:scale-[1.075] transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
+									>Join Game</button>
+								{/if}
 							</div>
-
-							<!-- Separator -->
-							<div class="hidden h-16 w-px bg-gray-200 md:block" />
-
-							<div>
-								<div class="text-2xl font-semibold">Stake</div>
-								<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
-							</div>
-							{#if isPlayer || !$connectedAddress || !$connectedChain || room.game == '8 Ball'}
-								<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
-								disabled>Join Game</button>
-							{:else}
-								<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px] z-50 hover:scale-[1.075] transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
-								>Join Game</button>
-							{/if}
-						</div>
-					{/if}
+						{/if}
 				{/each}
 				{#if selectedRoom}
 				<div id="container" class='flex flex-initial' class:show={isExpanded}>
