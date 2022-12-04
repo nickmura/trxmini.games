@@ -3,9 +3,10 @@ import express from 'express'
 import cors from 'cors';
 import { Server } from 'socket.io'
 import { chessEventListener, _redisPasswd } from '../state.js';
-
 import { createClient } from 'redis';
-const client = createClient({ url: `redis://nick:${_redisPasswd}@172.105.106.183:6379`});
+import { io } from 'socket.io-client';
+
+const client = createClient({ url: `redis://nick:${_redisPasswd}@192.53.123.185:6379`});
 
 const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'https://trxmini.games', 
 '//trxmini.games', 'http://localhost:5173', '//localhost:5173', '//127.0.0.1:5173', '//undefined']
@@ -15,6 +16,8 @@ const config = {
         else callback(new Error(`CORS Policy denied, origin is unexpected origin ${origin}`))
     }
 };
+
+const socket = io('http://localhost:3001/') // For relaying to make a placeholder for the game.
 
 const app = express();
 app.use(express.urlencoded({ extended: true }))
@@ -54,17 +57,21 @@ client.connect()
 
             let room8Ball = {game: '8 Ball', players: [user, '(Singleplayer)'], stake:'0'}
             ballRooms.push(room8Ball)
+            console.log(ballRooms)
 
             let jBallRooms = JSON.stringify(rooms)
             await client.set('BALLROOMS', jBallRooms)
 
 
+            // Gonna create a socket emit to the chess server, which will push the place holder to the array. Apparently, it doesn't like
+            // redis instance initalizing the array.
 
-            let roomPlaceholder = {place: 'holder'}
+            socket.emit('createBallRoom', {place: 'holder', players: []})
+            /**  let roomPlaceholder = {place: 'holder'}
             rooms.push(roomPlaceholder)
 
             let jRooms = JSON.stringify(roomPlaceholder)
-            await client.set('ROOMS', jRooms)
+            await client.set('ROOMS', jRooms) */
 
 
             setTimeout(async () => {
@@ -86,6 +93,8 @@ app.get('/getballrooms', async (req, res) => {
         res.json(ballrooms);
     })
 })
+
+
 async function getRoomsOnStartup() { // Doesn't require 'ENDEDROOMS' key as this is only grabbing
     if (await client.get('ROOMS') != null) {
         rooms =  await client.get('ROOMS')
@@ -100,13 +109,13 @@ async function getRoomsOnStartup() { // Doesn't require 'ENDEDROOMS' key as this
 
 
 
-const io = new Server(4903, {
+const server = new Server(4903, {
     cors: {
         origin: '*',
     }
 })
 
-io.on('connection', (socket) => {
+server.on('connection', (socket) => {
     socket.on('tippedPlayer', (from, to, amount, txid) => {
         console.log(`${from} HAS SENT ${to} ${amount} TRX`)
         io.emit('recievedTip', from, to, amount, txid);

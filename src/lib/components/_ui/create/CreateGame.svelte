@@ -75,15 +75,16 @@
         // FOR 8 BALL 
         if ($selectedOption == '8 Ball') {
             isWagerless = true
-            console.log('test')
+            // console.log('test')
 
-            if ($page.routeId == '/username' || $page.routeId == '/join') goto('../8ball')
+            // if ($page.routeId == '/username' || $page.routeId == '/join') goto('../8ball')
             
-                else if ($page.routeId == '/8ball') goto('./')
-                else {
-                    goto('./8ball')
+            //     else if ($page.routeId == '/8ball') goto('./')
+            //     else {
+            //         goto('./8ball')
                     
-                }
+            //     }
+            console.log(makeBallRoom + $connectedUsername)
             const res = await fetch(makeBallRoom + $connectedUsername)
             if (!res.ok) throw new Error('null fetch')
         }

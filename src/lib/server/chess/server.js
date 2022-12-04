@@ -5,7 +5,7 @@ import cors from 'cors';
 import { eventAPI, _redisPasswd } from '../state.js'
 import { createClient } from 'redis';
 
-const client = createClient({ url: `redis://nick:${_redisPasswd}@172.105.106.183:6379`});
+const client = createClient({ url: `redis://nick:${_redisPasswd}@192.53.123.185:6379`});
 client.connect()
 
 const app = express();
@@ -352,5 +352,19 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on('createBallRoom', async (obj) => {
+        // Pushes placeholder for 8 Ball game to the main rooms array, and into redis.
+        // The reason it needs to be a place holder is because I would need to add AND operators to check the game
+        // all of the server logic and client logic for chess specific room object indexes, which could be faulty,
+        // problematic considering how many there are. 8 ball indexes will be stored on a different key value for redis.
+    
+        rooms.push(obj)
+    
+        let jRooms = JSON.stringify(rooms)
+        await client.set('ROOMS', jRooms)
+    })
 })
+
+
+
 console.log('Listening on port 3001 for chess-game websocket instructions - trxmini.games')

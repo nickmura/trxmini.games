@@ -51,12 +51,13 @@
 		let json = await res.json()
 		rooms = JSON.parse(json)
         if (rooms != null && rooms.length && rooms != undefined) {
-			//console.log(rooms)
-			room = rooms?.find(room => room.players.includes($userID))
-			if (room) {
+			if (rooms?.find(room => room.players.includes($userID && !room.place))) {
+				room = rooms?.find(room => room.players.includes($userID))
+
 				hasRoom = room
 				isPlayer = true
 			}
+			
 		}
     } const updateInterval = setInterval(updateRooms, 1000)
 
