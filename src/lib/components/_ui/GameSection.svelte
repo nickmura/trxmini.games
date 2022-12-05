@@ -3,16 +3,32 @@
 	import { onDestroy } from 'svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
-	import { chessContract, connectedAddress, connectedUsername, userID, createGameForm, urlEndedRooms, urlRooms, chessWs, connectedChain, inGame } from '$lib/state/state'
-	
+	import { chessContract, 
+			connectedAddress, 
+			connectedUsername, 
+			userID,
+
+			createGameForm, 
+			urlEndedRooms, 
+			urlRooms,
+			getBallRoomsUrl,
+			chessWs, 
+			connectedChain, 
+			inGame, 
+		} from '$lib/state/state'
+	import { theme } from '$lib/state/Theme.svelte'
 	import { io } from 'socket.io-client'
 	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
 	import Tip from '$lib/components/_ui/create/Tip.svelte';
+
 	const socket = io(chessWs)
 
 
 	let endedRooms
 	let rooms
+	let ballRooms
+	$: ballRooms
+	let ballRoomIndex // Gets assigned rooms.length
 	let hasRoom
 	let selectedRoom
 	let isPlayer
@@ -21,7 +37,10 @@
 	let hasClicked
 
 
-	onDestroy(() => clearInterval(updateInterval))
+	onDestroy(() => {
+		clearInterval(updateInterval)
+		//clearInterval(ballRoomInterval)
+	})
 
 
 
@@ -33,14 +52,27 @@
 		let json = await res.json()
 		rooms = JSON.parse(json)
         if (rooms != null && rooms.length && rooms != undefined) {
-			//console.log(rooms)
-			room = rooms?.find(room => room.players.includes($userID))
-			if (room) {
+			if (rooms?.find(room => room.players.includes($userID && !room.place))) {
+				room = rooms?.find(room => room.players.includes($userID))
+
 				hasRoom = room
 				isPlayer = true
 			}
+			// ballRoomIndex = rooms.length - 1
+			
 		}
     } const updateInterval = setInterval(updateRooms, 1000)
+
+
+	async function getBallRooms() {
+		const res = await fetch(getBallRoomsUrl)
+		if (!res.ok) throw new Error(res)
+		let json = await res.json()
+		ballRooms = JSON.parse(json)
+
+		
+
+	} const ballRoomInterval = setInterval(getBallRooms, 10000) 
 
 	async function getEndedRoom() {
 		let room
@@ -123,7 +155,7 @@
 		
 		<div class="flex flex-col items-center gap-8">
 			<h2 class="text-3xl font-medium md:text-4xl">Game Lobbies</h2>
-			{#if $connectedUsername && letTimeout}
+			{#if $connectedAddress && letTimeout}
 				{#if $page.routeId == '/'}
 					{#if $connectedChain && !$inGame && $connectedAddress}
 						<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
@@ -143,106 +175,158 @@
 			<!-- {:else if !$connectedUsername && $connectedAddress && letTimeout}
 			<button class='flex absolute text-bold mt-10 opacity-100 text-red-300  animate-pulse' disabled>You need to create a TRX username before playing! Click  <a href={$page.routeId == '/' ? '/username' : $page.routeId == '/join' ? '../username' : ''}>&nbsp;<u>here to create a domain</u>.</a></button> -->
 			{/if}
-			<button class='flex absolute text-bold mt-10 hover:scale-[1:05] transition transition-200 opacity-100 hover:scale-105 animate-pulse' on:click={createGameForm}><a href='/#'>Create a game here!</a></button>
+			
 		</div>
 		<Tip></Tip>
 		<CreateGame></CreateGame>
-		
+		{#if !rooms}
+			<div class='flex justify-center w-full py-6 font-semibold text-2xl mt-4'>No games available!</div>
+		{/if}
 		{#if rooms}
 		<div class="relative mt-12 divide-bottom divide-gray-200 rounded-[10px] border border-blue-400 border-opacity-100 px-6 md:px-10 opacity-100">
-			<!-- <div class='absolute font-bold z-20 opacity-100 text-[#4957B0] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-			mx-auto text-5xl hover:scale-[1.02] transition transition-200'
-			>Coming soon</div> -->
 			
-			<!-- Game Lobby -->
-				{#if !rooms.length}
-					<div class='flex justify-center w-full py-6 font-semibold text-2xl'>No games available!</div>
-				{/if}
 				{#each rooms as room, index}
-				{#if room.players.length > 1}
+
+					{#if room.players.length > 1 && room.game == 'chess'}
+							<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
+								<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
+									<div class="relative self-start">
+										<span
+											class="absolute -top-2 -right-2 block h-8 w-8 rounded-full bg-gradient-to-r from-blue-500/90 to-blue-600/50"
+										/>
+										{#if $theme == 'light'}
+											<span class="relative text-5xl font-medium md:text-6xl"><img src='/img/game_dark.svg' alt='' class=' w-16 h-16'></span>
+										{:else}
+											<span class="relative text-5xl font-medium md:text-6xl"><img src='/img/game_dark.svg' alt='' class='w-16 h-16'></span>
+										{/if}
+									</div>
+									<div>
+										<div class="text-2xl text-gray-600 font-semibold">Game</div>
+										<span class="text-xl font-light text-gray-600">{room.game}</span>
+									</div>
+								</div>
+
+								<!-- Separator -->
+								<div class="hidden h-16 w-px bg-gray-500 md:block" />
+
+								<div>
+									<div class="text-2xl text-gray-600 font-semibold">Players</div>
+									<span class="text-xl font-light text-gray-600">
+										{room.players}
+									</span>
+								</div>
+
+								<!-- Separator -->
+								<div class="hidden h-16 w-px bg-gray-600 md:block" />
+
+								<div>
+									<div class="text-2xl text-gray-600 font-semibold">Stake</div>
+									<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
+								</div>
+								{#if isPlayer || !$connectedAddress || !$connectedUsername || !$connectedChain}
+									<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
+									>Join Game</button>
+								{:else}
+									<button class="opacity-50 whitespace-nowrap rounded-[10px] z-50 transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
+									disabled>Join Game</button>
+
+								{/if}
+							</div>
+						{/if}
+						{#if room.players.length < 2 && room.game == 'chess'}
+							<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
+								<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
+									<div class="relative self-start">
+										<span
+											class="absolute -top-2 -right-2 block h-8 w-8 rounded-full bg-gradient-to-r from-blue-500/90 to-blue-600/50"
+										/>
+										{#if $theme == 'light'}
+										<span class="relative text-5xl font-medium md:text-6xl"><img src='/img/game.svg' alt='' class='w-16 h-16'></span>
+										{:else}
+										<span class="relative text-5xl font-medium md:text-6xl"><img src='/img/game_dark.svg' alt='' class='w-16 h-16'></span>
+										{/if}
+									</div>
+									<div>
+										<div class="text-2xl font-semibold">Game</div>
+										<span class="text-xl font-light text-gray-600">{room.game}</span>
+									</div>
+								</div>
+
+								<!-- Separator -->
+								<div class="hidden h-16 w-px bg-gray-200 md:block" />
+
+								<div>
+									<div class="text-2xl font-semibold">Players</div>
+									<span class="text-xl font-light text-gray-600">
+										{room.players}
+									</span>
+								</div>
+
+								<!-- Separator -->
+								<div class="hidden h-16 w-px bg-gray-200 md:block" />
+
+								<div>
+									<div class="text-2xl font-semibold">Stake</div>
+									<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
+								</div>
+								{#if isPlayer || !$connectedAddress || !$connectedChain || room.game == '8 Ball' || room.players.includes($userID)}
+									<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
+									disabled>Join Game</button>
+								{:else}
+									<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px] z-50 hover:scale-[1.075] transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
+									>Join Game</button>
+								{/if}
+							</div>
+						{/if}
+						
+				{/each}
+				{#if ballRooms}
+					{#each ballRooms as ballRoom,i}
 						<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
 							<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
 								<div class="relative self-start">
 									<span
 										class="absolute -top-2 -right-2 block h-8 w-8 rounded-full bg-gradient-to-r from-blue-500/90 to-blue-600/50"
 									/>
-									<span class="relative text-5xl font-medium md:text-6xl">0{index+1}</span>
+									{#if $theme == 'light'}
+										<span class="relative text-5xl font-medium md:text-6xl"><img src='/img/game.svg' alt='' class='w-16 h-16'></span>
+									{:else}
+										<span class="relative text-5xl font-medium md:text-6xl"><img src='/img/game_dark.svg' alt='' class='w-16 h-16'></span>
+									{/if}
 								</div>
 								<div>
 									<div class="text-2xl text-gray-600 font-semibold">Game</div>
-									<span class="text-xl font-light text-gray-600">{room.game}</span>
+									<span class="text-xl font-light text-gray-600">{ballRoom.game}</span>
 								</div>
 							</div>
 
 							<!-- Separator -->
 							<div class="hidden h-16 w-px bg-gray-500 md:block" />
 
-							<div>
-								<div class="text-2xl text-gray-600 font-semibold">Players</div>
-								<span class="text-xl font-light text-gray-600">
-									{room.players}
-								</span>
-							</div>
-
-							<!-- Separator -->
-							<div class="hidden h-16 w-px bg-gray-600 md:block" />
-
-							<div>
-								<div class="text-2xl text-gray-600 font-semibold">Stake</div>
-								<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
-							</div>
-							{#if isPlayer || !$connectedAddress || !$connectedUsername || !$connectedChain}
-								<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
-								>Join Game</button>
-							{:else}
-								<button class="opacity-50 whitespace-nowrap rounded-[10px] z-50 transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
-								disabled>Join Game</button>
-
-							{/if}
-						</div>
-					{/if}
-					{#if room.players.length < 2}
-						<div class="grid gap-6 py-12 md:flex md:items-center md:justify-between md:py-16 opacity-100">
-							<div class="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-								<div class="relative self-start">
-									<span
-										class="absolute -top-2 -right-2 block h-8 w-8 rounded-full bg-gradient-to-r from-blue-500/90 to-blue-600/50"
-									/>
-									<span class="relative text-5xl font-medium md:text-6xl">0{index+1}</span>
-								</div>
 								<div>
-									<div class="text-2xl font-semibold">Game</div>
-									<span class="text-xl font-light text-gray-600">{room.game}</span>
-								</div>
-							</div>
+									<div class="text-2xl text-gray-600 font-semibold">Players</div>
+										<span class="text-xl font-light text-gray-600">
+											{ballRoom.players}
+										</span>
+									</div>
 
-							<!-- Separator -->
-							<div class="hidden h-16 w-px bg-gray-200 md:block" />
+									<!-- Separator -->
+									<div class="hidden h-16 w-px bg-gray-600 md:block" />
 
-							<div>
-								<div class="text-2xl font-semibold">Players</div>
-								<span class="text-xl font-light text-gray-600">
-									{room.players}
-								</span>
-							</div>
-
-							<!-- Separator -->
-							<div class="hidden h-16 w-px bg-gray-200 md:block" />
-
-							<div>
-								<div class="text-2xl font-semibold">Stake</div>
-								<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
-							</div>
-							{#if isPlayer || !$userID || !$connectedChain}
-								<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
-								>Join Game</button>
-							{:else}
-								<button on:click={(e)=>joinGameExpanded(room)} class="whitespace-nowrap rounded-[10px] z-50 hover:scale-[1.075] transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
-								>Join Game</button>
-							{/if}
-						</div>
-					{/if}
-				{/each}
+										<div>
+											<div class="text-2xl text-gray-600 font-semibold">Stake</div>
+											<span class="text-xl font-light text-gray-600">{ballRoom.stake} TRX</span>
+										</div>
+										<button class="opacity-50 whitespace-nowrap rounded-[10px] z-50 transition transition-200 bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white"
+											disabled>
+											Join Game
+										</button>
+									</div>
+							{/each}
+						{/if}
+				{#if !rooms.length}
+					<div class='flex justify-center w-full py-6 font-semibold text-2xl mt'>No games available! Click <button on:click={createGameForm} class='hover:scale-105'><a href='/#'>&nbsp;<u>here</u>&nbsp;</a></button> to create a game!</div>
+				{/if}
 				{#if selectedRoom}
 				<div id="container" class='flex flex-initial' class:show={isExpanded}>
 						

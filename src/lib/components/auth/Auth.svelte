@@ -33,6 +33,7 @@
     
     let user
     let userLevel
+    let levelProgress // for progress bar
     let rooms
     let currentRoom
     
@@ -116,8 +117,8 @@
             
             const res = await window.tronLink 
             if (res.tronWeb) connectedAddress.set(res.tronWeb.defaultAddress.base58)
-            console.log(res.tronWeb)
             getBalance.set(await window.tronWeb.trx.getBalance($connectedAddress) / 1000000)
+
             if ($connectedAddress) {
                 
                 const url2 = `http://170.187.182.220:5001/username?addr=${$connectedAddress}`
@@ -126,6 +127,11 @@
                 if (res) user = await res.json()
                 if (user) {
                     userLevel = await getLevel(user.xp);
+                    levelProgress = userLevel - Math.floor(userLevel)
+
+                    levelProgress = Math.round(levelProgress * 100)
+
+                    console.log(userLevel, levelProgress)
                     if (user.hasWon8Ball == true) {
                         medal8Ball = true
                         if (!localStorage.getItem('hasSeenMedal')) {
@@ -133,7 +139,6 @@
                             
                         }
                     }
-                    
                     connectedUsername.set(user.username)
                     if ($connectedUsername) {
                         userID.set($connectedUsername)
@@ -245,7 +250,7 @@
     {#if $authPrompt}
 
         <div class='absolute justify-center right-12 rounded-[10px] border border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-        dark:bg-[#16161e] bg-[#f2f0eb] max-h-2/4 w-[16rem] z-60  mt-48 text-sm' transition:slide>
+        dark:bg-[#16161e] bg-[#f2f0eb] max-h-2/4 w-[16rem] z-60  mt-60 text-sm' transition:slide>
             <div class='absolute flex justify-end w-full'>
                 <!-- <img src='/img/8ball_medal.png' alt='medal' class='w-8 h-8 mt-1 mr-1'> -->
                 {#if medal8Ball}
@@ -278,19 +283,28 @@
                             
                             <button class=''on:click={copyClipboard}>
                                 {#if $theme == 'dark'}
-                                        <img class='ml-3' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
+                                   <img class='ml-3' src='/img/copy-dark.svg' width='10px' height='10px' alt='Copy to clipboard'>
                                 {:else if $theme == 'light'}
-                                        <img class='ml-3' src='/img/copy-light.svg' width='10px' height='10px' alt='Copy to clipboard'>
+                                    <img class='ml-3' src='/img/copy-light.svg' width='10px' height='10px' alt='Copy to clipboard'>
                                 {/if}
                             </button>
                     </div>    
                     <div class='text-gray-400'>Balance: {Math.round(100*$getBalance)/100} TRX</div>
+                    <div class=''>
+                        <div class='w-full bg-gray-700 h-[0.5px] mt-2'></div>
+                        <div class='text-gray-400 flex justify-center mt-2 pointer-events-none'>Level: {Math.floor(userLevel)}</div>
+                        <!-- <progress class='rounded-lg' id="file" max="100" value={levelProgress}></progress> -->
+                        <div class="w-full bg-gray-200 rounded-full h-1.5 mb-4 dark:bg-gray-700 mt-2 hover:animate-pulse pointer-events-none">
+                            <div class="bg-gray-700 h-1.5 rounded-full dark:bg-gray-100" style={levelProgress ? `width: ${levelProgress}%` : ''}></div>
+                        </div>
+                    </div>
                 </div>
                 <div class='flex wrap mt-3 '>
-                    {#if !$inGame}
-                    <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                    dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
-                    {:else if currentRoom && $inGame || !$connectedChain}
+                    {#if !$inGame || $inGame}
+                        <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                        dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
+                    {/if}
+                    {#if !$connectedChain}
                         <button class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                         dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50' disabled>Create Game</button>
                     {/if}

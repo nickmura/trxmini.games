@@ -6,7 +6,7 @@
     import { page } from '$app/stores'
     import { browser } from '$app/environment'
     import { theme } from '$lib/state/Theme.svelte'
-    import { url0, url1, chessWs, inGame, creatingGame } from '$lib/state/state'
+    import { url0, url1, makeBallRoom, chessWs, inGame, creatingGame } from '$lib/state/state'
 
     import { io } from 'socket.io-client'
     const socket = io(chessWs)
@@ -41,7 +41,9 @@
     let hasClicked = false
     $: hasClicked
 
-
+    setTimeout(() => {
+        if ($inGame) selectedOption.set('8 Ball')
+    })
 
     let infoExpanded = false
     function infoDialog() {
@@ -75,14 +77,23 @@
         // FOR 8 BALL 
         if ($selectedOption == '8 Ball') {
             isWagerless = true
+            console.log('test')
+
+
+
             if ($page.routeId == '/username' || $page.routeId == '/join') goto('../8ball')
+            
                 else if ($page.routeId == '/8ball') goto('./')
                 else {
                     goto('./8ball')
                     
                 }
+            console.log(makeBallRoom + $connectedUsername)
+            const res = await fetch(makeBallRoom + $connectedUsername)
+            if (!res.ok) throw new Error('null fetch')
+
         }
-        // FOR CHESS
+        //FOR CHESS
         if ($selectedOption == 'Chess') {
             try {
                 let room
@@ -251,8 +262,13 @@
                             {#if isExpanded}
                                 <ul class='top-8 absolute z-50 inset-x-32 ml-3 border-[#b3b2b1] top-36 mt-2 bg-[#edece6] dark:bg-[#111112] rounded-lg text-black dark:text-[#edece6] pl-1 w-24 pr-1 pb-1 pt-1 border  'transition:slide>
                                     <div class='flex flex-col '>
-                                        <button class="pl-1 pr-1 rounded-sm dark:hover:bg-[#2b2b36] hover:bg-[#c4c4be] hover:scale-[1.03] transition transition-200" on:click={assignChess}>Chess</button>
+                                        {#if !$inGame}
+                                        <button class="pl-1 pr-1 rounded-sm" on:click={assignChess} >Chess</button>
+                                        {:else}
+                                        <button class="pl-1 pr-1 rounded-sm opacity-50">Chess</button>
+                                        {/if}
                                         <button class="pl-1 pr-1 rounded-sm" on:click={assign8Ball} >8 Ball</button>
+
                                         <button class="pl-1 pr-1 rounded-sm opacity-50 " on:click={assignDrawades} disabled>Drawades</button>
                                     </div>
                                 </ul>
