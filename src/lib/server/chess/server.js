@@ -5,7 +5,7 @@ import cors from 'cors';
 import { eventAPI, _redisPasswd } from '../state.js'
 import { createClient } from 'redis';
 
-const client = createClient({ url: `redis://nick:${_redisPasswd}@192.53.123.185:6379`});
+const client = createClient({ url: `redis://nick:${_redisPasswd}@172.105.106.183:6379`});
 client.connect()
 
 const app = express();
@@ -24,7 +24,7 @@ app.use(cors(config));
 
 let rooms = [];
 let endedRooms = []
-
+let ballRooms = []
 
 
 async function getRooms() {
@@ -37,6 +37,8 @@ async function getRooms() {
     console.log('getRooms (redis get ROOMS)', rooms)
 } getRooms()
 
+
+
 async function getEndedRooms() {
     if (await client.get('ENDEDROOMS')) {
         endedRooms =  await client.get('ENDEDROOMS')
@@ -46,7 +48,6 @@ async function getEndedRooms() {
     }
     console.log('getEndedRooms (redis get ENDEDROOMS)', endedRooms)
 } getEndedRooms()
-
 
 
 const io = new Server(3001, {
@@ -352,17 +353,44 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('createBallRoom', async (obj) => {
+    socket.on('createBallRoom', async (room, placeholder) => {
         // Pushes placeholder for 8 Ball game to the main rooms array, and into redis.
         // The reason it needs to be a place holder is because I would need to add AND operators to check the game
         // all of the server logic and client logic for chess specific room object indexes, which could be faulty,
         // problematic considering how many there are. 8 ball indexes will be stored on a different key value for redis.
     
-        rooms.push(obj)
+        ballRooms.push(room)
+        rooms.push(placeholder)
     
+        let jBallRooms = JSON.stringify(ballRooms)
+        await client.set('BALLROOMS', jBallRooms)
+        
         let jRooms = JSON.stringify(rooms)
         await client.set('ROOMS', jRooms)
     })
+
+    socket.on('deleteBallRoom', async (user) => {
+
+        console.log(user);
+
+        const findPlaceholder = rooms?.findIndex(room => room.place == 'holder' && room.person == user)
+        if (findPlaceholder > -1) rooms.splice(findPlaceholder, 1)
+
+
+        let jRooms = JSON.stringify(rooms)
+        await client.set('ROOMS', jRooms)
+
+        console.log(ballRooms)
+        const find8BallGame = ballRooms?.findIndex(room => room.players.includes(user))
+        if (find8BallGame > -1) ballRooms.splice(find8BallGame, 1)
+        
+
+        let jBallRooms = JSON.stringify(ballRooms)
+        await client.set('BALLROOMS', jBallRooms)
+
+        console.log('REMOVING 8BALL ROOM', find8ballGame)
+    })
+
 })
 
 

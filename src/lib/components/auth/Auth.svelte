@@ -300,10 +300,11 @@
                     </div>
                 </div>
                 <div class='flex wrap mt-3 '>
-                    {#if !$inGame}
-                    <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
-                    dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
-                    {:else if currentRoom && $inGame || !$connectedChain}
+                    {#if !$inGame || $inGame}
+                        <button on:click={createGameForm} class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
+                        dark:bg-[#16161e]  z-20 p-2 text-xs   hover:scale-[1.05] transition transition-200'>Create Game</button>
+                    {/if}
+                    {#if !$connectedChain}
                         <button class='rounded-[10px] border mr-1 border-indigo-500 dark:border-blue-500 border text-black dark:text-white  
                         dark:bg-[#16161e]  z-20 p-2 text-xs opacity-50' disabled>Create Game</button>
                     {/if}
