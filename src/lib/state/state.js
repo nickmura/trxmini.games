@@ -17,6 +17,8 @@ export const getBalance = writable()
 
 export const createPrompt = writable(false)
 export const tipPrompt = writable(false)
+export const notiPrompt = writable(false)
+
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
 export const authPrompt = writable(false)
@@ -48,6 +50,7 @@ export const eventAPI = 'http://192.53.123.185:5020/api'
  
 // Chess socket.io endpoint
 export const chessWs = 'http://192.53.123.185:3001';
+
 export const currentState = writable('') // Saves current FEN state of chess game.
 export const wagerTx = writable()
 export const theRoom = writable()
@@ -68,5 +71,12 @@ export async function tipPlayerForm() {
 
 let authExpanded = false
 export function myProfile() {
-    authPrompt.set(!authPrompt)
+    authExpanded = !authExpanded
+    authPrompt.set(authExpanded)
+}
+
+let notificationExpanded = false
+export function notificationPrompt() {
+    notificationExpanded = !notificationExpanded
+    notiPrompt.set(notificationExpanded)
 }

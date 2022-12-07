@@ -5,10 +5,14 @@ import cors from 'cors';
 import { eventAPI, _redisPasswd } from '../state.js'
 import { createClient } from 'redis';
 
+
 const client = createClient({ url: `redis://nick:${_redisPasswd}@192.53.123.185:6379`});
-client.connect()
+client.connect();
+
 
 const app = express();
+
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors())
@@ -161,6 +165,7 @@ io.on('connection', (socket) => {
         let loserObject
         
 
+        // It needs to be a post request because whether or not the user is an address / username.
 
         
         if (winner.includes('.trx')) { // Checks if winner is an address or a username
@@ -177,10 +182,9 @@ io.on('connection', (socket) => {
         }
 
 
-        const winUrl = 'http://170.187.182.220:5001/gamewon'
-        const lossUrl = 'http://170.187.182.220:5001/gameplayed'
-
+        
         // Gives xp to the winner
+        const winUrl = 'http://170.187.182.220:5001/gamewon'
         const submitWinnerData = async (url) => { // sending address to express and postgres
             const res = await fetch(url, {
                 method: 'post',
@@ -195,7 +199,9 @@ io.on('connection', (socket) => {
             .catch(err => console.error(err))
         
 
-
+    
+        // Gives xp to the loser (sorry)
+        const lossUrl = 'http://170.187.182.220:5001/gameplayed'
         const submitLoserData = async (url) => { // sending address to express and postgres
                 const res = await fetch(url, {
                     method: 'post',
@@ -208,7 +214,8 @@ io.on('connection', (socket) => {
         submitLoserData(lossUrl)
                 .then(res => console.log(res))
                 .catch(err => console.error(err))
-        
+    
+                
     })
 
     socket.on('isStalemate', (player) => {

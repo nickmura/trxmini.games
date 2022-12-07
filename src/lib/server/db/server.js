@@ -35,7 +35,6 @@ app.post('/address', async (req, res) => {
         if (!err) console.log('Insertion was successful')
         if (err) console.log(err)
     })
-
 })
 
 
@@ -123,13 +122,14 @@ app.post('/gameplayed', async (req, res) => {
 
     if (!user.name) {
         insert = `UPDATE usernames SET games_played=games_played+1,has_played=true,xp=xp+350 WHERE address=($1)`
-        values = [`${user}`]
+        values = [`${user.address}`]
     } else {
         insert = `UPDATE usernames SET games_played=games_played+1,has_played=true,xp=xp+350 WHERE username=($1)`
         values = [`${user.name}`]
     }
     post.query(insert, values, (err, result) => {
-        if (!err) { 
+        if (!err) {
+            console.log(insert) 
             console.log('Game played set to player', user) 
             
         }

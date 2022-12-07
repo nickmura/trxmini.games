@@ -2,11 +2,11 @@
 	//@ts-nocheck
 	
 	import Navbar from '$lib/components/_ui/reusable/Navbar.svelte';
-	
+
 	import Theme from '$lib/state/Theme.svelte'
-	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
+	import CreateGame from '$lib/components/_ui/dialogs/CreateGame.svelte'
 	import { theme } from '$lib/state/Theme.svelte'
-	import TipNotification from "$lib/components/_ui/create/TipNotification.svelte"
+	import TipNotification from "$lib/components/_ui/dialogs/TipNotification.svelte"
 
 	let date
 	let target = 1668373200

@@ -2,7 +2,7 @@
     // @ts-ignore
     import Navbar from '$lib/components/_ui/reusable/Navbar.svelte'
     import Username from '$lib/components/_ui/username/Username.svelte'
-    import TipNotification from '$lib/components/_ui/create/TipNotification.svelte';
+    import TipNotification from '$lib/components/_ui/dialogs/TipNotification.svelte';
 </script>
 
 <main class=''>

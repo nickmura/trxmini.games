@@ -84,22 +84,6 @@ client.connect()
             setTimeout(async () => {
 
                 socket.emit('deleteBallRoom', user);
-                // getRoomsOnStartup()
-                // const findPlaceholder = rooms?.findIndex(room => room.place == 'holder' && room.person == user)
-                // console.log(findPlaceholder)
-                // if (findPlaceholder > -1) rooms.splice(findPlaceholder, 1)
-
-                // let jRooms = JSON.stringify(rooms)
-                // await client.set('ROOMS', jRooms)
-
-
-                // const find8BallGame = ballRooms?.findIndex(room => room.players.includes(user))
-                // console.log(findPlaceholder)
-                // if (find8BallGame > -1) ballRooms.splice(find8BallGame, 1)
-
-                // let jBallRooms = JSON.stringify(ballRooms)
-                // await client.set('BALLROOMS', jBallRooms)
-
                 
             }, 720000)
             
