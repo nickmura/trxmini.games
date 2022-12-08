@@ -18,8 +18,8 @@
 		} from '$lib/state/state'
 	import { theme } from '$lib/state/Theme.svelte'
 	import { io } from 'socket.io-client'
-	import CreateGame from '$lib/components/_ui/create/CreateGame.svelte'
-	import Tip from '$lib/components/_ui/create/Tip.svelte';
+	import CreateGame from '$lib/components/_ui/dialogs/CreateGame.svelte'
+	import Tip from '$lib/components/_ui/dialogs/Tip.svelte';
 
 	const socket = io(chessWs)
 

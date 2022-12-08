@@ -135,6 +135,7 @@
                         stake: `${stakeValue}`, 
                         token: 'TRX', 
                         index: ``,
+                        idle: false,
                         currentTurn: $userID,
                         wagerTxs: [],
                         redeemedStake: [],
@@ -142,6 +143,7 @@
                     }
                 } else if (isWagerless) {
                     room = {
+
                         gameID: uuid, 
                         game: 'chess', 
                         players: [$userID], 
@@ -156,6 +158,7 @@
                         stake: `0`, 
                         token: 'TRX', 
                         index: ``,
+                        idle: false,
                         currentTurn: $userID,
                         wagerTxs: [],
                         redeemedStake: [],

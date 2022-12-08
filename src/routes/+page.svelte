@@ -6,7 +6,7 @@
 	import AboutSection from '$lib/components/_ui/AboutSection.svelte';
 	import FooterSection from '$lib/components/_ui/reusable/FooterSection.svelte';
 	import RoadmapSection from '$lib/components/_ui/RoadmapSection.svelte';
-	import TipNotification from '$lib/components/_ui/create/TipNotification.svelte'
+	import TipNotification from '$lib/components/_ui/dialogs/TipNotification.svelte'
 	import { url2 } from '$lib/state/state'
     // async function peepee() {
     //     const test = await fetch(url2+'nick.trx')

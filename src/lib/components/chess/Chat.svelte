@@ -47,8 +47,14 @@
 
 
     async function sendMsg(msg) {
-        let _msg = {user: $userID, msg: msg}
-        socket.emit('sendMessage', _msg)
+        let _msg
+        if (msg != '/forfeit') {
+            _msg = {user: $userID, msg: msg}
+        } else {
+            _msg = {user: $userID, msg: msg, command: true, request: $userID}
+        }
+        await socket.emit('sendMessage', _msg)
+
         msg = undefined
         message = undefined
     }
@@ -63,7 +69,7 @@
         <div class='p-2     absolute top-0 overflow-y-auto w-full max-h-full'>
         {#if getMsgs.length}   
             {#each getMsgs as chatlog}
-                <div class=''>
+                <div class={chatlog.user == 'SYSTEM' ? 'text-gray-400 italic' : ''}>
                     {chatlog.user}: {chatlog.msg}
                 </div>
             {/each}

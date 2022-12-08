@@ -11,7 +11,8 @@
 	import Theme from '$lib/state/Theme.svelte'
 	import Logo from '$lib/components/_ui/reusable/Logo.svelte'
 	import Auth from '$lib/components/auth/Auth.svelte'
-	import TipNotification from '../create/TipNotification.svelte';
+	import TipNotification from '../dialogs/TipNotification.svelte';
+	import Notifications from '../dialogs/Notifications.svelte'
 
 	import { 
 		connectedAddress, 
@@ -131,14 +132,17 @@
 				</li>
 			{/each}
 		</ul>
+		
 		<div class="flex items-center gap-4">
 			<!-- <button
 				class="rounded-[10px] border border-blue-500 py-1.5 px-6 text-lg opacity-40 border-opacity-50 font-medium text-[#3C1272] dark:text-white "
 			disabled>
 				Sign In
 			</button> -->
+			<Notifications></Notifications>
 			<Auth></Auth>
 			<div class='hover:scale-[1.10] mt-1.5 transition transition-200'>
+				
 				<Theme></Theme>
 			</div>
 		</div>
