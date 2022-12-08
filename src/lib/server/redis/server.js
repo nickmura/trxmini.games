@@ -6,7 +6,7 @@ import { chessEventListener, _redisPasswd } from '../state.js';
 import { createClient } from 'redis';
 import { io } from 'socket.io-client';
 
-const client = createClient({ url: `redis://nick:${_redisPasswd}@192.53.123.185:6379`});
+const client = createClient({ url: `redis://nick:${_redisPasswd}@172.105.106.183:6379`});
 
 const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'https://trxmini.games', 
 '//trxmini.games', 'http://localhost:5173', '//localhost:5173', '//127.0.0.1:5173', '//undefined']

@@ -6,7 +6,7 @@ import { eventAPI, _redisPasswd } from '../state.js'
 import { createClient } from 'redis';
 
 
-const client = createClient({ url: `redis://nick:${_redisPasswd}@192.53.123.185:6379` });
+const client = createClient({ url: `redis://nick:${_redisPasswd}@172.105.106.183:6379` });
 client.connect();
 
 
@@ -451,7 +451,6 @@ io.on('connection', (socket) => {
         let jBallRooms = JSON.stringify(ballRooms)
         await client.set('BALLROOMS', jBallRooms)
 
-        console.log('REMOVING 8BALL ROOM', find8ballGame)
     })
 
 })
