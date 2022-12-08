@@ -1,8 +1,10 @@
 //@ts-nocheck
 // THIS IS SOLELY CONFIGURATION AND ENDPOINTS FOR FOR USERNAMES VIA POSTGRES
 
-import { post } from './cred.js'
+import { post } from './cred.js';
+import { getLevel } from './level.js';
 import express, { query } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
 
 
@@ -10,7 +12,7 @@ import cors from 'cors';
 post.connect();
 const app = express();
 
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'http://trxmini.games', 
@@ -21,19 +23,19 @@ const config = {
         else callback(new Error(`CORS Policy denied, origin is unexpected origin ${origin}`))
     }
 }
-app.use(cors(config))
+app.use(cors(config));
 
-let rooms 
+let rooms;
 
 app.post('/address', async (req, res) => {
-    let user = req.body
+    let user = req.body;
     let insert = `insert into usernames("address","games_played", "has_played", "games_won", "has_won_8ball", "xp") 
-    values($1, $2, $3, $4, $5, $6)`
+    values($1, $2, $3, $4, $5, $6)`;
     
-    const values = [`${user.address}`, 0, false, 0, false, 0]
+    const values = [`${user.address}`, 0, false, 0, false, 0];
     post.query(insert, values, (err, result) => {
-        if (!err) console.log('Insertion was successful')
-        if (err) console.log(err)
+        if (!err) console.log('Insertion was successful');
+        if (err) console.log(err);
     })
 })
 
@@ -117,24 +119,64 @@ app.post('/gamewon8ball', async (req, res) => {
 
 app.post('/gameplayed', async (req, res) => {
     let user = req.body
+    let select
+    
+    let xp 
+
     let insert 
     let values
 
+    let insertNotification
+    let notification
+
     if (!user.name) {
+        select = `SELECT xp FROM usernames WHERE address = ($1)`
         insert = `UPDATE usernames SET games_played=games_played+1,has_played=true,xp=xp+350 WHERE address=($1)`
         values = [`${user.address}`]
     } else {
+        select = `SELECT xp FROM usernames WHERE username = ($1)`
         insert = `UPDATE usernames SET games_played=games_played+1,has_played=true,xp=xp+350 WHERE username=($1)`
         values = [`${user.name}`]
     }
-    post.query(insert, values, (err, result) => {
-        if (!err) {
-            console.log(insert) 
-            console.log('Game played set to player', user) 
-            
-        }
-        else console.log(err)
-    })
+    try {
+        xp = await post.query(select, values)
+        xp = xp.rows[0].xp
+        console.log(xp)
+    } catch (error) {
+        console.log(error)
+    }
+    
+    let lastLevel = getLevel(xp)
+    let currentLevel = getLevel(xp+350)
+    console.log(lastLevel, currentLevel)
+    if (Math.floor(lastLevel) < Math.floor(currentLevel)) {
+        console.log(lastLevel, currentLevel);
+        let uuid = uuidv4()
+
+        if (!user.name) {
+            insertNotification = `INSERT into notifications("address","notification", "id") values($1, $2, $3)`;
+            notification = [`${user.address}`, `You leveled up to level ${Math.floor(currentLevel)}!`, `${uuid}`];
+        } else {
+            insertNotification = `INSERT into notifications("username","notification", "id") values($1, $2, $3)`;
+            notification = [`${user.name}`, `You leveled up to level ${Math.floor(currentLevel)}!`, `${uuid}`];
+        } 
+        try {
+            await post.query(insertNotification, notification)
+            console.log('Created notification for level up')
+        } catch(error) {
+            console.log('insertNotification error', error)
+        }    
+    }
+
+
+    try {
+        await post.query(insert, values);
+        console.log('Game played set to player', user)
+    } catch (error) {
+        console.log(error);
+    }
+
+
 })
 
 app.post('/gamewon', async (req, res) => {

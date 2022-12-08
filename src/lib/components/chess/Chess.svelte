@@ -206,6 +206,9 @@
         currentState.set(FEN)
         updateRooms()
     })
+    socket.on('gameForfeited', () => {
+        currentState.set('')
+    })
 
 
     $: config = {
@@ -426,7 +429,7 @@
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition
                             transition-200 mr-1 '
                             on:click={(e)=>collectDraw(currentRoom.index)}>Collect draw </button>
-                        {:else if hasClicked || !isDraw && !Stalemate || currentRoom.redeemedDraw.includes($userID)}
+                        {:else if hasClicked || !isDraw && !Stalemate || currentRoom.redeemedDraw.includes($userID) || currentRoom.stake == '0' && currentRoom.idle && currentRoom.isDraw}
                             <button class='rounded-[10px] border border-indigo-500 dark:border-blue-500 
                             border-indigo-500 hover:border-green-500 py-1.5 px-6 text-lg font-medium text-[#3C1272] mr-1 dark:text-white opacity-50'
                             disabled>Collect draw</button>
