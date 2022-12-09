@@ -118,11 +118,13 @@ io.on('connection', (socket) => {
     socket.on('sendMessage', (chatlog) => {
         console.log(chatlog)
 
-        let room = rooms.find(room => room.players.includes(chatlog.user))
+        let room = rooms?.find(room => room.players.includes(chatlog.user))
+        if (!room) room = endedRooms.find(room => room.players.includes(chatlog.user))
+        console.log(room)
         socket.join(`${room.gameID}`)
         room.chat.push(chatlog)
 
-        if (room.idle == true && chatlog.msg != '/forfeit') {
+        if (room.idle == true && chatlog.msg != '/forfeit' && room.players.length > 1) {
             room.idle = false
             console.log('GAME HAS RESUMED')
             let command = {user: 'SYSTEM', msg: `Game has resumed due to activity.`}
@@ -174,7 +176,7 @@ io.on('connection', (socket) => {
 
                     io.to(`${room.gameID}`).emit('gameForfeited')
                 }
-            }, 45000)
+            }, 300000)
         }
 
     })
@@ -184,7 +186,18 @@ io.on('connection', (socket) => {
         socket.join(`${room.gameID}`)
 
         room.fen = fenValue
-        if (room.idle == true)
+        if (room.idle == true) {
+            room.idle = false
+            console.log('GAME HAS RESUMED')
+            let command = {user: 'SYSTEM', msg: `Game has resumed due to activity.`}
+            room.chat.push(command)
+
+            let jRooms = JSON.stringify(rooms)
+            client.set('ROOMS', jRooms)
+            io.to(`${room.gameID}`).emit('recieveMessage', room.chat)
+
+
+        }
         room.idle = false
 
         console.log(`CHESS MOVE IN ${room.gameID}`, room.fen)
@@ -279,6 +292,55 @@ io.on('connection', (socket) => {
         console.log(`ROOM ${room.gameID} IS A STALEMATE (draw)`)
         room.isStalemate = 'true'
 
+        let opponent = room.players.find(opponent => opponent != player);
+
+        let playerObject
+        
+        if (player.includes('.trx')) { // Checks if player is an address or a username
+            playerObject = JSON.stringify({ address: '', name: player })
+        } else {
+            playerObject = JSON.stringify({ address: player })
+        }
+
+        const playerOpponentUrl = 'http://170.187.182.220:5001/gameplayed'
+        const submitPlayerData = async (url) => { // sending address to express and postgres
+            const res = await fetch(url, {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: playerObject,
+            })
+            if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+            return res
+        }       
+        submitPlayerData(playerOpponentUrl)
+            .then(res => console.log(res))
+            .catch(err => console.error(err))
+
+        let opponentObject
+        
+        if (opponent.includes('.trx')) { // Checks if opponent is an address or a username
+            opponentObject = JSON.stringify({ address: '', name: opponent })
+        } else {
+            opponentObject = JSON.stringify({ address: opponent })
+        }
+
+        const submitOpponentData = async (url) => { // sending address to express and postgres
+            const res = await fetch(url, {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: opponentObject,                
+            })
+            if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+            return res
+            }       
+        submitOpponentData(playerOpponentUrl)
+            .then(res => console.log(res))
+            .catch(err => console.error(err))
+
+
+
+        
+
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
     })
@@ -287,6 +349,54 @@ io.on('connection', (socket) => {
         let room = rooms?.find(room => room.players.includes(player))
         console.log(`ROOM ${room.gameID} IS A DRAW`)
         room.isDraw = 'true'
+
+        
+        let playerObject
+        
+        if (player.includes('.trx')) { // Checks if player is an address or a username
+            playerObject = JSON.stringify({ address: '', name: player })
+        } else {
+            playerObject = JSON.stringify({ address: player })
+        }
+
+        const playerOpponentUrl = 'http://170.187.182.220:5001/gameplayed'
+        const submitPlayerData = async (url) => { // sending address to express and postgres
+            const res = await fetch(url, {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: playerObject,
+            })
+            if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+            return res
+        }       
+        submitPlayerData(playerOpponentUrl)
+            .then(res => console.log(res))
+            .catch(err => console.error(err))
+        
+        let opponent = room.players.find(opponent => opponent != player);
+        let opponentObject
+        
+        if (opponent.includes('.trx')) { // Checks if opponent is an address or a username
+            opponentObject = JSON.stringify({ address: '', name: opponent })
+        } else {
+            opponentObject = JSON.stringify({ address: opponent })
+        }
+
+        const submitOpponentData = async (url) => { // sending address to express and postgres
+            const res = await fetch(url, {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: opponentObject,                
+            })
+            if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+            return res
+            }       
+        submitOpponentData(playerOpponentUrl)
+            .then(res => console.log(res))
+            .catch(err => console.error(err))
+
+
+
 
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
