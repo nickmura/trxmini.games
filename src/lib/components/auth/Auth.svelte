@@ -10,7 +10,7 @@
 
 
     import { theme } from '$lib/state/Theme.svelte'
-    import { urlRooms, urlEndedRooms, url0, url1, url2, tipSocket, getXp, authPrompt } from '$lib/state/state'
+    import { urlRooms, urlEndedRooms, url0, url1, url2, tipSocket, getXp, authPrompt, notificationsUrl } from '$lib/state/state'
     import { 
         connectedAddress, 
         connectedUsername,
@@ -23,7 +23,8 @@
         createGameForm,
         getBalance,
         inGame,
-        medalAlert
+        medalAlert,
+        playerNotifications
 
     } from '$lib/state/state'
     import { getLevel } from '$lib/state/level'
@@ -53,6 +54,25 @@
                             connectedChain.set(true)
                         }
                         console.log('name of contract', ifChain.name)
+
+
+                        const userNotification = JSON.stringify({address: $connectedAddress, name: $connectedUsername})
+                        const getNotifications = async (url) => { // sending address to express and postgres
+                        const res = await fetch(url, {
+                            method: 'post',
+                            headers: {'Content-Type': 'application/json'},
+                            body: userNotification,
+                        })
+                        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+
+                        playerNotifications.set(await res.json())
+                        console.log('$playerNotifications', $playerNotifications)
+                        return res
+                    } 
+
+                    getNotifications(notificationsUrl)
+                        //.then(res => console.log(res.json()))
+                        .catch(err => console.error(err))
                     }
                     
                 }
@@ -170,6 +190,7 @@
                     headers: {'Content-Type': 'application/json'},
                     body: user,
                 })
+
                 if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
                 return res
             }
@@ -180,12 +201,12 @@
             setTimeout(checkUser, 1500)
             console.log(res)
             let ifChain = await res.tronWeb.trx.getContract(chessContract)
-                if (ifChain.name) { 
-                    console.log('name of contract', ifChain.name)
-                    connectedChain.set(true)
-                }
-        
 
+            if (ifChain.name) { 
+                console.log('name of contract', ifChain.name)
+                connectedChain.set(true)
+            }
+    
 			if (res.code === 4001) {
 				throw new Error(`TronLink error: ${res.message}`)
 			}

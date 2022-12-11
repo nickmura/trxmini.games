@@ -1,5 +1,4 @@
 {
-
 	"outDir": ".svelte-kit",
 	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
@@ -14,9 +13,8 @@
 	},
 	"exclude": [
 		"node_modules",
-		"out/**/*",
-		"./src",
-
+		".svelte-kit/**/*",
+		"./src/**/*",
 	]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//

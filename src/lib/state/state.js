@@ -15,20 +15,28 @@ export const connectedChain = writable(false);
 
 export const getBalance = writable() 
 
+export const playerNotifications = writable()
+
 export const createPrompt = writable(false)
 export const tipPrompt = writable(false)
+
 export const notiPrompt = writable(false)
+export const authPrompt = writable(false)
+export const isProfile = writable();
+export const fetchedProfile = writable();
 
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
-export const authPrompt = writable(false)
 export const medalAlert = writable(false)
 export const creatingGame = writable()
+
 // POSTGRES ENDPOINTS
 export const url0 = 'http://170.187.182.220:5001/address'
 export const url1 = 'http://170.187.182.220:5001/username'
 export const url2 = 'http://170.187.182.220:5001/getaddr?username='
 export const getXp = 'http://170.187.182.220:5001/getxp?user=' // May not need this.
+export const notificationsUrl = 'http://170.187.182.220:5001/getnotifications'
+export const getProfileURL = 'http://170.187.182.220:5001/getprofile?user='
 // REDIS ENDPOINTS
 
 
@@ -45,7 +53,9 @@ export const tipContract = 'TBPL4jVJMwnMLUjmX9GDTgXcC8y3T5zVgD';
 export const chessContract = 'TMGBGionnPs1TFRHxNrZRiGneZaDi6zkBh'
 export const _chessContract  = 'TQyY41mqbHVWWHWt5Zq1pPL5rYd7HgM2kE'
 
+
 export const chessEventListener = `https://api.shasta.trongrid.io/v1/contracts/${chessContract}/events` 
+
 export const eventAPI = 'http://192.53.123.185:5020/api'
  
 // Chess socket.io endpoint
@@ -80,3 +90,13 @@ export function notificationPrompt() {
     notificationExpanded = !notificationExpanded
     notiPrompt.set(notificationExpanded)
 }
+
+export async function postRequest(url, body) {
+    const res = await fetch(url, {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+    })
+    if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+    return await res.json()
+} 

@@ -8,9 +8,9 @@
     import { io } from 'socket.io-client'
 
 
-    import { chessWs, urlRooms, urlEndedRooms } from '$lib/state/state' // ENDPOINTS
+    import { chessWs, urlRooms, urlEndedRooms, tipSocket } from '$lib/state/state' // ENDPOINTS
     const socket = io(chessWs)
-    
+    const notificationSocket = io(tipSocket)
 
 
     import { 
@@ -289,13 +289,15 @@
     async function collectWager(index) {
         try {
             hasClicked = true
+            let opponent
             //let index = parseInt(index)
             var parameter = [{type:'uint',value:index}]
             var options = {
                 feeLimit: 100000000,
 
             }
-
+            if ($userID == host) opponent = player2
+            if ($userID == player2) opponent = host
             // invoking contract function
             const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
                 window.tronWeb.address.toHex(chessContract), "payWager(uint256)",
@@ -304,8 +306,11 @@
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
             wagerTx.set(broadcastTx.txid)
             socket.emit('redeemedStake', $userID, broadcastTx.txid);
+            notificationSocket.emit('wonChessWager', $userID, opponent, broadcastTx.txid, currentRoom.stake)
             receivedStake = true
             
+
+
         } catch (error) {
             hasClicked = false
         }
@@ -536,7 +541,15 @@
             <Chat></Chat>
         </div>
     </div> 
-    <style>
+<style>
+    .tooltip .tooltipinfo {
+        visibility: hidden;
+        padding: 5px 0;
+    }
+
+    .tooltip:hover .tooltipinfo {
+        visibility: visible;
+    }
         :global(.cg-wrap coords.files) {
             bottom: 0;
             text-align: right;
@@ -552,14 +565,3 @@
         }
     </style>
 </main>
-
-<style>
-.tooltip .tooltipinfo {
-    visibility: hidden;
-    padding: 5px 0;
-}
-
-.tooltip:hover .tooltipinfo {
-    visibility: visible;
-}
-</style>

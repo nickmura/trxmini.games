@@ -105,10 +105,10 @@ app.post('/gamewon8ball', async (req, res) => {
     let insert 
     let values
     if (!user.name) {
-        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true,xp=xp+1000 WHERE address=($1)`
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true,xp=xp+1000,is_beta=true WHERE address=($1)`
         values = [`${user.address}`]
     } else {
-        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true,xp=xp+1000 WHERE username=($1)`
+        insert = `UPDATE usernames SET games_played=games_played+1,games_won=games_won+1,has_played=true,has_won_8ball=true,xp=xp+1000,is_beta=true WHERE username=($1)`
         values = [`${user.name}`]
     }
     post.query(insert, values, (err, result) => {
@@ -175,7 +175,7 @@ app.post('/gameplayed', async (req, res) => {
     } catch (error) {
         console.log(error);
     }
-
+    return res.json({success: true})
 
 })
 
@@ -194,6 +194,7 @@ app.post('/gamewon', async (req, res) => {
         if (!err) console.log('Game played & won set to player', user)
         else console.log(err)
     })
+    return res.json({success: 'gameWon'})
 })
 
 app.get('/getxp', async (req, res) => {
@@ -209,6 +210,92 @@ app.get('/getxp', async (req, res) => {
         }
         if (err) console.log(err)
     })
+
+})
+
+app.post('/getnotifications', async (req, res) => {
+    let user = req.body
+    let select = `SELECT notification,id FROM notifications WHERE address = ($1) OR username = ($2)`
+    let values = [`${user.address}`, `${user.name}`]
+    let query 
+
+    try {
+        query = await post.query(select,values)
+    } catch (error) {
+        console.log(error)
+    } return res.json(query.rows)
+})
+
+app.post('/deletenotification', async (req, res) => {
+    let notification = req.body
+    const deleteQuery = 'DELETE FROM notifications WHERE id = ($1)'
+    const values = [`${notification.id}`]
+    let query
+    try {
+        query = await post.query(deleteQuery, values);
+        console.log('Deleted notification', notification.id                                                 )
+    } catch (error) { console.log(error) } 
+})
+
+app.post('/tipnotification', async (req, res) => {
+    let tip = req.body
+    let uuid = uuidv4();
+    let noti = `<a href='https://shasta.tronscan.org/#/transaction/${tip.txid}' target='_blank' rel='noreferrer'><u>You have recieved a tip from ${tip.sender} for ${tip.amount} TRX!</u></a>` // Should be changed to include the token.
+    let query
+
+    const insert = `INSERT into notifications("address", "notification", "id") values($1, $2, $3)`
+    const values = [`${tip.recipient}`, `${noti}`, `${uuid}`]
+
+    try {
+        query = await post.query(insert, values)
+        console.log('Success insertion', tip.recipient)
+    } catch (error) {
+        console.log(error)
+    }
+    return res.json(console.log({success: tip.recipient}))
+})
+
+app.post('/chessnotification', async (req, res) => {
+    let wager = req.body
+    let uuid = uuidv4();
+    let noti = `<a href='https://shasta.tronscan.org/#/transaction/${wager.txid}' target='_blank' rel='noreferrer'><u>You won a chess game wager against ${wager.opponent} for ${wager.amount} TRX!</u></a>`
+    let query
+
+    let insert
+    let values
+
+    
+    if (wager.address) {
+        insert = `INSERT into notifications("address", "notification", "id") values($1, $2, $3)`
+        values = [`${wager.address}`, `${noti}`,`${uuid}`]
+    } else {
+        insert = `INSERT into notifications("username", "notification", "id") values($1, $2, $3)`
+        values = [`${wager.winner}`, `${noti}`,`${uuid}`]
+    }
+
+    try {
+        query = await post.query(insert, values)
+        console.log('Success wager insertion', wager.winner)
+    } catch (error) {
+        console.log(error)
+    }
+    return res.json({success: wager.txid})
+})
+app.get('/getprofile', async(req, res) => {
+    let user = req.query.user
+
+    let insert = `SELECT address,username,has_played,games_played,games_won,has_won_8ball,xp,is_beta FROM usernames WHERE username = ($1)`
+    let values = [`${user}`]
+
+    let query
+
+    try { 
+        query = await post.query(insert, values);
+        //console.log('Successfully fetched profile information')
+    } catch (error) {
+        console.log(error);
+    } 
+    return res.json(query.rows[0]);
 
 })
 

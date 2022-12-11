@@ -133,7 +133,7 @@ io.on('connection', (socket) => {
             
             let jRooms = JSON.stringify(rooms)
             client.set('ROOMS', jRooms)
-        }
+        } 
 
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
@@ -154,9 +154,12 @@ io.on('connection', (socket) => {
             client.set('ROOMS', jRooms)
 
             io.to(`${room.gameID}`).emit('recieveMessage', room.chat)
+
             setTimeout(() => {
                 console.log(room)
                 if (room.idle == true) {
+
+                    let player = chatlog.user
                     console.log('GAME HAS NOW ENDED DUE TO IDLE')
 
                     let command = { command: true, user: 'SYSTEM', msg: `Game has drawed due to idle exceeding 5 minutes and forfeit.`, request: chatlog.user}                      
@@ -171,10 +174,61 @@ io.on('connection', (socket) => {
                     room.isDraw = 'true'
                     room.fen = ''
 
+
+                    let opponent = room.players.find(opponent => opponent != player);
+                    
+                    let playerObject;
+                    
+                    if (player.includes('.trx')) { // Checks if player is an address or a username
+                        playerObject = JSON.stringify({ address: '', name: player })
+                    } else {
+                        playerObject = JSON.stringify({ address: player })
+                    }
+
+                    const playerOpponentUrl = 'http://170.187.182.220:5001/gameplayed'
+                    
+                    const submitPlayerData = async (url) => { // sending address to express and postgres
+                        const res = await fetch(url, {
+                            method: 'post',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: playerObject,
+                        })
+                        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+                        return res
+                    }       
+                    submitPlayerData(playerOpponentUrl)
+                        .then(res => console.log(res))
+                        .catch(err => console.error(err))
+
+                    let opponentObject
+                    
+                    if (opponent.includes('.trx')) { // Checks if opponent is an address or a username
+                        opponentObject = JSON.stringify({ address: '', name: opponent })
+                    } else {
+                        opponentObject = JSON.stringify({ address: opponent })
+                    }
+
+                    const submitOpponentData = async (url) => { // sending address to express and postgres
+                        const res = await fetch(url, {
+                            method: 'post',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: opponentObject,                
+                        })
+                        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+                        return res
+                        }       
+                    submitOpponentData(playerOpponentUrl)
+                        .then(res => console.log(res))
+                        .catch(err => console.error(err))
+
+
+
                     let jRooms = JSON.stringify(rooms)
                     client.set('ROOMS', jRooms)
 
                     io.to(`${room.gameID}`).emit('gameForfeited')
+                    
+                     
                 }
             }, 300000)
         }
@@ -337,10 +391,6 @@ io.on('connection', (socket) => {
             .then(res => console.log(res))
             .catch(err => console.error(err))
 
-
-
-        
-
         let jRooms = JSON.stringify(rooms)
         client.set('ROOMS', jRooms)
     })
@@ -417,6 +467,7 @@ io.on('connection', (socket) => {
             let jRooms = JSON.stringify(rooms)
             client.set('ROOMS', jRooms)
 
+            
         } else if (endedRooms?.find(room => room.players.includes(player))) {
             room = endedRooms.find(room => room.players.includes(player))
             room.redeemedStake.push(player)

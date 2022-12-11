@@ -2,7 +2,7 @@
 import express from 'express'
 import cors from 'cors';
 import { Server } from 'socket.io'
-import { chessEventListener, _redisPasswd } from '../state.js';
+import { chessEventListener, _redisPasswd, postRequest } from '../state.js';
 import { createClient } from 'redis';
 import { io } from 'socket.io-client';
 
@@ -128,10 +128,31 @@ const server = new Server(4903, {
     }
 })
 
-server.on('connection', (socket) => {
-    socket.on('tippedPlayer', (from, to, amount, txid) => {
+server.on('connection', async (socket) => {
+    socket.on('tippedPlayer', async (from, to, amount, txid) => {
         console.log(`${from} HAS SENT ${to} ${amount} TRX`)
-        io.emit('recievedTip', from, to, amount, txid);
+        let url = 'http://170.187.182.220:5001/tipnotification'
+        let body = JSON.stringify({sender: from, recipient: to, amount: amount, txid: txid})
+        server.emit('recievedTip', from, to, amount, txid);
+        postRequest(url, body)
+    })
+
+    socket.on('wonChessWager', async (winner, opponent, txid, amount) => {
+        console.log('wonChessWager', winner)
+        let url = 'http://170.187.182.220:5001/chessnotification'
+        let body
+        if (winner.includes('.trx')) {
+            body = JSON.stringify({winner: winner, opponent: opponent, amount: amount, txid: txid})
+        } else {
+            body = JSON.stringify({address: winner, opponent: opponent, amount: amount, txid: txid})
+        }
+        
+        try { 
+            postRequest(url, body)
+        } catch (error) {
+            console.log(error)
+        }
+            
     })
 })
 app.listen(5020);

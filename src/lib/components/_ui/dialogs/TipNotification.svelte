@@ -1,7 +1,7 @@
 <script>
 //@ts-nocheck
 import { slide} from 'svelte/transition'
-import { connectedAddress, connectedUsername, getBalance, tipSocket, medalAlert, authPrompt } from '$lib/state/state'
+import { connectedAddress, connectedUsername, notificationsUrl, playerNotifications, getBalance, tipSocket, medalAlert, authPrompt, postRequest } from '$lib/state/state'
 import { io } from 'socket.io-client'
 
 const socket = io(tipSocket)
@@ -12,7 +12,8 @@ let txid
 
 let hasTipped = false // Checks if the event variable 'to' matches the $connectedAddress. If true, hasTipped = true
 let hasSent = false // Checks if the event variable 'from' matches the $connectedAddress || $connectedUsername, If true = hasSent = true
-socket.on('recievedTip', (from, to, amount, tx) => {
+socket.on('recievedTip', async (from, to, amount, tx) => {
+    console.log(from, to, amount, tx)
     sender = from
     recipient = to
     tip = amount;
@@ -25,6 +26,10 @@ socket.on('recievedTip', (from, to, amount, tx) => {
         hasSent = true
         hasTipped = false
     }
+    const userNotification = JSON.stringify({address: $connectedAddress, name: $connectedUsername})
+    let test = await postRequest(notificationsUrl, userNotification)
+    console.log(test)
+    playerNotifications.set(test)
 })
 
 function seenNotification() {
