@@ -284,7 +284,7 @@ app.post('/chessnotification', async (req, res) => {
 app.get('/getprofile', async(req, res) => {
     let user = req.query.user
 
-    let insert = `SELECT address,username,has_played,games_played,games_won,has_won_8ball,xp,is_beta FROM usernames WHERE username = ($1)`
+    let insert = `SELECT address,username,has_played,games_played,games_won,has_won_8ball,xp,is_beta,description FROM usernames WHERE username = ($1)`
     let values = [`${user}`]
 
     let query
