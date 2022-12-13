@@ -1,5 +1,6 @@
 <script>
 	import Logo from './Logo.svelte'
+	import { page } from '$app/stores'
 </script>
 
 <section
@@ -18,9 +19,16 @@
 				<span class="inline-block pt-4 text-sm font-light text-blue-100 opacity-30 flex flex-wrap">
 					trxmini.games developed & created by  <div class='ml-1 hover:scale-[1.06] transition transition-300'><a class='underline' href='http://github.com/nickmura'>Nick Mura</a></div>
 				</span>
-				<span class="inline-block pt-4 text-sm font-light text-blue-200 opacity-20">
-					Icons from Wikimedia Commons © 2022. All rights reserved by Jan Uchytil
-				</span>
+				{#if !$page.routeId.includes('profile') }
+					<span class="inline-block pt-4 text-sm font-light text-blue-200 opacity-20">
+						Icons from Wikimedia Commons © 2022. All rights reserved by Jan Uchytil
+					</span>
+				{:else}
+					<span class="inline-block pt-4 text-sm font-light text-blue-200 opacity-30">
+						Icons from Wikimedia Commons & Icons8 © 2022. All rights reserved by Sadath N.
+					</span>
+				{/if}
+				
 
 			</div>
 		</footer>

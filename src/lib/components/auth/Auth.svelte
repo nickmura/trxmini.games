@@ -38,6 +38,7 @@
     let rooms
     let currentRoom
     
+    let profileLink
     async function check() { 
         try {
             if (browser) {
@@ -64,7 +65,7 @@
                             body: userNotification,
                         })
                         if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-
+                        
                         playerNotifications.set(await res.json())
                         console.log('$playerNotifications', $playerNotifications)
                         return res
@@ -162,6 +163,7 @@
                     connectedUsername.set(user.username)
                     if ($connectedUsername) {
                         userID.set($connectedUsername)
+                        profileLink = `/profile/${$connectedUsername}`
                     } else {
                         userID.set($connectedAddress)
                     }
@@ -290,7 +292,7 @@
                 {/if}
             </div>
             <div class='pl-6 pr-6 pt-3  pb-3'>
-                <i><div class=''>{$connectedUsername}'s account</div></i>
+                <i><div class='hover:scale-[1.05] transition transition-200'><a href={profileLink} alt='noreferrer'><u>{$connectedUsername}'s account</u></a></div></i>
 
                 <div class='flex-row '>
                     <div class='flex wrap text-gray-400 hover:text-gray-500'>

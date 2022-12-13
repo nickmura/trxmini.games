@@ -3,7 +3,7 @@
 
 import { post } from './cred.js';
 import { getLevel } from './level.js';
-import express, { query } from 'express';
+import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
 

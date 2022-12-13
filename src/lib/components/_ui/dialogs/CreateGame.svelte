@@ -35,7 +35,7 @@
     let errorHandling
     let setUsername = false
     let isUnique = true
-    //$: isUnique
+
     let init = false
     
     let hasClicked = false

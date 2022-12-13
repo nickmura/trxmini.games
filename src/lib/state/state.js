@@ -10,6 +10,11 @@ export const connectedUsername = writable()
 export const isHostAddress = writable()
 export const isTwoAddress = writable()
 
+
+export const isProfile = writable();
+export const fetchedProfile = writable();
+export const profileBadges = writable([]);
+
 export const userID = writable(); // Allows users to play with their address or username. If no username, assigns address. 
 export const connectedChain = writable(false);
 
@@ -22,8 +27,8 @@ export const tipPrompt = writable(false)
 
 export const notiPrompt = writable(false)
 export const authPrompt = writable(false)
-export const isProfile = writable();
-export const fetchedProfile = writable();
+
+
 
 export const selectedOption = writable('Chess')
 export const inGame = writable(false)
