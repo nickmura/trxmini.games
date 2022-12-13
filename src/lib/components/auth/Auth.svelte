@@ -232,6 +232,7 @@
     async function redirectJoin() {
         createPrompt.set(false)
         if ($page.routeId == "/username") goto('../join')
+        if ($page.routeId.includes('/profile/')) goto('../../join')
         if ($page.routeId == '/join') goto('./')
         if ($page.routeId == '/') goto('./join')
 

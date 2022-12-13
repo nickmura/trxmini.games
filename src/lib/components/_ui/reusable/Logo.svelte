@@ -6,6 +6,7 @@
     function refresh() {
         
         if ($page.routeId == '/username' || $page.routeId == '/join' || $page.routeId == '/chess') goto('../')
+        else if ($page.routeId?.includes('/profile/')) goto('../../')
         else goto('./')
         
     }

@@ -5,12 +5,18 @@
 	import Badges from '$lib/components/_ui/reusable/Badges.svelte';
 	import Footer from '$lib/components/_ui/reusable/FooterSection.svelte'
 
-
+	import { getLevel } from '$lib/state/level'
 	import { fetchedProfile, profileBadges } from '$lib/state/state'
 
 	let userPng = Math.floor(Math.random(Math.random() * 100)*100);
-	console.log(userPng)
-	let players = $profileBadges
+	let level 
+	async function fetchLevel() {
+		level = await getLevel($fetchedProfile.xp)
+	}
+	if ($fetchedProfile) {
+		fetchLevel()
+	}
+	console.log(level)
 	
 
 
@@ -64,9 +70,9 @@
 						/>
 					{/if}
 					<div class="flex items-start justify-between gap-2 py-3">
-						<div class="flex flex-col gap-2.5 pl-36 sm:pl-44">
+						<div class="flex flex-col gap-1 pl-36 sm:pl-44">
 							<h1 class="text-5xl text-white">{$fetchedProfile.username}</h1>
-
+							<span class='italic text-red-500'>Level: {Math.floor(level)}</span>
 
 
 							<span class="italic text-[#706C6C]">{$fetchedProfile.address.substring(0,5)}...{$fetchedProfile.address.substring(29,34)}</span>
