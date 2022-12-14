@@ -7,7 +7,9 @@
 
 	import { getLevel } from '$lib/state/level'
 	import { fetchedProfile, profileBadges } from '$lib/state/state'
-
+	
+	console.log($fetchedProfile)
+	
 	let userPng = Math.floor(Math.random(Math.random() * 100)*100);
 	let level 
 	async function fetchLevel() {
