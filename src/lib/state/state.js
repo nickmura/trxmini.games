@@ -27,7 +27,7 @@ export const tipPrompt = writable(false)
 
 export const notiPrompt = writable(false)
 export const authPrompt = writable(false)
-
+export const avatarPrompt = writable(false)
 
 
 export const selectedOption = writable('Chess')
@@ -42,6 +42,8 @@ export const url2 = 'http://170.187.182.220:5001/getaddr?username='
 export const getXp = 'http://170.187.182.220:5001/getxp?user=' // May not need this.
 export const notificationsUrl = 'http://170.187.182.220:5001/getnotifications'
 export const getProfileURL = 'http://170.187.182.220:5001/getprofile?user='
+
+export const uploadAvatarURL = 'http://170.187.182.220:5001/uploadavatar'
 // REDIS ENDPOINTS
 
 
@@ -94,6 +96,12 @@ let notificationExpanded = false
 export function notificationPrompt() {
     notificationExpanded = !notificationExpanded
     notiPrompt.set(notificationExpanded)
+}
+
+let avatarExpanded = false
+export function expandAvatarPrompt() {
+    avatarExpanded = !avatarExpanded
+    avatarPrompt.set(avatarExpanded)
 }
 
 export async function postRequest(url, body) {

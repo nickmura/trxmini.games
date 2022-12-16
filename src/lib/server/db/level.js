@@ -6,3 +6,17 @@ export function getLevel(xp) {
     const userLevel = (xp ** (1/y))  * x
     return userLevel
 }
+
+export const sirvClientID = ''
+export const sirvSecret = ''
+export const sirvEndpoint = ''
+
+export async function postRequest(url, body) {
+    const res = await fetch(url, {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+    })
+    if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+    return await res.json()
+} 

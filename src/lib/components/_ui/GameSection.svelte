@@ -58,7 +58,6 @@
 				hasRoom = room
 				isPlayer = true
 			}
-			// ballRoomIndex = rooms.length - 1
 			
 		}
     } const updateInterval = setInterval(updateRooms, 1000)

@@ -1,11 +1,13 @@
 //@ts-nocheck
 // THIS IS SOLELY CONFIGURATION AND ENDPOINTS FOR FOR USERNAMES VIA POSTGRES
-
-import { post } from './cred.js';
-import { getLevel } from './level.js';
 import express from 'express';
+
+
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
+
+import { post } from './cred.js';
+import { getLevel, sirvClientID, sirvSecret, sirvEndpoint, postRequest } from './level.js';
 
 
 
@@ -95,7 +97,6 @@ app.post('/unique', async (req, res) => {
             if (result.rows[0].count == 0) return res.json({unique: true}) 
             if (result.rows[0].count == 1) return res.json({unique: false}) 
         } else console.log(err)
-
     })
 })
 
@@ -159,8 +160,7 @@ app.post('/gameplayed', async (req, res) => {
         } else {
             insertNotification = `INSERT into notifications("username","notification", "id") values($1, $2, $3)`;
             notification = [`${user.name}`, `You leveled up to level ${Math.floor(currentLevel)}!`, `${uuid}`];
-        } 
-        try {
+        } try {
             await post.query(insertNotification, notification)
             console.log('Created notification for level up')
         } catch(error) {
@@ -233,7 +233,7 @@ app.post('/deletenotification', async (req, res) => {
     let query
     try {
         query = await post.query(deleteQuery, values);
-        console.log('Deleted notification', notification.id                                                 )
+        console.log('Deleted notification', notification.id)
     } catch (error) { console.log(error) } 
 })
 
@@ -296,8 +296,40 @@ app.get('/getprofile', async(req, res) => {
         console.log(error);
     } 
     return res.json(query.rows[0]);
+})
+
+
+app.post('/uploadavatar', async (req, res) => {
+    let avatar = req.body
+    let binaryAvatar = avatar.toString(2)
+
+    let getTokenBody = JSON.stringify({clientId: sirvClientID, clientSecret: sirvSecret})
+    let tokenURL = 'https://api.sirv.com/v2/token'
+
+    let token
+
+    async function postRequestToken(url, body) {
+        const res = await fetch(url, {
+            method: 'post',
+            headers: {'Content-Type': 'application/json'},
+            body: body,
+        })
+        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+        
+        token = await res.json()
+        
+    } 
+    postRequestToken(tokenURL, getTokenBody)
+    .then(res => console.log('res.json()', res))
+    .catch(error => console.log(error))
+
+    
+    // sending data to pc
+    console.log('token', token)
 
 })
+
+
 
 console.log('Listening on port 5001')
 app.listen(5001)

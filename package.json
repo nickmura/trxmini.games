@@ -20,6 +20,7 @@
 		"@sveltejs/kit": "next",
 		"@types/chess.js": "^0.13.4",
 		"autoprefixer": "^10.4.7",
+		"imagekit": "^4.1.2",
 		"postcss": "^8.4.14",
 		"postcss-load-config": "^4.0.1",
 		"prettier": "^2.7.1",
