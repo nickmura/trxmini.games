@@ -31,10 +31,10 @@ let rooms;
 
 app.post('/address', async (req, res) => {
     let user = req.body;
-    let insert = `insert into usernames("address","games_played", "has_played", "games_won", "has_won_8ball", "xp") 
-    values($1, $2, $3, $4, $5, $6)`;
+    let insert = `insert into usernames("address", "games_played", "has_played", "games_won", "has_won_8ball", "xp", "is_beta") 
+    values($1, $2, $3, $4, $5, $6, $7)`;
     
-    const values = [`${user.address}`, 0, false, 0, false, 0];
+    const values = [`${user.address}`, 0, false, 0, false, 0, true];
     post.query(insert, values, (err, result) => {
         if (!err) console.log('Insertion was successful');
         if (err) console.log(err);
