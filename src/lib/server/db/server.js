@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'http://trxmini.games', 
-'http://www.trxmini.games', 'http://localhost:5173', '//localhost:5173', 'http://localhost:5500', 'http://172.105.106.183:3001', 'http://172.105.106.183:3001']
+'http://www.trxmini.games', 'http://localhost:5173', '//localhost:5173', 'http://localhost:5500', 'http://192.53.123.185:3001', 'http://192.53.123.185:3001']
 const config = {
     origin: function (origin, callback) {
         if (!origin || whitelist.indexOf(origin) !== -1) callback(null, true)
