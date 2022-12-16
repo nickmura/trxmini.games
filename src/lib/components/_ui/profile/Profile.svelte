@@ -27,10 +27,7 @@
 
 		let token
 		let tokenURL = 'https://api.sirv.com/v2/token'
-		let getTokenBody = JSON.stringify({
-			clientId: 'lSR7DI2c3gQWOH27HFfzaJpNPH',
-			clientSecret: 'MkqpIf3BhQ8n3nWp2tl9NGYnjh6b/ji50FGDIiltUm3v80uveQM6XXSOD5z8W21fsp1ruLAWJ4dT/CLLPPpUUA=='
-		})
+
 		async function postRequestToken(url, body) {
 			const res = await fetch(url, {
 				method: 'post',
