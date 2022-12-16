@@ -25,27 +25,7 @@
 	async function postImage(avatar) {
 		console.log(avatar)
 
-		let token
-		let tokenURL = 'https://api.sirv.com/v2/token'
 
-		async function postRequestToken(url, body) {
-			const res = await fetch(url, {
-				method: 'post',
-				headers: {'Content-Type': 'application/json'},
-				body: body,
-			})
-			if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-			
-			token = await res.json()
-			
-		} 
-		postRequestToken(tokenURL, getTokenBody)
-		.then(res => console.log('res.json()', res))
-		.catch(error => console.log(error))
-
-		
-		// sending data to pc
-		console.log('token', token)
 	}
 
 </script>
