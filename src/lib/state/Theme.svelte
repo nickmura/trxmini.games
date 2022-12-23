@@ -4,6 +4,7 @@
 </script>
 
 <script>
+    //@ts-nocheck
     import { browser } from '$app/environment'
     //
     let isNight = false

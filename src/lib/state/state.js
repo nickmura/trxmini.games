@@ -14,6 +14,7 @@ export const isTwoAddress = writable()
 export const isProfile = writable();
 export const fetchedProfile = writable();
 export const profileBadges = writable([]);
+export const trxDomains = writable()
 
 export const userID = writable(); // Allows users to play with their address or username. If no username, assigns address. 
 export const connectedChain = writable(false);
@@ -43,6 +44,7 @@ export const getXp = 'http://170.187.182.220:5001/getxp?user=' // May not need t
 export const notificationsUrl = 'http://170.187.182.220:5001/getnotifications'
 export const getProfileURL = 'http://170.187.182.220:5001/getprofile?user='
 
+export const getDomainsURL = `https://app.trxdomains.xyz/api/domains/getDomains?address=`
 export const uploadAvatarURL = 'http://170.187.182.220:5001/uploadavatar'
 // REDIS ENDPOINTS
 
@@ -59,7 +61,7 @@ export const tipSocket = 'http://192.53.123.185:4903/'
 export const tipContract = 'TBPL4jVJMwnMLUjmX9GDTgXcC8y3T5zVgD';
 export const chessContract = 'TMGBGionnPs1TFRHxNrZRiGneZaDi6zkBh'
 export const _chessContract  = 'TQyY41mqbHVWWHWt5Zq1pPL5rYd7HgM2kE'
-
+export const trxDomainContract = 'TAtgoVq9xqv1C65hjFTerJQZFt4rbAPea6'
 
 export const chessEventListener = `https://api.shasta.trongrid.io/v1/contracts/${chessContract}/events` 
 
@@ -72,6 +74,8 @@ export const currentState = writable('') // Saves current FEN state of chess gam
 export const wagerTx = writable()
 export const theRoom = writable()
 let prompted = false
+
+
 export async function createGameForm() { // Create game prompt state sharing between components
     prompted = !prompted
     createPrompt.set(prompted)
@@ -113,3 +117,13 @@ export async function postRequest(url, body) {
     if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
     return await res.json()
 } 
+
+export async function getDomains(address) {
+    let domains
+    let url = getDomainsURL + address + `&network=mainnet`
+    const res = await fetch(url)
+    if (!res.ok) throw new Error (res.status)
+    domains = await res.json()
+    console.log(domains.data)
+    trxDomains.set(domains.data)
+}

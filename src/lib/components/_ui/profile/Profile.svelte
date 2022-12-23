@@ -2,13 +2,13 @@
     // @ts-nocheck
 
 	import Navbar from '$lib/components/_ui/reusable/Navbar.svelte';
-	import Badges from '$lib/components/_ui/reusable/Badges.svelte';
+	import Badges from '$lib/components/_ui/profile/Badges.svelte';
 	import Footer from '$lib/components/_ui/reusable/FooterSection.svelte'
 	
 	import Avatar from './Avatar.svelte'
 
 	import { getLevel } from '$lib/state/level'
-	import { fetchedProfile, profileBadges, avatarPrompt, expandAvatarPrompt, uploadAvatarURL } from '$lib/state/state'
+	import { connectedUsername, connectedAddress, fetchedProfile, profileBadges, avatarPrompt, expandAvatarPrompt, uploadAvatarURL, trxDomains, getDomains } from '$lib/state/state'
 
 
 	let userPng = Math.floor(Math.random(Math.random() * 100)*100);
@@ -24,9 +24,17 @@
 	
 	async function postImage(avatar) {
 		console.log(avatar)
-
-
 	}
+
+	let isProfile = false
+	async function profileIsUser() {
+		if ($fetchedProfile == $connectedUsername) {
+			isProfile = true
+		}
+
+	} profileIsUser()
+
+
 
 </script>
 
@@ -56,12 +64,17 @@
 						class="absolute h-32 w-32 -translate-y-1/2 rounded-full object-cover sm:h-40 sm:w-40 group-hover:opacity-70">
 
 						<div class='tooltipinfo absolute h-32 w-32 -translate-y-1/2  sm:h-40 sm:w-40 '>
-								<Avatar />
+							<Avatar />
 						</div>
+
 					</div>
 					<div class="flex items-start justify-between gap-2 py-3">
 						<div class="flex flex-col gap-1 pl-36 sm:pl-44">
-							<h1 class="text-5xl text-white">{$fetchedProfile.username}</h1>
+							<div class='flex-wrap'>
+								<h1 class="text-5xl text-white">{$fetchedProfile.username}</h1>
+								<button class=''><span src='/img/dropdown.svg'></span></button>
+							</div>
+
 							<span class='italic text-red-500'>Level: {Math.floor(level)}</span>
 
 

@@ -43,8 +43,8 @@
 		if (!$connectedAddress) isUser = false
 		if ($connectedAddress && !$connectedUsername) hasName = false
 		if ($connectedAddress && !$connectedChain) Shasta = true
-		console.log(isUser, hasName, Shasta)
-		console.log($connectedAddress)
+		// console.log(isUser, hasName, Shasta)
+		// console.log($connectedAddress)
 	
 	},3000)
 

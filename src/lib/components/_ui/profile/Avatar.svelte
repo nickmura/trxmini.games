@@ -1,5 +1,5 @@
 <script>
-    import { avatarPrompt, expandAvatarPrompt, userID, connectedAddress, connectedUsername, postRequest } from '$lib/state/state';
+    import { avatarPrompt, expandAvatarPrompt, userID, connectedAddress, connectedUsername, postRequest, } from '$lib/state/state';
     import { theme } from '$lib/state/Theme.svelte';
 
     async function postImage() {

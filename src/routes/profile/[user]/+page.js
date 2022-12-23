@@ -8,7 +8,7 @@ export function load({ params }) {
   if (params.user) {
     
     let user = params.user
-    console.log(typeof(params.user), user, params)
+    // console.log(typeof(params.user), user, params)
     return params
   }
  

@@ -1,4 +1,5 @@
 <script>
+    //@ts-nocheck
     import { theme } from '$lib/state/Theme.svelte'
     import { goto } from '$app/navigation'
     import { page } from '$app/stores'

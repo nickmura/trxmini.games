@@ -2,7 +2,7 @@
   // @ts-nocheck
 
 import Navbar from '$lib/components/_ui/reusable/Navbar.svelte';
-import Badges from '$lib/components/_ui/reusable/Badges.svelte';
+import Badges from '$lib/components/_ui/profile/Badges.svelte';
 import Footer from '$lib/components/_ui/reusable/FooterSection.svelte'
 
 import { getLevel } from '$lib/state/level'
@@ -14,9 +14,9 @@ export let data;
 let level 
 onMount(async () => {
   /** @type {import('./$types').PageServerLoad} */
-    console.log($page.routeId)
+    // console.log($page.routeId)
     let input = data.user
-    console.log(data)
+    // console.log(data)
     //console.log(input)
     let user
     let res
@@ -24,7 +24,7 @@ onMount(async () => {
     if (input.includes('.trx')) user = input
     else if (input == '*') user = 'nick.trx'
     else user = input + '.trx'
-    console.log(user)
+    //console.log(user)
     try {
         res= await fetch(getProfileURL + user)
         if (!res.ok) throw new Error('fetch Error, null fetch')
@@ -36,7 +36,7 @@ onMount(async () => {
         console.log(error.message)
     }
 })
-console.log($fetchedProfile)
+// console.log($fetchedProfile)
 
 let userPng = Math.floor(Math.random(Math.random() * 100)*100);
 
@@ -44,7 +44,7 @@ async function fetchLevel() {
   level = await getLevel($fetchedProfile.xp)
 }
 
-console.log(level)
+// console.log(level)
 
 
 
