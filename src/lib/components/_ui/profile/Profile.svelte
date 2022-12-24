@@ -34,7 +34,10 @@
 
 	} profileIsUser()
 
-
+	function test() {
+		console.log('CHECK BADGES NOW', $profileBadges)
+		console.log('1234')
+	}
 
 </script>
 
@@ -83,7 +86,7 @@
 						<div class='tooltip'>
 							<button
 								class="opacity-70  rounded-[10px] border border-transparent bg-gradient-to-r from-blue-500 to-blue-600 py-1.5 px-6 text-lg font-medium text-white"
-							disabled>
+							>
 								Edit
 								<span class="hidden sm:inline">profile</span>
 							</button>
@@ -97,7 +100,7 @@
 			<div class="flex items-center gap-4 px-4 pt-12 sm:px-10">
 				<button
 					class="rounded-[10px] border border-transparent bg-gradient-to-r from-blue-500 to-blue-600 py-1.5 px-6 text-lg font-medium text-white"
-				>
+				on:click={test}>
 					Badges
 				</button>
 				<div class='tooltip'>
@@ -110,7 +113,7 @@
 				</div>
 			</div>
 			<div class="grid grid-cols-1 gap-4 px-4 py-8 sm:grid-cols-2 sm:px-10 md:gap-6 lg:grid-cols-4">
-				{#if $profileBadges && $profileBadges.length < 3 && $fetchedProfile}
+				{#if $profileBadges && $fetchedProfile}
 					<Badges/>
 				{/if}
 			</div>

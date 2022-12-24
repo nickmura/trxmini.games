@@ -31,7 +31,6 @@
     let user
     let stakeValue
     let isWagerless = false
-    $: console.log(isWagerless)
     let errorHandling
     let setUsername = false
     let isUnique = true

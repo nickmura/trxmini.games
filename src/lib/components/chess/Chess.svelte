@@ -72,7 +72,7 @@
 
         
         
-        if ($userID) { //This is not runing because $userID isn't before this component via Auth.svelte
+        if ($userID) { //This is not runing because $userID isn't before this component via Authenticate.svelte
             if (rooms != null) room = rooms?.find(room => room.players.includes($userID))
             console.log(room)
             let counter = 0

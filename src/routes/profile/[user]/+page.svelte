@@ -134,7 +134,7 @@ async function fetchLevel() {
         </div>
       </div>
       <div class="grid grid-cols-1 gap-4 px-4 py-8 sm:grid-cols-2 sm:px-10 md:gap-6 lg:grid-cols-4">
-        {#if $profileBadges && $profileBadges.length < 3 && $fetchedProfile}
+        {#if $profileBadges && $fetchedProfile}
           <Badges/>
         {/if}
       </div>

@@ -13,6 +13,7 @@
     }
     
 	async function getDomains(address) {
+        await checkBadges()
         let domains
         let url = getDomainsURL + address + `&network=mainnet`
         // console.log(url)
@@ -20,17 +21,25 @@
         if (!res.ok) throw new Error (res.status)
         domains = await res.json()
         if (domains != []) trxDomains.set(domains.data)
- 
+        console.log($trxDomains)
         
-        // if (badges && domains.data.length > 0 && !badges.find(badge => badge.name == '.trx Domain Holder')) {
+        // if (badges && domains.data.length > 0) {
         //     badges.push(trxDomainBadge)
-        //     //profileBadges.set(badges)
-        //     console.log('FDOMAIN', $profileBadges)
-        //     console.log(domains.data)
-        //     //console.log('IF DOMAIN HOLDER', $profileBadges.find(badge => badge.name == '.trx Domain Holder'))  
+        //     profileBadges.set(badges)
+        //     console.log($profileBadges)
         // }
-    } setTimeout(async () => {
-        getDomains($fetchedProfile.address), 1000
+        if (badges && domains.data.length > 0 && !badges.find(badge => badge.name == '.trx Domain Holder')) {
+            badges.push(trxDomainBadge)
+            profileBadges.set(badges)
+            //console.log('FDOMAIN', $profileBadges)
+            //console.log(domains.data)
+            //console.log('IF DOMAIN HOLDER', $profileBadges.find(badge => badge.name == '.trx Domain Holder'))  
+        }
+        
+    } 
+    
+    setTimeout(async () => {
+        getDomains($fetchedProfile.address), 250
         
     })
 
@@ -76,17 +85,20 @@
             console.log('IF 8 BALL CHAMP', badges)
         } 
 
-    } checkBadges()
+    }
 
 
     let isExpanded = false
     function viewDetails(selectedBadge) {
+
         isExpanded = !isExpanded
         badge=selectedBadge
         console.log($profileBadges)
-       
     }
 
+    // function setTimer() {
+    //     console.log($profileBadges, $fetchedProfile)
+    // } setInterval(setTimer, 5000)
 
 </script>
 {#if badges}

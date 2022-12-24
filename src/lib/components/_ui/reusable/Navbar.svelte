@@ -10,7 +10,7 @@
 
 	import Theme from '$lib/state/Theme.svelte'
 	import Logo from '$lib/components/_ui/reusable/Logo.svelte'
-	import Auth from '$lib/components/auth/Auth.svelte'
+	import Auth from '$lib/components/auth/Authenticate.svelte'
 	import TipNotification from '../dialogs/TipNotification.svelte';
 	import Notifications from '../dialogs/Notifications.svelte'
 

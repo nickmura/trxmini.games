@@ -81,7 +81,7 @@
         if (endedRooms != null && endedRooms.length && endedRooms != undefined) {
 			
 			room = endedRooms?.find(room => room.players.includes($userID))
-			console.log($userID, room)
+			//console.log($userID, room)
 			if (room) {
 				hasRoom = room
 				inGame.set(true)
@@ -124,7 +124,7 @@
 			throwErr = ''
 			hasClicked = true
 			stake = room.stake*1000000
-			//console.log(typeof(stake), stake)
+
 			i = parseInt(room.index)
 			console.log(stake, i)
 			let parameter = [{type:'uint256',value:i},{type:'address', value:$connectedAddress}, {type:'uint256', value:stake}]

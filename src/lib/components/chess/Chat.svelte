@@ -2,7 +2,7 @@
     //@ts-nocheck
     import { connectedAddress, connectedUsername, userID } from '$lib/state/state'
     import { urlRooms, urlEndedRooms, chessWs } from '$lib/state/state';
-    import Auth from '$lib/components/auth/Auth.svelte'
+    import Auth from '$lib/components/auth/Authenticate.svelte'
     
     import { io } from 'socket.io-client'
 	import { onMount } from 'svelte';

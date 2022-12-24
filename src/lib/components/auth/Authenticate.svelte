@@ -46,7 +46,7 @@
         try {
             if (browser) {
                 const res = await window.tronLink
-                console.log(res)
+                //console.log(res)
                 if (res) {
                     if (res.tronWeb == undefined || res.tronWeb === false) { 
                         connectedAddress.set()
@@ -54,10 +54,10 @@
                         connectedAddress.set(res.tronWeb.defaultAddress.base58)
                         let ifChain = await res.tronWeb.trx.getContract(chessContract)
                         if (ifChain.name) { 
-                            console.log('name of contract', ifChain.name)
+
                             connectedChain.set(true)
                         }
-                        console.log('name of contract', ifChain.name)
+
 
 
                         const userNotification = JSON.stringify({address: $connectedAddress, name: $connectedUsername})
@@ -70,7 +70,7 @@
                         if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
                         
                         playerNotifications.set(await res.json())
-                        console.log('$playerNotifications', $playerNotifications)
+                        //console.log('$playerNotifications', $playerNotifications)
                         return res
                     } 
 
@@ -106,7 +106,7 @@
                     inGame.set(false)
                     currentRoom = false
                 }
-            console.log('inGame', $inGame)
+            //console.log('inGame', $inGame)
               
         
     } setTimeout(() => {
@@ -157,7 +157,7 @@
 
                     levelProgress = Math.round(levelProgress * 100)
 
-                    console.log(userLevel, levelProgress)
+                    //console.log(userLevel, levelProgress)
                     if (user.hasWon8Ball == true) {
                         medal8Ball = true
                         if (!localStorage.getItem('hasSeenMedal')) {
@@ -173,7 +173,7 @@
                         userID.set($connectedAddress)
                     }
                 }
-                console.log($userID)
+                //console.log($userID)
             }
         }   
     } setTimeout(checkUser, 300)
@@ -210,7 +210,7 @@
             let ifChain = await res.tronWeb.trx.getContract(chessContract)
 
             if (ifChain.name) { 
-                console.log('name of contract', ifChain.name)
+                //console.log('name of contract', ifChain.name)
                 connectedChain.set(true)
             }
     

@@ -42,6 +42,7 @@
     let currentRoom
     
     let profileLink
+    
     async function check() { 
         try {
             if (browser) {
