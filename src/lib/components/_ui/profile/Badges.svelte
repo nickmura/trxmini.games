@@ -21,19 +21,12 @@
         if (!res.ok) throw new Error (res.status)
         domains = await res.json()
         if (domains != []) trxDomains.set(domains.data)
-        console.log($trxDomains)
-        
-        // if (badges && domains.data.length > 0) {
-        //     badges.push(trxDomainBadge)
-        //     profileBadges.set(badges)
-        //     console.log($profileBadges)
-        // }
+
+
         if (badges && domains.data.length > 0 && !badges.find(badge => badge.name == '.trx Domain Holder')) {
             badges.push(trxDomainBadge)
             profileBadges.set(badges)
-            //console.log('FDOMAIN', $profileBadges)
-            //console.log(domains.data)
-            //console.log('IF DOMAIN HOLDER', $profileBadges.find(badge => badge.name == '.trx Domain Holder'))  
+
         }
         
     } 
@@ -77,12 +70,11 @@
         if ($fetchedProfile.is_beta && !badges.find(badge => badge.name == 'Early Supporter')) {
             badges.push(earlySupporterBadge)
             profileBadges.set(badges)
-            console.log('IF EARLY SUPPORTER', badges)
-        }
-        if ($fetchedProfile.has_won_8ball && !badges.find(badge => badge.name == '8 Ball Champion')) {
+            // console.log('IF EARLY SUPPORTER', badges)
+        } if ($fetchedProfile.has_won_8ball && !badges.find(badge => badge.name == '8 Ball Champion')) {
             badges.push(poolBadge)
             profileBadges.set(badges)
-            console.log('IF 8 BALL CHAMP', badges)
+            // console.log('IF 8 BALL CHAMP', badges)
         } 
 
     }

@@ -34,10 +34,10 @@
 
 	} profileIsUser()
 
-	function test() {
-		console.log('CHECK BADGES NOW', $profileBadges)
-		console.log('1234')
-	}
+		// function test() {
+		// 	console.log('CHECK BADGES NOW', $profileBadges)
+		// 	console.log('1234')
+		// }
 
 </script>
 
@@ -75,7 +75,7 @@
 						<div class="flex flex-col gap-1 pl-36 sm:pl-44">
 							<div class='flex-wrap'>
 								<h1 class="text-5xl text-white">{$fetchedProfile.username}</h1>
-								<button class=''><span src='/img/dropdown.svg'></span></button>
+								
 							</div>
 
 							<span class='italic text-red-500'>Level: {Math.floor(level)}</span>
@@ -100,7 +100,7 @@
 			<div class="flex items-center gap-4 px-4 pt-12 sm:px-10">
 				<button
 					class="rounded-[10px] border border-transparent bg-gradient-to-r from-blue-500 to-blue-600 py-1.5 px-6 text-lg font-medium text-white"
-				on:click={test}>
+				>
 					Badges
 				</button>
 				<div class='tooltip'>
