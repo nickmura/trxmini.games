@@ -6,6 +6,7 @@ import { writable } from 'svelte/store';
 
 export const connectedAddress = writable();
 export const connectedUsername = writable()
+export const defaultUsername = writable();
 
 export const isHostAddress = writable()
 export const isTwoAddress = writable()
@@ -29,6 +30,7 @@ export const tipPrompt = writable(false)
 export const notiPrompt = writable(false)
 export const authPrompt = writable(false)
 export const avatarPrompt = writable(false)
+export const trxPrompt = writable();
 
 
 export const selectedOption = writable('Chess')
@@ -43,9 +45,10 @@ export const url2 = 'http://170.187.182.220:5001/getaddr?username='
 export const getXp = 'http://170.187.182.220:5001/getxp?user=' // May not need this.
 export const notificationsUrl = 'http://170.187.182.220:5001/getnotifications'
 export const getProfileURL = 'http://170.187.182.220:5001/getprofile?user='
-
+export const changeUsernameURL = 'http://170.187.182.220:5001/changeusername'
 export const getDomainsURL = `https://app.trxdomains.xyz/api/domains/getDomains?address=`
 export const uploadAvatarURL = 'http://170.187.182.220:5001/uploadavatar'
+
 // REDIS ENDPOINTS
 
 

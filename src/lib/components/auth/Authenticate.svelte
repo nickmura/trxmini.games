@@ -10,7 +10,7 @@
 
 
     import { theme } from '$lib/state/Theme.svelte'
-    import { urlRooms, urlEndedRooms, url0, url1, url2, tipSocket, getXp, authPrompt, notificationsUrl } from '$lib/state/state'
+    import { urlRooms, urlEndedRooms, url0, url1, url2, tipSocket, getXp, authPrompt, notificationsUrl, defaultUsername } from '$lib/state/state'
     import { 
         connectedAddress, 
         connectedUsername,
@@ -157,7 +157,7 @@
 
                     levelProgress = Math.round(levelProgress * 100)
 
-                    //console.log(userLevel, levelProgress)
+
                     if (user.hasWon8Ball == true) {
                         medal8Ball = true
                         if (!localStorage.getItem('hasSeenMedal')) {
@@ -166,6 +166,7 @@
                         }
                     }
                     connectedUsername.set(user.username)
+                    defaultUsername.set(user.defaultusername)
                     if ($connectedUsername) {
                         userID.set($connectedUsername)
                         profileLink = `/profile/${$connectedUsername}`

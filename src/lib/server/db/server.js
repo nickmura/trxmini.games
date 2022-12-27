@@ -45,7 +45,7 @@ app.post('/address', async (req, res) => {
 app.post('/username', (req, res) => {
     let user = req.body
     console.log(user)
-    let insert = `UPDATE usernames SET username = ($1) WHERE address = ($2)`;
+    let insert = `UPDATE usernames SET username,default_username = ($1) WHERE address = ($2)`;
     const values = [`${user.name}.trx`, `${user.address}`]
     console.log(values)
     post.query(insert, values, (err, result) => {
@@ -58,13 +58,13 @@ app.get('/username', async (req, res) => {
     let userAddress = req.query.addr
     let user 
     
-    const select = `SELECT username,has_won_8ball,xp FROM usernames WHERE address = ($1)`
+    const select = `SELECT username,default_username,has_won_8ball,xp FROM usernames WHERE address = ($1)`
     const values = [`${userAddress}`]
     post.query(select, values, (err, result) => {
         //if (!err) user = {address: userAddress, username: result.rows[0]}
         if (!err) {
             console.log('Selected query', result.rows[0])
-            if (result.rows[0] != undefined) user = {address: userAddress, username: result.rows[0].username, xp: result.rows[0].xp, hasWon8Ball: result.rows[0].has_won_8ball}
+            if (result.rows[0] != undefined) user = {address: userAddress, username: result.rows[0].username, defaultusername: result.rows[0].default_username, xp: result.rows[0].xp, hasWon8Ball: result.rows[0].has_won_8ball}
             if (user) return res.json(user)
         }
         else console.log(err)
@@ -283,18 +283,19 @@ app.post('/chessnotification', async (req, res) => {
 })
 app.get('/getprofile', async(req, res) => {
     let user = req.query.user
-
-    let insert = `SELECT address,username,has_played,games_played,games_won,has_won_8ball,xp,is_beta,description FROM usernames WHERE username = ($1)`
+    
+    // Make this fetch by address.
+    let insert = `SELECT address,username,default_username,has_played,games_played,games_won,has_won_8ball,xp,is_beta,description FROM usernames WHERE username = ($1)` 
     let values = [`${user}`]
 
     let query
 
     try { 
         query = await post.query(insert, values);
-        //console.log('Successfully fetched profile information')
+        console.log('Successfully fetched profile information', query.rows[0])
     } catch (error) {
         console.log(error);
-    } 
+    }
     return res.json(query.rows[0]);
 })
 
@@ -327,6 +328,19 @@ app.post('/uploadavatar', async (req, res) => {
     // sending data to pc
     console.log('token', token)
 
+})
+
+app.post('/changeusername', async (req, res) => {
+    let user = req.body
+
+    let insert = `UPDATE usernames SET username=($1) WHERE address=($2)`
+    let values = [`${user.name}`, `${user.address}`]
+    try {
+        await post.query(insert, values);
+        console.log('Successfuly changed username to', user.name)
+    } catch (error) {
+        console.log(error)
+    }
 })
 
 

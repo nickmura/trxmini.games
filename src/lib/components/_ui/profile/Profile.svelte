@@ -4,12 +4,27 @@
 	import Navbar from '$lib/components/_ui/reusable/Navbar.svelte';
 	import Badges from '$lib/components/_ui/profile/Badges.svelte';
 	import Footer from '$lib/components/_ui/reusable/FooterSection.svelte'
-	
 	import Avatar from './Avatar.svelte'
 
+	import { theme } from '$lib/state/Theme.svelte'
 	import { getLevel } from '$lib/state/level'
-	import { connectedUsername, connectedAddress, fetchedProfile, profileBadges, avatarPrompt, expandAvatarPrompt, uploadAvatarURL, trxDomains, getDomains } from '$lib/state/state'
+	import { 
+		connectedUsername, 
+		connectedAddress,
+		defaultUsername,
+		isProfile,
+		fetchedProfile, 
+		profileBadges, 
+		avatarPrompt, 
+		expandAvatarPrompt, 
+		uploadAvatarURL, 
+		changeUsernameURL,
+		trxDomains, 
+		getDomains,
 
+	} from '$lib/state/state'
+	
+	
 
 	let userPng = Math.floor(Math.random(Math.random() * 100)*100);
 	let uploadedAvatar
@@ -20,24 +35,52 @@
 	if ($fetchedProfile) {
 		fetchLevel()
 	}
-	console.log(level)
 	
+
+
+	//let isProfile = false
+	async function profileIsUser() {
+		
+	if ($connectedUsername == $fetchedProfile.username || $defaultUsername == $fetchedProfile.username 
+	  || $connectedUsername == $fetchedProfile.default_username || 
+	  $defaultUsername == $fetchedProfile.default_username) {
+		console.log('dfdsfdsfdsfdsfdsgsd')
+	    isProfile.set(true)
+	}
+
+	} setTimeout(profileIsUser, 1000)
+
+
+
+
+	let trxPromptExpanded = false
+	async function trxPromptOpen() {
+		trxPromptExpanded = !trxPromptExpanded
+	}
+
 	async function postImage(avatar) {
 		console.log(avatar)
 	}
 
-	let isProfile = false
-	async function profileIsUser() {
-		if ($fetchedProfile == $connectedUsername) {
-			isProfile = true
-		}
+	let trxDomainName
+	let usernameDialog = false
+	async function changeUsernameDialog(name) {
+		console.log('penis')
+		trxDomainName = name;
+		usernameDialog = !usernameDialog;
+	}
 
-	} profileIsUser()
+	async function changeTrxUsername(trxusername) {
+		let user = JSON.stringify({address: $connectedAddress, name: trxusername})
 
-		// function test() {
-		// 	console.log('CHECK BADGES NOW', $profileBadges)
-		// 	console.log('1234')
-		// }
+		const res = await fetch(changeUsernameURL, {
+			method: 'post',
+			headers: {'Content-Type': 'application/json'},
+			body: user,
+		})
+		if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+		return await res.json()
+	} 
 
 </script>
 
@@ -61,21 +104,88 @@
 			<div class="relative pl-4 pr-3 sm:pl-10">
 				<div class="">
 					<div class='relative tooltip group'>
-						<img
-						src="/img/player5.png"
-						alt="https://www.npmjs.com/package/ethereum-blockies/v/0.1.0?activeTab=readme"
-						class="absolute h-32 w-32 -translate-y-1/2 rounded-full object-cover sm:h-40 sm:w-40 group-hover:opacity-70">
-
-						<div class='tooltipinfo absolute h-32 w-32 -translate-y-1/2  sm:h-40 sm:w-40 '>
-							<Avatar />
-						</div>
-
+						{#if $isProfile}
+							<img
+							src="/img/player5.png"
+							alt="https://www.npmjs.com/package/ethereum-blockies/v/0.1.0?activeTab=readme"
+							class="absolute h-32 w-32 -translate-y-1/2 rounded-full object-cover sm:h-40 sm:w-40 group-hover:opacity-70">
+						
+							<div class='tooltipinfo absolute h-32 w-32 -translate-y-1/2  sm:h-40 sm:w-40 '>
+								<Avatar />
+							</div>
+						{:else}
+							<img
+							src="/img/player5.png"
+							alt="https://www.npmjs.com/package/ethereum-blockies/v/0.1.0?activeTab=readme"
+							class="absolute h-32 w-32 -translate-y-1/2 rounded-full object-cover sm:h-40 sm:w-40 ">
+						{/if}
 					</div>
 					<div class="flex items-start justify-between gap-2 py-3">
 						<div class="flex flex-col gap-1 pl-36 sm:pl-44">
-							<div class='flex-wrap'>
+							<div class='flex flex-wrap flex-row'>
 								<h1 class="text-5xl text-white">{$fetchedProfile.username}</h1>
-								
+								{#if $isProfile}
+									<button on:click={trxPromptOpen}><img alt='norefferer' class='w-6 h-6 ml-2 mt-2.5 z-20' src={$theme == 'dark' ? '/img/dark_drop.svg' : '/img/drop.svg'}/></button>
+									{#if trxPromptExpanded}
+										<div class=' w-32 absolute ml-28 mt-12'>
+											<div class=' w-fit rounded-lg
+											dark:bg-[#16161d] bg-[#f2f0eb]'>
+												{#if $trxDomains}
+													{#each $trxDomains as domain}
+														<div class='flex-row '>
+															<!-- <button on:click={(e)=>changeTrxUsername(domain)}>{domain}</button> -->
+															<button on:click={(e)=>changeUsernameDialog(domain)} class='px-3 py-3 rounded-lg dark:hover:bg-[#23232F] hover:bg-[#EFECE6] 
+															hover:scale-[1.05] transition transition-200'>{domain}</button>
+														</div>
+													{/each}
+												{/if}
+											</div>
+										</div>
+									{/if}
+									<div id="container" class='flex flex-initial' class:show={usernameDialog}>
+						
+										<div id="exampleModal" class="absolute reveal-modal overflow-hidden bottom-[8rem] opacity-[98] bg-[#1E1E32] text-white
+										shadow-xl rounded-lg p-6">
+									
+											<!-- {#if badge.rarity == 'Uncommon'}
+												<h2 class='title font-semibold text-indigo-400'>{badge.name}</h2>
+											{:else}
+												<h2 class='title font-semibold text-[#FCB449]/80'>{badge.name}</h2>
+											{/if} -->
+											<div class=''>
+												<div class='flex justify-center h-[16rem] mt-3 '>
+													<div class=' 
+													rounded-lg w-full'>
+													
+														<div class='flex justify-center text-center text-bold'>
+																Change username to '{trxDomainName}'?
+														</div>
+														<div class='flex wrap  px-8 flex justify-center text-center mx-2 ml-2 border-[#535754]'>
+															You will be able to change it back to your default username.
+														</div>
+									
+														
+														
+													</div>  
+													
+												</div>
+											</div>
+									
+											<div class='absolute inset-x-0 bottom-0 mb-4 ml-4 mr-[1.5rem]'>
+												<div class='flex justify-between'>
+													<button class="ml-2 rounded-[10px] border  border-red-500 
+													py-1.5 px-6 text-lg font-medium text-white hover:scale-[1.05] transition
+													transition-200" on:click={(e)=>changeUsernameDialog(trxDomainName)}>Cancel</button>
+
+													<button class="ml-2 rounded-[10px] border border-indigo-500 dark:border-green-500 
+													py-1.5 px-6 text-lg font-medium text-white hover:scale-[1.05] transition
+													transition-200" on:click={(e)=>changeTrxUsername(trxDomainName)}>Change</button>
+												</div>
+												
+											</div>
+										</div>
+									</div>
+								{/if}
 							</div>
 
 							<span class='italic text-red-500'>Level: {Math.floor(level)}</span>
@@ -119,9 +229,9 @@
 			</div>
 		</div>
 	</div>
-	<div id="container" class='flex flex-initial' class:show={$avatarPrompt}>
+	<div id="container2" class='flex flex-initial' class:show={$avatarPrompt}>
 						
-		<div id="exampleModal" class="absolute reveal-modal overflow-hidden translate-y-1/2 opacity-[98] bg-[#1E1E32] text-white
+		<div id="exampleModal" class="absolute reveal-modal2 overflow-hidden translate-y-1/2 opacity-[98] bg-[#1E1E32] text-white
 		shadow-xl rounded-lg p-6">
 				<h2 class='flex title font-semibold justify-center text-gray-200 '>Change Avatar</h2>
 			<form action={uploadAvatarURL} method='POST'>
@@ -174,11 +284,13 @@
 </main>
 
 <style>
+
+
 	#container {
 		width: 100%;
 
 		position: absolute;
-		top: 0;
+		top: 20;
 		left: 0;
 		visibility:hidden;
 		display:none;
@@ -204,6 +316,35 @@
 		box-shadow:0 0 10px rgba(0,0,0,0.4); */
 	}
 
+	#container2 {
+		width: 100%;
+
+		position: absolute;
+		top: 0;
+		left: 0;
+		visibility:hidden;
+		display:none;
+	}
+	
+	#container2.show {
+		z-index: 20;
+		visibility: visible;
+		display: block;
+	}
+	
+	.reveal-modal2 {
+		margin: 0 auto;
+		width:400px; 
+		height: 200px;
+		position:relative;
+		
+		z-index:100;
+		;
+		/* padding:30px;  */
+		/* -webkit-box-shadow:0 0 10px rgba(0,0,0,0.4);
+		-moz-box-shadow:0 0 10px rgba(0,0,0,0.4); 
+		box-shadow:0 0 10px rgba(0,0,0,0.4); */
+	}
 .tooltip .tooltipinfo {
     visibility: hidden;
     padding: 5px 0;

@@ -1,6 +1,13 @@
 <script lang="ts">
     //@ts-nocheck
-    import { fetchedProfile, profileBadges, getDomainsURL, trxDomains } from '$lib/state/state'
+    import { 
+        fetchedProfile, 
+        profileBadges, 
+        getDomainsURL, 
+        trxDomains, 
+        connectedUsername, 
+        defaultUsername 
+    } from '$lib/state/state'
 
 
     let badges = []
@@ -20,7 +27,12 @@
         const res = await fetch(url)
         if (!res.ok) throw new Error (res.status)
         domains = await res.json()
-        if (domains != []) trxDomains.set(domains.data)
+        if (badges != [])
+        if (domains != []) {
+            console.log(domains.data)
+            if ($defaultUsername != $connectedUsername) domains.data.push($defaultUsername)
+            trxDomains.set(domains.data)
+        }
 
 
         if (badges && domains.data.length > 0 && !badges.find(badge => badge.name == '.trx Domain Holder')) {
