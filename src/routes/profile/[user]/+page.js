@@ -18,12 +18,15 @@ export async function load({ fetch, params }) {
 
   let profile
   if (input.includes('.trx') || input.includes('.usdd')) {
-    console.log(input)
-    const res = await fetch(getProfileURL + input)
-    if (!res.ok) throw new Error('fetch Error, null fetch')
     
+    console.log(input);
+
+    const res = await fetch(getProfileURL + input);
+    
+    if (!res.ok) throw new Error('fetch Error, null fetch');
     profile = await res.json();
-    fetchedProfile.set(profile)
+
+    fetchedProfile.set(profile);
     console.log(profile)
   } else {
     try {

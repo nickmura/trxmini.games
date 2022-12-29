@@ -45,7 +45,7 @@ app.post('/address', async (req, res) => {
 app.post('/username', (req, res) => {
     let user = req.body
     console.log(user)
-    let insert = `UPDATE usernames SET username,default_username = ($1) WHERE address = ($2)`;
+    let insert = `UPDATE usernames SET username,default_username,previous_username = ($1) WHERE address = ($2)`;
     const values = [`${user.name}.trx`, `${user.address}`]
     console.log(values)
     post.query(insert, values, (err, result) => {
@@ -283,19 +283,21 @@ app.post('/chessnotification', async (req, res) => {
 })
 app.get('/getprofile', async(req, res) => {
     let user = req.query.user
-    
-    // Make this fetch by address.
-    let insert = `SELECT address,username,default_username,has_played,games_played,games_won,has_won_8ball,xp,is_beta,description FROM usernames WHERE username = ($1)` 
+
+    // Make this fetch by address. -->  
+    let insert = `SELECT address,username,default_username,has_played,games_played,games_won,has_won_8ball,xp,is_beta,description 
+    FROM usernames WHERE username = ($1) OR default_username = ($1) OR previous_username = ($1)`
     let values = [`${user}`]
 
     let query
 
     try { 
         query = await post.query(insert, values);
-        console.log('Successfully fetched profile information', query.rows[0])
+        
     } catch (error) {
         console.log(error);
     }
+    console.log('Successfully fetched profile information', query.rows[0])
     return res.json(query.rows[0]);
 })
 
@@ -333,14 +335,22 @@ app.post('/uploadavatar', async (req, res) => {
 app.post('/changeusername', async (req, res) => {
     let user = req.body
 
-    let insert = `UPDATE usernames SET username=($1) WHERE address=($2)`
-    let values = [`${user.name}`, `${user.address}`]
+    let insertPrevious = `UPDATE usernames SET previous_username=username WHERE address=($1)`;
+    let value = [`${user.address}`];
+    
+    let insert = `UPDATE usernames SET username=($1) WHERE address=($2)`;
+    let values = [`${user.name}`, `${user.address}`];
+    
     try {
+        await post.query(insertPrevious, value);
         await post.query(insert, values);
         console.log('Successfuly changed username to', user.name)
+
     } catch (error) {
+        
         console.log(error)
     }
+    
 })
 
 

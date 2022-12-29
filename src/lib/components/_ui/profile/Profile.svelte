@@ -1,5 +1,6 @@
 <script>
     // @ts-nocheck
+	import { invalidateAll } from "$app/navigation";
 
 	import Navbar from '$lib/components/_ui/reusable/Navbar.svelte';
 	import Badges from '$lib/components/_ui/profile/Badges.svelte';
@@ -20,8 +21,7 @@
 		uploadAvatarURL, 
 		changeUsernameURL,
 		trxDomains, 
-		getDomains,
-
+		getDomains
 	} from '$lib/state/state'
 	
 	
@@ -65,20 +65,20 @@
 	let trxDomainName
 	let usernameDialog = false
 	async function changeUsernameDialog(name) {
-		console.log('penis')
+
 		trxDomainName = name;
 		usernameDialog = !usernameDialog;
 	}
 
 	async function changeTrxUsername(trxusername) {
-		let user = JSON.stringify({address: $connectedAddress, name: trxusername})
-
+		let user = JSON.stringify({address: $connectedAddress, name: trxusername});
 		const res = await fetch(changeUsernameURL, {
 			method: 'post',
 			headers: {'Content-Type': 'application/json'},
 			body: user,
-		})
+		});
 		if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+		// await invalidateAll()
 		return await res.json()
 	} 
 
@@ -125,9 +125,10 @@
 							<div class='flex flex-wrap flex-row'>
 								<h1 class="text-5xl text-white">{$fetchedProfile.username}</h1>
 								{#if $isProfile}
+									<div class='relative'>
 									<button on:click={trxPromptOpen}><img alt='norefferer' class='w-6 h-6 ml-2 mt-2.5 z-20' src={$theme == 'dark' ? '/img/dark_drop.svg' : '/img/drop.svg'}/></button>
 									{#if trxPromptExpanded}
-										<div class=' w-32 absolute ml-28 mt-12'>
+										<div class=' w-32 absolute left-0'>
 											<div class=' w-fit rounded-lg
 											dark:bg-[#16161d] bg-[#f2f0eb]'>
 												{#if $trxDomains}
@@ -142,6 +143,8 @@
 											</div>
 										</div>
 									{/if}
+									</div>
+								
 									<div id="container" class='flex flex-initial' class:show={usernameDialog}>
 						
 										<div id="exampleModal" class="absolute reveal-modal overflow-hidden bottom-[8rem] opacity-[98] bg-[#1E1E32] text-white
