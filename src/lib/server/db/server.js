@@ -1,7 +1,7 @@
 //@ts-nocheck
 // THIS IS SOLELY CONFIGURATION AND ENDPOINTS FOR FOR USERNAMES VIA POSTGRES
 import express from 'express';
-
+import crypto from 'crypto';
 
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
@@ -305,32 +305,60 @@ app.get('/getprofile', async(req, res) => {
 app.post('/uploadavatar', async (req, res) => {
     let avatar = req.body
     let binaryAvatar = avatar.toString(2)
+    let authToken
 
-    let getTokenBody = JSON.stringify({clientId: sirvClientID, clientSecret: sirvSecret})
-    let tokenURL = 'https://api.sirv.com/v2/token'
+    async function authenticate() {
+        const authenticateUrl = 'https://api.backblazeb2.com/b2api/v2/b2_authorize_account'
+        let idAndKey = 'de2297eb85a0:0043437c2551f4118c0dc56b70dbd2485b03b942ef'
+        let authString = 'Basic ' + Buffer.from(idAndKey).toString('base64');
+        let authResponse
 
-    let token
+        const res = await fetch(authenticateUrl, {
+            headers: {'Authorization': authString },
+        }) 
+        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+        authResponse = await res.json()
+        authToken = authResponse.authorizationToken
+        //console.log(authResponse)
 
-    async function postRequestToken(url, body) {
+    } await authenticate()
+
+    async function uploadImage(token, img) {
+        let headers = {
+            'Authorization': token,
+            'X-Bz-File-Name':img,
+            'Content-Type': 'b2/x-auto',
+        }
+
         const res = await fetch(url, {
             method: 'post',
-            headers: {'Content-Type': 'application/json'},
+            headers: headers,
             body: body,
-        })
+        }) 
         if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-        
-        token = await res.json()
-        
-    } 
-    postRequestToken(tokenURL, getTokenBody)
-    .then(res => console.log('res.json()', res))
-    .catch(error => console.log(error))
+    } await uploadImage(authToken, avatar)
 
-    
-    // sending data to pc
-    console.log('token', token)
 
 })
+app.get('/authenticate', async (req, res) => {
+    let response
+    async function authenticate() {
+        const authenticateUrl = 'https://api.backblazeb2.com/b2api/v2/b2_authorize_account'
+        let idAndKey = 'de2297eb85a0:0043437c2551f4118c0dc56b70dbd2485b03b942ef'
+        let authString = 'Basic ' + Buffer.from(idAndKey).toString('base64');
+        
+        const res = await fetch(authenticateUrl, {
+            headers: {'Authorization': authString },
+        }) 
+        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+        response = await res.json()
+        console.log(response)
+        
+    } await authenticate()
+    return res.json(response)
+    
+})
+
 
 app.post('/changeusername', async (req, res) => {
     let user = req.body
