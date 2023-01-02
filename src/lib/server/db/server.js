@@ -3,7 +3,7 @@
 import express from 'express';
 import crypto from 'crypto';
 import B2 from 'backblaze-b2'
-
+import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
 
@@ -46,16 +46,20 @@ app.post('/address', async (req, res) => {
 })
 
 
-app.post('/username', (req, res) => {
+app.post('/username',  async (req, res) => {
     let user = req.body
     console.log(user)
-    let insert = `UPDATE usernames SET username,default_username,previous_username = ($1) WHERE address = ($2)`;
+    let insert = `UPDATE usernames SET username = ($1) WHERE address = ($2)`;
+    let insertDefault = `UPDATE usernames SET default_username = ($1) WHERE address = ($2)`
     const values = [`${user.name}.trx`, `${user.address}`]
     console.log(values)
     post.query(insert, values, (err, result) => {
         if (!err) console.log('Username insertion was successful')
-        else console.log(error)
+        else console.log(err)
     })
+    try {
+        const insert_default_query = await post.query(insertDefault, values);
+    } catch (err) { console.log(err) }
 })
 
 app.get('/username', async (req, res) => {
@@ -306,34 +310,39 @@ app.get('/getprofile', async(req, res) => {
 })
 
 
-app.post('/uploadavatar', async (req, res) => {
-    let avatarRequest = req.body
+app.post('/uploadavatar', multer({storage: multer.memoryStorage()}).single("avatar"), async (req, res, next) => {
+    if (req.file) {
+        let avatarRequest = req.body
 
-    let uploadUrl
-    let uploadAuthToken
-    async function authenticate() {
-        let auth = await b2.authorize();
+        let uploadUrl
+        let uploadAuthToken
+        let imageUploadResponse
+        async function authenticate() {
+            let auth = await b2.authorize();
+            let uploadUrlRequest = await b2.getUploadUrl({
+                bucketId: 'dd6eb222a9a75ebb88550a10'
+            });
+            // console.log(uploadUrlRequest)
+            // console.log('uploadUrl.data', uploadUrlRequest.data)
+            uploadUrl = uploadUrlRequest.data.uploadUrl
+            uploadAuthToken = uploadUrlRequest.data.authorizationToken
+            console.log(uploadUrl)
 
-        let uploadUrlRequest = await b2.getUploadUrl({
-            bucketId: 'dd6eb222a9a75ebb88550a10'
-        });
-        // console.log(uploadUrlRequest)
-        // console.log('uploadUrl.data', uploadUrlRequest.data)
-        uploadUrl = uploadUrlRequest.data.uploadUrl
-        uploadAuthToken = uploadUrlRequest.data.authorizationToken
-        console.log(uploadUrl)
+        } await authenticate()
+        async function imageUpload() {
+            let uuid = Math.floor(Math.random()*1000000)
+            let upload = b2.uploadFile({
+                uploadUrl: uploadUrl,
+                uploadAuthToken: uploadAuthToken,
+                fileName: `image-${uuid}.png`,
+                data: req.file.buffer
+            })
+            imageUploadResponse = upload
+            console.log('Successful image upload')
 
-    } await authenticate()
-    async function imageUpload() {
-        let uuid = Math.floor(Math.random()*1000000)
-        let upload = b2.uploadFile({
-            uploadUrl: uploadUrl,
-            uploadAuthToken: uploadAuthToken,
-            fileName: `image-${uuid}`,
-            data: ''
-        })
-    } await imageUpload();
-
+        } await imageUpload();
+        console.log(await imageUploadResponse)
+    }
 
 })
 

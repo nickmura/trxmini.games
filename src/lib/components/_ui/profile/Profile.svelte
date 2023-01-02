@@ -237,7 +237,7 @@
 		<div id="exampleModal" class="absolute reveal-modal2 overflow-hidden translate-y-1/2 opacity-[98] bg-[#1E1E32] text-white
 		shadow-xl rounded-lg p-6">
 				<h2 class='flex title font-semibold justify-center text-gray-200 '>Change Avatar</h2>
-			<form action={uploadAvatarURL} method='POST'>
+			<form action={uploadAvatarURL} method='POST' enctype="multipart/form-data">
 				<div class=''>
 					<div class='flex justify-center h-[16rem] mt-3 '>
 						<div class=' 
