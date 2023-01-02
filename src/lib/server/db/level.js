@@ -7,8 +7,8 @@ export function getLevel(xp) {
     return userLevel
 }
 
-export const sirvClientID = ''
-export const sirvSecret = ''
+export const B2AppKeyID = 'INSERT KEY ID HERE'
+export const B2AppKey = ''
 export const sirvEndpoint = ''
 
 export async function postRequest(url, body) {

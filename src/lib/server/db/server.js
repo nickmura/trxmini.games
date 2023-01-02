@@ -2,14 +2,18 @@
 // THIS IS SOLELY CONFIGURATION AND ENDPOINTS FOR FOR USERNAMES VIA POSTGRES
 import express from 'express';
 import crypto from 'crypto';
+import B2 from 'backblaze-b2'
 
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
 
 import { post } from './cred.js';
-import { getLevel, sirvClientID, sirvSecret, sirvEndpoint, postRequest } from './level.js';
+import { getLevel, B2AppKeyID, B2AppKey, postRequest } from './level.js';
 
-
+const b2 = new B2({
+    applicationKeyId:B2AppKeyID,
+    applicationKey:B2AppKey,
+})
 
 post.connect();
 const app = express();
@@ -303,60 +307,56 @@ app.get('/getprofile', async(req, res) => {
 
 
 app.post('/uploadavatar', async (req, res) => {
-    let avatar = req.body
-    let binaryAvatar = avatar.toString(2)
-    let authToken
+    let avatarRequest = req.body
 
+    let uploadUrl
+    let uploadAuthToken
     async function authenticate() {
-        const authenticateUrl = 'https://api.backblazeb2.com/b2api/v2/b2_authorize_account'
-        let idAndKey = 'de2297eb85a0:0043437c2551f4118c0dc56b70dbd2485b03b942ef'
-        let authString = 'Basic ' + Buffer.from(idAndKey).toString('base64');
-        let authResponse
+        let auth = await b2.authorize();
 
-        const res = await fetch(authenticateUrl, {
-            headers: {'Authorization': authString },
-        }) 
-        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-        authResponse = await res.json()
-        authToken = authResponse.authorizationToken
-        //console.log(authResponse)
+        let uploadUrlRequest = await b2.getUploadUrl({
+            bucketId: 'dd6eb222a9a75ebb88550a10'
+        });
+        // console.log(uploadUrlRequest)
+        // console.log('uploadUrl.data', uploadUrlRequest.data)
+        uploadUrl = uploadUrlRequest.data.uploadUrl
+        uploadAuthToken = uploadUrlRequest.data.authorizationToken
+        console.log(uploadUrl)
 
     } await authenticate()
-
-    async function uploadImage(token, img) {
-        let headers = {
-            'Authorization': token,
-            'X-Bz-File-Name':img,
-            'Content-Type': 'b2/x-auto',
-        }
-
-        const res = await fetch(url, {
-            method: 'post',
-            headers: headers,
-            body: body,
-        }) 
-        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-    } await uploadImage(authToken, avatar)
+    async function imageUpload() {
+        let uuid = Math.floor(Math.random()*1000000)
+        let upload = b2.uploadFile({
+            uploadUrl: uploadUrl,
+            uploadAuthToken: uploadAuthToken,
+            fileName: `image-${uuid}`,
+            data: ''
+        })
+    } await imageUpload();
 
 
 })
-app.get('/authenticate', async (req, res) => {
-    let response
+
+app.get('/authenticate', async (req, res) => { // This is a test
+    let request = req.body
+    let resp
+    let uploadUrl
     async function authenticate() {
-        const authenticateUrl = 'https://api.backblazeb2.com/b2api/v2/b2_authorize_account'
-        let idAndKey = 'de2297eb85a0:0043437c2551f4118c0dc56b70dbd2485b03b942ef'
-        let authString = 'Basic ' + Buffer.from(idAndKey).toString('base64');
-        
-        const res = await fetch(authenticateUrl, {
-            headers: {'Authorization': authString },
-        }) 
-        if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-        response = await res.json()
-        console.log(response)
-        
+        let auth = await b2.authorize();
+
+        let uploadUrlRequest = await b2.getUploadUrl({
+            bucketId: 'dd6eb222a9a75ebb88550a10'
+        });
+        // console.log(uploadUrlRequest)
+        // console.log('uploadUrl.data', uploadUrlRequest.data)
+        uploadUrl = uploadUrlRequest.data.uploadUrl
+        console.log(uploadUrl)
+
     } await authenticate()
-    return res.json(response)
     
+    // async function upload
+
+
 })
 
 
