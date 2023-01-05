@@ -7,6 +7,7 @@ import {
   getProfileURL, 
   isProfile, 
   fetchedProfile,
+  avatarSrc
 } from '$lib/state/state'
 
 /** @type {import('./$types').PageLoad} */
@@ -27,6 +28,7 @@ export async function load({ fetch, params }) {
     profile = await res.json();
 
     fetchedProfile.set(profile);
+    avatarSrc.set(profile.img)
     console.log(profile)
   } else {
     try {
@@ -34,20 +36,27 @@ export async function load({ fetch, params }) {
         const res = await fetch(getProfileURL + user + '.trx')
         if (!res.ok) throw new Error('fetch Error, null fetch')
         profile = await res.json()
-        if (profile != undefined) fetchedProfile.set(profile)
+        if (profile != undefined) {
+          fetchedProfile.set(profile)
+          
+          avatarSrc.set(profile.img)
+        } 
         if (profile == undefined && !user.includes('.trx') && !user.includes('.usdd')) {
           // with .usdd prefix
           try {
             const fetch = await fetch(getProfileURL + user + '.usdd')
             if (!fetch.ok) throw new Error('fetch Error, null fetch')
             profile = await fetch.json()
-            if (profile != undefined) fetchedProfile.set(profile)
+            if (profile != undefined) {
+              fetchedProfile.set(profile)
+              avatarSrc.set(profile.img)
+            }
           } catch (error) {
             console.log(error)
           }
         }
         
-        
+        console.log(profile)
         return profile
     } catch (error) {
         console.log(error.message)

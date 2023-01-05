@@ -293,7 +293,7 @@ app.get('/getprofile', async(req, res) => {
     let user = req.query.user
 
     // Make this fetch by address. -->  
-    let insert = `SELECT address,username,default_username,has_played,games_played,games_won,has_won_8ball,xp,is_beta,description 
+    let insert = `SELECT address,username,default_username,img,has_played,games_played,games_won,has_won_8ball,xp,is_beta,description 
     FROM usernames WHERE username = ($1) OR default_username = ($1) OR previous_username = ($1)`
     let values = [`${user}`]
 
@@ -370,17 +370,21 @@ app.get('/getavatar', async (req, res) => {
     let imageUrl
     let counter = 0
     let hasAvatar = false
-    while (counter < 1000 && !hasAvatar) {
-        counter++;
-        try {
-            let SELECT = `SELECT img FROM usernames WHERE username = ($1)`
-            let values = [`${user}`]
-            let selectQuery = await post.query(SELECT, values);
-        } catch (error) {
-            console.log(error);
-        }
-        
-    }
+    let selectQuery 
+    async function fetchAvatar() {
+        while (counter < 1000 && !hasAvatar) {
+            counter++;
+            try {
+                let SELECT = `SELECT img FROM usernames WHERE username = ($1)`
+                let values = [`${user}`]
+                selectQuery = await post.query(SELECT, values);
+                hasAvatar = true
+            } catch (error) {
+                console.log(error);
+            }
+        } return res.json(selectQuery.rows[0].img)
+    }   
+    setTimeout(fetchAvatar, 3000)
 })
 
 app.post('/changeusername', async (req, res) => {

@@ -84,9 +84,12 @@
 		return await res.json()
 	} 
 
-	async function testFunction() {
+	async function getAvatar() {
 		if (uploadedAvatar) {
+			console.log(uploadedAvatar)
 			const res = await fetch(getAvatarURL + `?user=${$connectedUsername}`)
+			if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+			avatarSrc.set(await res.json())
 		}
 	}
 </script>
@@ -244,7 +247,7 @@
 		<div id="exampleModal" class="absolute reveal-modal2 overflow-hidden translate-y-1/2 opacity-[98] bg-[#1E1E32] text-white
 		shadow-xl rounded-lg p-6">
 				<h2 class='flex title font-semibold justify-center text-gray-200 '>Change Avatar</h2>
-			<form action={uploadAvatarURL + `?user=${$connectedUsername}`} on:submit={testFunction} method='POST' enctype="multipart/form-data">
+			<form action={uploadAvatarURL + `?user=${$connectedUsername}`} on:submit={getAvatar} method='POST' enctype="multipart/form-data">
 				<div class=''>
 					<div class='flex justify-center h-[16rem] mt-3 '>
 						<div class=' 
