@@ -14,14 +14,16 @@
 		connectedAddress,
 		defaultUsername,
 		isProfile,
-		fetchedProfile, 
+		fetchedProfile,
+		avatarSrc, 
 		profileBadges, 
 		avatarPrompt, 
 		expandAvatarPrompt, 
-		uploadAvatarURL, 
+		uploadAvatarURL,
+		getAvatarURL,
 		changeUsernameURL,
 		trxDomains, 
-		getDomains
+		getDomains,
 	} from '$lib/state/state'
 	
 	
@@ -58,9 +60,9 @@
 		trxPromptExpanded = !trxPromptExpanded
 	}
 
-	async function postImage(avatar) {
-		console.log(avatar)
-	}
+	// async function postImage(avatar) {
+	// 	console.log(avatar)
+	// }
 
 	let trxDomainName
 	let usernameDialog = false
@@ -82,6 +84,11 @@
 		return await res.json()
 	} 
 
+	async function testFunction() {
+		if (uploadedAvatar) {
+			const res = await fetch(getAvatarURL + `?user=${$connectedUsername}`)
+		}
+	}
 </script>
 
 <main class="min-h-screen dark:bg-[#16161D]">
@@ -106,7 +113,7 @@
 					<div class='relative tooltip group'>
 						{#if $isProfile}
 							<img
-							src="/img/player5.png"
+							src={$avatarSrc}
 							alt="https://www.npmjs.com/package/ethereum-blockies/v/0.1.0?activeTab=readme"
 							class="absolute h-32 w-32 -translate-y-1/2 rounded-full object-cover sm:h-40 sm:w-40 group-hover:opacity-70">
 						
@@ -115,7 +122,7 @@
 							</div>
 						{:else}
 							<img
-							src="/img/player5.png"
+							src={$avatarSrc}
 							alt="https://www.npmjs.com/package/ethereum-blockies/v/0.1.0?activeTab=readme"
 							class="absolute h-32 w-32 -translate-y-1/2 rounded-full object-cover sm:h-40 sm:w-40 ">
 						{/if}
@@ -237,7 +244,7 @@
 		<div id="exampleModal" class="absolute reveal-modal2 overflow-hidden translate-y-1/2 opacity-[98] bg-[#1E1E32] text-white
 		shadow-xl rounded-lg p-6">
 				<h2 class='flex title font-semibold justify-center text-gray-200 '>Change Avatar</h2>
-			<form action={uploadAvatarURL} method='POST' enctype="multipart/form-data">
+			<form action={uploadAvatarURL + `?user=${$connectedUsername}`} on:submit={testFunction} method='POST' enctype="multipart/form-data">
 				<div class=''>
 					<div class='flex justify-center h-[16rem] mt-3 '>
 						<div class=' 
@@ -266,7 +273,6 @@
 						
 					</div>
 				</div>
-		
 				<div class='absolute inset-x-0 bottom-0 mb-4 ml-4 mr-[1.5rem]'>
 					<div class='flex justify-between'>
 						<button class="ml-2 rounded-[10px] border border-red-500 
@@ -274,7 +280,10 @@
 						transition-200" on:click={expandAvatarPrompt}>Cancel</button>
 						<button class="ml-2 rounded-[10px] border border-green-500 
 						py-1.5 px-6 text-lg font-medium text-white hover:scale-[1.05] transition
-						transition-200" on:click={(e)=>postImage(uploadedAvatar)}>Apply</button>
+						transition-200" >Apply</button>
+						<!-- <button class="ml-2 rounded-[10px] border border-green-500 
+						py-1.5 px-6 text-lg font-medium text-white hover:scale-[1.05] transition
+						transition-200" on:click={(e)=>postImage(uploadedAvatar)}>Apply</button> -->
 					</div>
 					
 				</div>

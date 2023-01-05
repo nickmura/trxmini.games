@@ -14,6 +14,7 @@ export const isTwoAddress = writable()
 
 export const isProfile = writable();
 export const fetchedProfile = writable();
+export const avatarSrc = writable('/img/player5.png');
 export const profileBadges = writable([]);
 export const trxDomains = writable()
 
@@ -48,6 +49,7 @@ export const getProfileURL = 'http://170.187.182.220:5001/getprofile?user='
 export const changeUsernameURL = 'http://170.187.182.220:5001/changeusername'
 export const getDomainsURL = `https://app.trxdomains.xyz/api/domains/getDomains?address=`
 export const uploadAvatarURL = 'http://170.187.182.220:5001/uploadavatar'
+export const getAvatarURL = 'http://170.187.182.220:5001/getavatar'
 
 // REDIS ENDPOINTS
 
@@ -129,4 +131,20 @@ export async function getDomains(address) {
     domains = await res.json()
     console.log(domains.data)
     trxDomains.set(domains.data)
+}
+
+// TEST
+async function postImageRequest(url, image) {
+    const formData = new FormData();
+    let blob = new Blob(image)
+    formData.append('image', blob,'image/png')
+    console.log('fdsfdsfdshfddgd3283245832548325825')
+    const res = await fetch(uploadAvatarURL, {
+        method: 'POST',
+        // headers: {'Content Type': 'multipart/form-data'},
+        body: formData,
+    })
+    console.log('fetched')
+    if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+    return await res.json()
 }

@@ -7,7 +7,6 @@
 			connectedAddress, 
 			connectedUsername, 
 			userID,
-
 			createGameForm, 
 			urlEndedRooms, 
 			urlRooms,

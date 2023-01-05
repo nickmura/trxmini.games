@@ -311,9 +311,11 @@ app.get('/getprofile', async(req, res) => {
 
 
 app.post('/uploadavatar', multer({storage: multer.memoryStorage()}).single("avatar"), async (req, res, next) => {
+    let user = req.query.user
+    console.log('$connectedUsername', user)
     if (req.file) {
-        let avatarRequest = req.body
 
+        //console.log('req.file', req.file)
         let uploadUrl
         let uploadAuthToken
         let imageUploadResponse
@@ -329,45 +331,57 @@ app.post('/uploadavatar', multer({storage: multer.memoryStorage()}).single("avat
             console.log(uploadUrl)
 
         } await authenticate()
-        async function imageUpload() {
-            let uuid = Math.floor(Math.random()*1000000)
+        async function imageUpload(mime, originalName, buffer) {
+            let uuid = Math.floor(Math.random()*10000000)
             let upload = b2.uploadFile({
                 uploadUrl: uploadUrl,
                 uploadAuthToken: uploadAuthToken,
-                fileName: `image-${uuid}.png`,
-                data: req.file.buffer
+                fileName: mime.includes('jpeg') && originalName.includes('jpg') ? `image-${uuid}.jpg` : mime.includes('jpeg') && originalName.includes('jpeg') ? `image-${uuid}.jpeg` : `image-${uuid}.png`,
+                mime: mime, 
+                data: buffer
             })
-            imageUploadResponse = upload
+            imageUploadResponse = await upload
             console.log('Successful image upload')
 
-        } await imageUpload();
-        console.log(await imageUploadResponse)
+        } await imageUpload(req.file.mimetype, req.file.originalname, req.file.buffer);
+
+        let imageName = imageUploadResponse.data.fileName
+        let imageUrl = `https://f004.backblazeb2.com/file/trxmini-games-/${imageName}`
+
+        // SQL insertion
+
+        let insertImgUrl = `UPDATE usernames SET img = ($1) WHERE username = ($2)`
+        let values = [`${imageUrl}`, `${user}`]
+        try {
+            let updateImageUsernames = await post.query(insertImgUrl, values);
+            console.log('Successfully added avatarimage to user row');
+        } catch (error) {
+            console.log(error);
+        }
+        
+        console.log(imageUploadResponse)
+        console.log(imageName)
     }
 
 })
 
-app.get('/authenticate', async (req, res) => { // This is a test
-    let request = req.body
-    let resp
-    let uploadUrl
-    async function authenticate() {
-        let auth = await b2.authorize();
-
-        let uploadUrlRequest = await b2.getUploadUrl({
-            bucketId: 'dd6eb222a9a75ebb88550a10'
-        });
-        // console.log(uploadUrlRequest)
-        // console.log('uploadUrl.data', uploadUrlRequest.data)
-        uploadUrl = uploadUrlRequest.data.uploadUrl
-        console.log(uploadUrl)
-
-    } await authenticate()
-    
-    // async function upload
-
-
+app.get('/getavatar', async (req, res) => {
+    let user = req.query.user
+    let imageUrl
+    let counter = 0
+    let hasAvatar = false
+    while (counter < 1000 && !hasAvatar) {
+        counter++;
+        try {
+            let SELECT = `SELECT img FROM usernames WHERE username = ($1)`
+            let values = [`${user}`]
+            let selectQuery = await post.query(SELECT, values);
+        } catch (error) {
+            console.log(error);
+        }
+        
+    }
 })
-
 
 app.post('/changeusername', async (req, res) => {
     let user = req.body
