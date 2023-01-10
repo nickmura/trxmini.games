@@ -14,7 +14,7 @@ export const isTwoAddress = writable()
 
 export const isProfile = writable();
 export const fetchedProfile = writable();
-export const avatarSrc = writable('/img/player5.png');
+export const avatarSrc = writable('https://f004.backblazeb2.com/file/trxmini-games-/player4.png');
 export const profileBadges = writable([]);
 export const trxDomains = writable()
 

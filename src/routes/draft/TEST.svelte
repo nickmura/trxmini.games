@@ -13,7 +13,7 @@ import { onMount } from 'svelte';
 export let data;
 let level 
 onMount(async () => {
-  /** @type {import('./$types').PageServerLoad} */
+  /** @type {import('../profile/[user]/$types').PageServerLoad} */
     // console.log($page.routeId)
     let input = data.user
     // console.log(data)

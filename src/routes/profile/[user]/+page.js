@@ -28,7 +28,7 @@ export async function load({ fetch, params }) {
     profile = await res.json();
 
     fetchedProfile.set(profile);
-    avatarSrc.set(profile.img)
+    if (profile.img) avatarSrc.set(profile.img)
     console.log(profile)
   } else {
     try {
@@ -38,8 +38,7 @@ export async function load({ fetch, params }) {
         profile = await res.json()
         if (profile != undefined) {
           fetchedProfile.set(profile)
-          
-          avatarSrc.set(profile.img)
+          if (profile.img) avatarSrc.set(profile.img)
         } 
         if (profile == undefined && !user.includes('.trx') && !user.includes('.usdd')) {
           // with .usdd prefix
@@ -49,7 +48,7 @@ export async function load({ fetch, params }) {
             profile = await fetch.json()
             if (profile != undefined) {
               fetchedProfile.set(profile)
-              avatarSrc.set(profile.img)
+              if (profile.img) avatarSrc.set(profile.img)
             }
           } catch (error) {
             console.log(error)
@@ -57,10 +56,14 @@ export async function load({ fetch, params }) {
         }
         
         console.log(profile)
-        return profile
+        if (profile) {
+          return profile
+        }
+        
     } catch (error) {
         console.log(error.message)
     }
+    throw error ('404', 'not found')
   }
   // if ($connectedUsername == $fetchedProfile.username || $defaultUsername == $fetchedProfile.username 
   //   || $connectedUsername == $fetchedProfile.default_username || 
