@@ -127,7 +127,7 @@ export async function getDomains(address) {
     let domains
     let url = getDomainsURL + address + `&network=mainnet`
     const res = await fetch(url)
-    if (!res.ok) throw new Error (res.status)
+    if (!res.ok) throw new Error (`${res.status}: ${res.statusText}`)
     domains = await res.json()
     console.log(domains.data)
     trxDomains.set(domains.data)

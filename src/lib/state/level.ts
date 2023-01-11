@@ -1,4 +1,4 @@
-export async function getLevel(xp) {
+export async function getLevel(xp:number) {
     // Remember to keep this correlated with server-side, client-side
     
     let y = 1.275 // Affects required XP increase per level (larger y is, harder)
