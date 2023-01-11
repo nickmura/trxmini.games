@@ -1,4 +1,4 @@
-<script>
+<script lang='ts'>
     import { avatarPrompt, expandAvatarPrompt, userID, connectedAddress, connectedUsername, postRequest, } from '$lib/state/state';
     import { theme } from '$lib/state/Theme.svelte';
 

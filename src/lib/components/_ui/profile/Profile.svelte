@@ -1,7 +1,6 @@
-<script>
-    // @ts-nocheck
-	import { invalidateAll } from "$app/navigation";
-
+<script lang='ts'>
+    
+	
 	import Navbar from '$lib/components/_ui/reusable/Navbar.svelte';
 	import Badges from '$lib/components/_ui/profile/Badges.svelte';
 	import Footer from '$lib/components/_ui/reusable/FooterSection.svelte'
@@ -27,12 +26,12 @@
 	} from '$lib/state/state'
 	
 	
-
-	let userPng = Math.floor(Math.random(Math.random() * 100)*100);
-	let uploadedAvatar
-	let level 
+	let mathRand = Math.random()*100000
+	let userPng = Math.floor(mathRand);
+	let uploadedAvatar : String
+	let level : Number
 	async function fetchLevel() {
-		level = await getLevel($fetchedProfile.xp)
+		level = Math.floor(await getLevel($fetchedProfile.xp))
 	}
 	if ($fetchedProfile) {
 		fetchLevel()
@@ -65,15 +64,15 @@
 	// 	console.log(avatar)
 	// }
 
-	let trxDomainName
+	let trxDomainName:String
 	let usernameDialog = false
-	async function changeUsernameDialog(name) {
+	async function changeUsernameDialog(name:String) {
 
 		trxDomainName = name;
 		usernameDialog = !usernameDialog;
 	}
 
-	async function changeTrxUsername(trxusername) {
+	async function changeTrxUsername(trxusername:String) {
 		let user = JSON.stringify({address: $connectedAddress, name: trxusername});
 		const res = await fetch(changeUsernameURL, {
 			method: 'post',
@@ -202,7 +201,7 @@
 									{/if}
 								</div>
 
-								<span class='italic text-red-500'>Level: {Math.floor(level)}</span>
+								<span class='italic text-red-500'>Level: {level}</span>
 
 
 								<span class="italic text-[#706C6C]">{$fetchedProfile.address.substring(0,5)}...{$fetchedProfile.address.substring(29,34)}</span>

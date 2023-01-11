@@ -1,5 +1,5 @@
 <script lang="ts">
-    //@ts-nocheck
+
     import { 
         fetchedProfile, 
         profileBadges, 
@@ -10,25 +10,34 @@
     } from '$lib/state/state'
 
 
-    let badges = []
+    interface Badge {
+        name: string
+        bio: string,
+        img: string,
+        rarity: string,
+        description: string
+    }
+
+    let badges:Badge[] = []
     let description
     let badge = {
         name: '',
         bio: '',
+        img: '',
         rarity: '',
         description: '',
     }
     
-	async function getDomains(address) {
+	async function getDomains(address:string) {
         await checkBadges()
         let domains
         let url = getDomainsURL + address + `&network=mainnet`
         // console.log(url)
         const res = await fetch(url)
-        if (!res.ok) throw new Error (res.status)
+        if (!res.ok) throw new Error (`${res.status}: ${res.statusText}`)
         domains = await res.json()
-        if (badges != [])
-        if (domains != []) {
+        if (badges.length)
+        if (domains.length) {
             console.log(domains.data)
             if ($defaultUsername != $connectedUsername) domains.data.push($defaultUsername)
             trxDomains.set(domains.data)

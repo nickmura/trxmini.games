@@ -1,5 +1,5 @@
-<script>
-	//@ts-nocheck
+<script lang='ts'>
+
 	
 	import Navbar from '$lib/components/_ui/reusable/Navbar.svelte';
 
