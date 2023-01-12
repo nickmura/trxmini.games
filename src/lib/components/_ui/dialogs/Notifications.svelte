@@ -1,31 +1,36 @@
-<script>
-    //@ts-nocheck
+<script lang='ts'>
+
     import { slide } from 'svelte/transition'
 	import { notiPrompt, notificationPrompt, postRequest, connectedAddress, connectedUsername, playerNotifications } from '$lib/state/state';
     import { theme } from '$lib/state/Theme.svelte'
 
-    function noti() {
-        let user = JSON.stringify({address: $connectedAddress, name: $connectedUsername})
-        const lossUrl = 'http://170.187.182.220:5001/gameplayed'
-        const submitLoserData = async (url) => { // sending address to express and postgres
-                const res = await fetch(url, {
-                    method: 'post',
-                    headers: {'Content-Type': 'application/json'},
-                    body: user,
-                })
-                if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-                return res
-            }
-
-
-        submitLoserData(lossUrl)
-                .then(res => console.log(res))
-                .catch(err => console.error(err))
+    interface Notification {
+        notification: String,
+        id: Number,
 
     }
+    // function noti() {
+    //     let user = JSON.stringify({address: $connectedAddress, name: $connectedUsername})
+    //     const lossUrl = 'http://170.187.182.220:5001/gameplayed'
+    //     const submitLoserData = async (url) => { // sending address to express and postgres
+    //             const res = await fetch(url, {
+    //                 method: 'post',
+    //                 headers: {'Content-Type': 'application/json'},
+    //                 body: user,
+    //             })
+    //             if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+    //             return res
+    //         }
 
-    async function deleteNotification(n) {
-        let array = $playerNotifications
+
+    //     submitLoserData(lossUrl)
+    //             .then(res => console.log(res))
+    //             .catch(err => console.error(err))
+
+    // }
+
+    async function deleteNotification(n:Notification) {
+        let array:Notification[] = $playerNotifications
         let deleteNotificationUrl = 'http://170.187.182.220:5001/deletenotification'
         let body = JSON.stringify({notification: n.notification, id: n.id})
 

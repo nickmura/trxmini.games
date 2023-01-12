@@ -28,6 +28,11 @@ interface PostBody {
     y: string,
 }
 
+interface Notification {
+    notification: String,
+    id: Number,
+
+}
 import { writable } from 'svelte/store';
 
 export const connectedAddress = writable();
@@ -49,7 +54,7 @@ export const connectedChain = writable(false);
 
 export const getBalance = writable<number>() 
 
-export const playerNotifications = writable()
+export const playerNotifications = writable<Notification[]>()
 
 export const createPrompt = writable(false)
 export const tipPrompt = writable(false)
