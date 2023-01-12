@@ -143,6 +143,7 @@
             
             const res = await window.tronLink 
             if (res.tronWeb) connectedAddress.set(res.tronWeb.defaultAddress.base58)
+            //@ts-ignore
             getBalance.set(await window.tronWeb.trx.getBalance($connectedAddress) / 1000000)
 
             if ($connectedAddress) {

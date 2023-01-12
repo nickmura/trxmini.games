@@ -1,5 +1,5 @@
 {
-	"outDir": ".svelte-kit",
+	"outDir": "build",
 	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
 		"allowJs": true,
@@ -13,9 +13,11 @@
 	},
 	"exclude": [
 		"node_modules",
-		".svelte-kit/**/*",
+		"build/**/*",
 		"./src/**/*",
+		"./src/**/**/*",
 	]
+
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//
 	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes

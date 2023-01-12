@@ -54,6 +54,7 @@
     
     setTimeout(async () => {
         getDomains($fetchedProfile.address), 250
+        console.log($trxDomains)
         
     })
 
@@ -102,7 +103,7 @@
 
 
     let isExpanded = false
-    function viewDetails(selectedBadge) {
+    function viewDetails(selectedBadge:Badge) {
 
         isExpanded = !isExpanded
         badge=selectedBadge

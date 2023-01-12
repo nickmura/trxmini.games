@@ -1,6 +1,32 @@
 // REMOVE LOCALHOST AND CHANGE TO IP OF DEV SERVER / PROD SERVER WHEN DEPLOYED
 //  / // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / ? ?
 //  / // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / ? ?
+interface Badge {
+    name: string
+    bio: string,
+    img: string,
+    rarity: string,
+    description: string
+}
+
+interface Profile {
+    address: string,
+    username: string,
+    default_username: string,
+    img: string,
+    has_played: boolean,
+    games_played: number,
+    games_won: number,
+    has_won_8ball: boolean,
+    xp: number,
+    is_beta: boolean,
+    description: string
+}
+
+interface PostBody {
+    x: string,
+    y: string,
+}
 
 import { writable } from 'svelte/store';
 
@@ -13,15 +39,15 @@ export const isTwoAddress = writable()
 
 
 export const isProfile = writable();
-export const fetchedProfile = writable();
-export const avatarSrc = writable('https://f004.backblazeb2.com/file/trxmini-games-/player4.png');
-export const profileBadges = writable([]);
-export const trxDomains = writable()
+export const fetchedProfile = writable<Profile>();
+export const avatarSrc = writable<string>('https://f004.backblazeb2.com/file/trxmini-games-/player4.png');
+export const profileBadges = writable<Badge[]>([]);
+export const trxDomains = writable<Array<string>>()
 
 export const userID = writable(); // Allows users to play with their address or username. If no username, assigns address. 
 export const connectedChain = writable(false);
 
-export const getBalance = writable() 
+export const getBalance = writable<number>() 
 
 export const playerNotifications = writable()
 
@@ -113,7 +139,7 @@ export function expandAvatarPrompt() {
     avatarPrompt.set(avatarExpanded)
 }
 
-export async function postRequest(url, body) {
+export async function postRequest(url:string, body:BodyInit) {
     const res = await fetch(url, {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -123,7 +149,7 @@ export async function postRequest(url, body) {
     return await res.json()
 } 
 
-export async function getDomains(address) {
+export async function getDomains(address:String) {
     let domains
     let url = getDomainsURL + address + `&network=mainnet`
     const res = await fetch(url)
@@ -134,17 +160,17 @@ export async function getDomains(address) {
 }
 
 // TEST
-async function postImageRequest(url, image) {
-    const formData = new FormData();
-    let blob = new Blob(image)
-    formData.append('image', blob,'image/png')
-    console.log('fdsfdsfdshfddgd3283245832548325825')
-    const res = await fetch(uploadAvatarURL, {
-        method: 'POST',
-        // headers: {'Content Type': 'multipart/form-data'},
-        body: formData,
-    })
-    console.log('fetched')
-    if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-    return await res.json()
-}
+// async function postImageRequest(url, image) {
+//     const formData = new FormData();
+//     let blob = new Blob(image)
+//     formData.append('image', blob,'image/png')
+//     console.log('fdsfdsfdshfddgd3283245832548325825')
+//     const res = await fetch(uploadAvatarURL, {
+//         method: 'POST',
+//         // headers: {'Content Type': 'multipart/form-data'},
+//         body: formData,
+//     })
+//     console.log('fetched')
+//     if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
+//     return await res.json()
+// }

@@ -37,7 +37,19 @@
 		fetchLevel()
 	}
 	
-
+	interface Profile {
+		address: string,
+		username: string,
+		default_username: string,
+		img: string,
+		has_played: boolean,
+		games_played: number,
+		games_won: number,
+		has_won_8ball: boolean,
+		xp: number,
+		is_beta: boolean,
+		description: string
+	}
 
 	//let isProfile = false
 	function profileIsUser() {

@@ -1,5 +1,5 @@
-<script>
-    //@ts-nocheck
+<script lang='ts'>
+
     import { onMount } from 'svelte'
     import { slide } from 'svelte/transition'
 	import { goto } from '$app/navigation';
@@ -11,7 +11,6 @@
     import { io } from 'socket.io-client'
     const socket = io(chessWs)
 
-    
     import { 
         connectedAddress, 
         connectedUsername, 
@@ -25,13 +24,13 @@
 
 
 
-    let username 
+    let username:String
     let balanceInterval
 
     let user
-    let stakeValue
+    let stakeValue:number
     let isWagerless = false
-    let errorHandling
+    let errorHandling:String
     let setUsername = false
     let isUnique = true
 
@@ -49,7 +48,7 @@
         infoExpanded = !infoExpanded
     }
 
-    let isExpanded
+    let isExpanded:boolean
     async function selectGame() {
         isExpanded = !isExpanded
     }
@@ -70,7 +69,7 @@
 
 
 
-    async function createGame(info) {
+    async function createGame(info:String) {
         // DO THIS LOGIC
 
         // FOR 8 BALL 
@@ -111,11 +110,17 @@
                     } 
                     
                     // invoking function with parameters declared above
+                    //@ts-ignore
                     const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+                        //@ts-ignore
                         window.tronWeb.address.toHex(chessContract), "startGame(uint32,address,uint256)", 
+                        //@ts-ignore
                         options, parameter, window.tronWeb.address.toHex($connectedAddress))
+                    //@ts-ignore
                     const signedTx = await tronWeb.trx.sign(tx.transaction);
+                    //@ts-ignore
                     const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
+                
                 }
                 // room parameters for the server to index and update server side
                 if (!isWagerless) {
@@ -168,7 +173,7 @@
                 socket.emit('createRoom', uuid, room)
                 createPrompt.set(false)
                 inGame.set(true)
-                sessionStorage.setItem('inGame', true)
+                sessionStorage.setItem('inGame', 'true')
                 if ($page.routeId == '/username' || $page.routeId == '/join') goto('../chess')
                 else if ($page.routeId == '/chess') goto('./')
                 else {
