@@ -1,5 +1,14 @@
-<script>
-	const roadmaps = [
+<script lang='ts'>
+	
+
+	interface Roadmaps {
+		title: string,
+		description: string,
+		image: string
+	}
+
+
+	const roadmaps:Roadmaps[] = [
 		{
 			title: 'Release beta & gain feedback',
 			description:

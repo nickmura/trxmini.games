@@ -30,9 +30,12 @@
 	let userPng = Math.floor(mathRand);
 	let uploadedAvatar : String
 	let level : Number
+
+
 	async function fetchLevel() {
 		level = Math.floor(await getLevel($fetchedProfile.xp))
 	}
+
 	if ($fetchedProfile) {
 		fetchLevel()
 	}

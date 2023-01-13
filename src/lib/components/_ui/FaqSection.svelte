@@ -1,5 +1,13 @@
-<script>
-	const faqs = [
+<script lang='ts'>
+	import { stringify } from "postcss";
+
+
+	interface Faq {
+		question: string,
+		answer: string,
+	}
+	
+	const faqs:Faq[] = [
 
 		{
 			question: 'How do you play a minigame?',

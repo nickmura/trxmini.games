@@ -1,20 +1,20 @@
-<script>
-	//@ts-nocheck
+<script lang='ts'>
+
 	import { onDestroy } from 'svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
 	import { chessContract, 
-			connectedAddress, 
-			connectedUsername, 
-			userID,
-			createGameForm, 
-			urlEndedRooms, 
-			urlRooms,
-			getBallRoomsUrl,
-			chessWs, 
-			connectedChain, 
-			inGame, 
-		} from '$lib/state/state'
+		connectedAddress, 
+		connectedUsername, 
+		userID,
+		createGameForm, 
+		urlEndedRooms, 
+		urlRooms,
+		getBallRoomsUrl,
+		chessWs, 
+		connectedChain, 
+		inGame, 
+	} from '$lib/state/state'
 	import { theme } from '$lib/state/Theme.svelte'
 	import { io } from 'socket.io-client'
 	import CreateGame from '$lib/components/_ui/dialogs/CreateGame.svelte'
