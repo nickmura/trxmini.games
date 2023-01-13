@@ -1,14 +1,14 @@
-<script>
-//@ts-nocheck
+<script lang='ts'>
+
 import { slide} from 'svelte/transition'
 import { connectedAddress, connectedUsername, notificationsUrl, playerNotifications, getBalance, tipSocket, medalAlert, authPrompt, postRequest } from '$lib/state/state'
 import { io } from 'socket.io-client'
 
 const socket = io(tipSocket)
-let sender
+let sender:String
 let recipient
-let tip
-let txid
+let tip:Number
+let txid:string
 
 let hasTipped = false // Checks if the event variable 'to' matches the $connectedAddress. If true, hasTipped = true
 let hasSent = false // Checks if the event variable 'from' matches the $connectedAddress || $connectedUsername, If true = hasSent = true
@@ -43,7 +43,7 @@ function openAuth() {
     authPrompt.set(!$authPrompt)
 }
 function medalAlertOff() {
-    localStorage.setItem('hasSeenMedal', true)
+    localStorage.setItem('hasSeenMedal', 'true')
     medalAlert.set(false)
 }
 </script>

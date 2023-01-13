@@ -9,25 +9,7 @@
         id: Number,
 
     }
-    // function noti() {
-    //     let user = JSON.stringify({address: $connectedAddress, name: $connectedUsername})
-    //     const lossUrl = 'http://170.187.182.220:5001/gameplayed'
-    //     const submitLoserData = async (url) => { // sending address to express and postgres
-    //             const res = await fetch(url, {
-    //                 method: 'post',
-    //                 headers: {'Content-Type': 'application/json'},
-    //                 body: user,
-    //             })
-    //             if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-    //             return res
-    //         }
 
-
-    //     submitLoserData(lossUrl)
-    //             .then(res => console.log(res))
-    //             .catch(err => console.error(err))
-
-    // }
 
     async function deleteNotification(n:Notification) {
         let array:Notification[] = $playerNotifications

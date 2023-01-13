@@ -1,5 +1,5 @@
-<script>
-    //@ts-nocheck
+<script lang='ts'>
+
     
     import { onMount } from 'svelte'
     import { slide } from 'svelte/transition'
@@ -7,21 +7,22 @@
     import { page } from '$app/stores';
     import { io } from 'socket.io-client'
     import { tipContract, tipPlayerForm, tipPrompt, connectedAddress, connectedUsername, getBalance, url2, tipSocket } from '$lib/state/state'
+	import type { Input } from 'postcss';
 
     const socket = io(tipSocket)
 
 
     let throwErr
     let hasClicked = false
-    let tip
-    let recip
-    let userExists = null
+    let tip:any // FIX 
+    let recip:string
+    let userExists:boolean
 
 
-    async function checkUniqueUser(uniqueUser) {
+    async function checkUniqueUser(uniqueUser:string) {
         const url3 = `http://170.187.182.220:5001/unique?user=${uniqueUser}.trx`
         let user = JSON.stringify({name: uniqueUser})
-            const submitData = async (url) => { // sending address to express and postgres
+            const submitData = async (url:string) => { // sending address to express and postgres
                 const res = await fetch(url, {
                     method: 'post',
                     headers: {'Content-Type': 'application/json'},
@@ -37,10 +38,10 @@
             if (json.unique == true) userExists = false
     }
 
-    const debounce = (callback, delay) => {
+    const debounce = (callback:CallableFunction, delay:number) => {
         let debounceTimer;
         return ((...args) => {
-            clearTimeout(debounceTimer);
+            clearTimeout(debounceTimer); 
             debounceTimer = setTimeout(() => callback(...args), delay);
         });
     };
@@ -53,7 +54,7 @@
     async function tipPlayerExpanded() {
         isExpanded = !isExpanded
     }
-    async function tipPlayer(amount, recipient) {
+    async function tipPlayer(amount:number, recipient:string) {
         try {
             let recipAddr
             
@@ -76,14 +77,19 @@
             }
 
             //invoking contract function
+            //@ts-ignore
             const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+                //@ts-ignore
                 window.tronWeb.address.toHex(tipContract), "tip(uint32,uint64,address)",
+                //@ts-ignore
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
+            //@ts-ignore
             const signedTx = await tronWeb.trx.sign(tx.transaction);
+            //@ts-ignore
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx);
             if (!$connectedUsername) socket.emit('tippedPlayer', $connectedAddress, recipAddr, amount, broadcastTx.txid);
             if ($connectedUsername) socket.emit('tippedPlayer', $connectedUsername, recipAddr, amount, broadcastTx.txid);
-            hasClicked =
+            hasClicked = false
             isExpanded = !isExpanded
             tipPrompt.set(false)
         } catch (error) {
