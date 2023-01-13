@@ -26,8 +26,11 @@
 		theRoom
 	} from '$lib/state/state'
 
-
-	let menu = [
+	interface Pages {
+		name: string,
+		url: string,
+	}
+	let menu:Pages[] = [
 		{ name: 'About', url: '/#about' },
 		{ name: 'Games', url: '/#games' },
 		{ name: 'Roadmap', url: '/#roadmap' },
@@ -65,7 +68,7 @@
 			goto('/chess')
 		}
 	}
-	let wagerTxLink
+	let wagerTxLink:string
 	$: wagerTxLink = `https://shasta.tronscan.org/#/transaction/${$wagerTx}`
 	if ($wagerTx) wagerTxLink = `https://shasta.tronscan.org/#/transaction/${$wagerTx}`
 </script>
@@ -121,7 +124,7 @@
 			{#each menu as item}
 				<li>
 					{#if item.name == 'Whitepaper'}
-						<a href='./' class="text-lg opacity-50" disabled>{item.name}</a>
+						<a href='./' class="text-lg opacity-50">{item.name}</a>
 					{:else if $page.routeId == '/join' && item.name == 'Games'} 
 							<a href='./' class="text-lg ">{item.name}</a>
 					{:else}
@@ -186,7 +189,7 @@
 								on:click={() => (isOpen = false)}
 								href='./'
 								class='inline-block w-full py-4 px-4 text-lg font-semibold opacity-50'
-							disabled>
+							>
 								{item.name}
 							</a>
 					{:else}
@@ -194,7 +197,7 @@
 								on:click={() => (isOpen = false)}
 								href={item.url}
 								class='inline-block w-full py-4 px-4 text-lg font-semibold'
-								disabled>
+								>
 								{item.name}
 							</a>
 					{/if}

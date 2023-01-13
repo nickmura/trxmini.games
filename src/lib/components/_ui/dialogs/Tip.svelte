@@ -38,14 +38,21 @@
             if (json.unique == true) userExists = false
     }
 
-    const debounce = (callback:CallableFunction, delay:number) => {
-        let debounceTimer;
-        return ((...args) => {
-            clearTimeout(debounceTimer); 
-            debounceTimer = setTimeout(() => callback(...args), delay);
-        });
+    // const debounce = (callback:CallableFunction, delay:number) => {
+    //     let debounceTimer;
+    //     return ((...args) => {
+    //         clearTimeout(debounceTimer); 
+    //         debounceTimer = setTimeout(() => callback(...args), delay);
+    //     });
+    // };
+    export const debounce = <T extends (...args: Parameters<T>) => 
+    void>(func: T, wait = 400): T => {
+        let timeout: ReturnType<typeof setTimeout>;
+        return ((...args: Parameters<T>): void => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), wait);
+        }) as T;
     };
-    
 
     const bounceCheckUser = debounce(checkUniqueUser, 300) // Debounce user input to querying database.
 
