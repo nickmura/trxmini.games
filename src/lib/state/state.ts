@@ -49,7 +49,7 @@ export const avatarSrc = writable<string>('https://f004.backblazeb2.com/file/trx
 export const profileBadges = writable<Badge[]>([]);
 export const trxDomains = writable<Array<string>>()
 
-export const userID = writable(); // Allows users to play with their address or username. If no username, assigns address. 
+export const userID = writable<String>(); // Allows users to play with their address or username. If no username, assigns address. 
 export const connectedChain = writable(false);
 
 export const getBalance = writable<number>() 

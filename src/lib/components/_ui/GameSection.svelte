@@ -18,22 +18,45 @@
 	import { theme } from '$lib/state/Theme.svelte'
 	import { io } from 'socket.io-client'
 	import CreateGame from '$lib/components/_ui/dialogs/CreateGame.svelte'
-	import Tip from '$lib/components/_ui/dialogs/Tip.svelte';
+	// import Tip from '$lib/components/_ui/dialogs/Tip.svelte';
 
+
+	interface Rooms {
+		gameID: number,
+        game: string, 
+        players: String[], 
+        host: string,
+        player2: string, 
+        chat: string[],
+        orientation: string, // For when the game ends, client can know what the orientation was.
+        fen: string,
+        isCheckmate: string, 
+        isStalemate: string,
+        isDraw: string, 
+        stake: string,
+		place: boolean,
+        token: string,             
+		index: string,
+        idle: boolean,
+        currentTurn: string,
+        wagerTxs: string[],
+        redeemedStake: string[],
+        redeemedDraw: string[],
+	}
 	const socket = io(chessWs)
 
 
-	let endedRooms
-	let rooms
-	let ballRooms
+	let endedRooms:Rooms[]
+	let rooms:Rooms[]
+	let ballRooms:Rooms[]
 	$: ballRooms
 	let ballRoomIndex // Gets assigned rooms.length
 	let hasRoom
-	let selectedRoom
-	let isPlayer
-	let getPlayerBalance
-	let throwErr
-	let hasClicked
+	let selectedRoom:Rooms
+	let isPlayer:boolean
+	let getPlayerBalance:number
+	let throwErr:string
+	let hasClicked:boolean
 
 
 	onDestroy(() => {
@@ -46,12 +69,12 @@
 	async function updateRooms() {
         let room 
 		const res = await fetch(urlRooms)
-		if (!res.ok) throw new Error(res)
+		if (!res.ok) throw new Error (`${res.status}: ${res.statusText}`)
 
 		let json = await res.json()
 		rooms = JSON.parse(json)
         if (rooms != null && rooms.length && rooms != undefined) {
-			if (rooms?.find(room => room.players.includes($userID && !room.place))) {
+			if (rooms?.find(room => room.players.includes($userID))) {
 				room = rooms?.find(room => room.players.includes($userID))
 
 				hasRoom = room
@@ -64,7 +87,7 @@
 
 	async function getBallRooms() {
 		const res = await fetch(getBallRoomsUrl)
-		if (!res.ok) throw new Error(res)
+		if (!res.ok) throw new Error (`${res.status}: ${res.statusText}`)
 		let json = await res.json()
 		ballRooms = JSON.parse(json)
 
@@ -75,10 +98,9 @@
 	async function getEndedRoom() {
 		let room
 		const res = await fetch(urlEndedRooms)
-		if (!res.ok) throw new Error(res)
+		if (!res.ok) throw new Error (`${res.status}: ${res.statusText}`)
 		endedRooms = JSON.parse(await res.json())
         if (endedRooms != null && endedRooms.length && endedRooms != undefined) {
-			
 			room = endedRooms?.find(room => room.players.includes($userID))
 			//console.log($userID, room)
 			if (room) {
@@ -101,13 +123,14 @@
 	setTimeout(() => {
 		letTimeout = true
 	}, 1600)
-	async function joinGameExpanded(room) {
+	async function joinGameExpanded(room:Rooms) {
 		if (room.game == 'chess' || room.game == 'Chess') {
 			try {
 				selectedRoom = room
 				isExpanded = !isExpanded
+				//@ts-ignore
 				getPlayerBalance = await window.tronWeb.trx.getBalance($connectedAddress) / 1000000
-				if (selectedRoom.stake > getPlayerBalance) throwErr = `Insufficient balance to join game - requires a stake of ${selectedRoom.stake} ${room.token}`
+				if (parseInt(selectedRoom.stake) > getPlayerBalance) throwErr = `Insufficient balance to join game - requires a stake of ${selectedRoom.stake} ${room.token}`
 				else throwErr = ''
 			} catch (error) {
 				hasClicked = false
@@ -115,27 +138,32 @@
 		}
 	}
 
-	async function joinGame(room) {
+	async function joinGame(room:Rooms) {
 		let stake
 		let i 
 		try {
 			if (room.stake != '0') {
-			throwErr = ''
-			hasClicked = true
-			stake = room.stake*1000000
+				throwErr = ''
+				hasClicked = true
+				stake = parseInt(room.stake)*1000000
 
-			i = parseInt(room.index)
-			console.log(stake, i)
-			let parameter = [{type:'uint256',value:i},{type:'address', value:$connectedAddress}, {type:'uint256', value:stake}]
-			let options = {
-				feeLimit:100000000,
-				callValue:stake
-			}
-			// Invoke contract function joinGame() with parameters above
-			const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(window.tronWeb.address.toHex(chessContract), 
-			"joinGame(uint256,address,uint256)", options, parameter, window.tronWeb.address.toHex($connectedAddress))
-			const signedTx = await tronWeb.trx.sign(tx.transaction);
-			const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx);
+				i = parseInt(room.index)
+				console.log(stake, i)
+				let parameter = [{type:'uint256',value:i},{type:'address', value:$connectedAddress}, {type:'uint256', value:stake}]
+				let options = {
+					feeLimit:100000000,
+					callValue:stake
+				}
+				// Invoke contract function joinGame() with parameters above
+
+				//@ts-ignore
+				const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(window.tronWeb.address.toHex(chessContract), 
+				//@ts-ignore
+				"joinGame(uint256,address,uint256)", options, parameter, window.tronWeb.address.toHex($connectedAddress))
+				//@ts-ignore
+				const signedTx = await tronWeb.trx.sign(tx.transaction);
+				//@ts-ignore
+				const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx);
 			}
 			socket.emit('joinRoom', $userID, room.gameID)
 			if ($page.routeId == '/join') goto('../chess')
@@ -175,7 +203,7 @@
 			{/if}
 			
 		</div>
-		<Tip></Tip>
+		<!-- <Tip></Tip> Check if this is nessescary -->
 		<CreateGame></CreateGame>
 		{#if !rooms}
 			<div class='flex justify-center w-full py-6 font-semibold text-2xl mt-4'>No games available!</div>
@@ -267,7 +295,7 @@
 									<div class="text-2xl font-semibold">Stake</div>
 									<span class="text-xl font-light text-gray-600">{room.stake} TRX</span>
 								</div>
-								{#if isPlayer || !$connectedAddress || !$connectedChain || room.game == '8 Ball' || room.players.includes($userID)}
+								{#if isPlayer || !$connectedAddress || !$connectedChain || room.game != 'chess' || room.players.includes($userID)}
 									<button class="whitespace-nowrap rounded-[10px]  bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-2 text-lg font-medium text-white opacity-50"
 									disabled>Join Game</button>
 								{:else}
@@ -365,7 +393,7 @@
 								transition-200" on:click={(e)=>joinGameExpanded(selectedRoom)}>Cancel</button>
 				
 								<!-- Change last and operator to selectedRoom.stake > 49 -->
-								{#if selectedRoom.stake && selectedRoom.stake < getPlayerBalance - 16 && !hasClicked && selectedRoom.stake > 9 || selectedRoom.stake == '0'}  
+								{#if selectedRoom.stake && parseInt(selectedRoom.stake) < getPlayerBalance - 16 && !hasClicked && parseInt(selectedRoom.stake) > 9 || selectedRoom.stake == '0'}  
 									<button on:click={(e)=>joinGame(selectedRoom)} class=' rounded-[10px] border 
 										border-indigo-500 dark:hover:border-emerald-500 dark:border-blue-500 hover:border-emerald-500 py-1.5 px-6 text-lg 
 										font-medium text-[#3C1272] dark:text-white hover:scale-[1.05] transition 
@@ -380,7 +408,7 @@
 										' disabled> 
 										Join Game
 									</button>
-								{:else if selectedRoom.stake > getPlayerBalance || selectedRoom.stake > getPlayerBalance - 16 || selectedRoom.stake < 50}
+								{:else if parseInt(selectedRoom.stake) > getPlayerBalance || parseInt(selectedRoom.stake) > getPlayerBalance - 16 || parseInt(selectedRoom.stake) < 50}
 									<button on:click={(e)=>joinGame(selectedRoom)} class=' rounded-[10px] border border-[#b3b2b1] 
 										py-1.5 px-6 text-lg font-medium text-[#3C1272] dark:text-white opacity-50' disabled> 
 										Join Game

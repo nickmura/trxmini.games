@@ -7,7 +7,7 @@
     import { page } from '$app/stores';
     import { io } from 'socket.io-client'
     import { tipContract, tipPlayerForm, tipPrompt, connectedAddress, connectedUsername, getBalance, url2, tipSocket } from '$lib/state/state'
-	import type { Input } from 'postcss';
+
 
     const socket = io(tipSocket)
 
