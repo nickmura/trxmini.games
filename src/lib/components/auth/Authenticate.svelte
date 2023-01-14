@@ -1,5 +1,5 @@
-<script>
-    //@ts-nocheck
+<script lang='ts'>
+
 
     import { beforeUpdate, onMount } from 'svelte'
     import { slide } from 'svelte/transition'
@@ -30,26 +30,60 @@
         
 
     } from '$lib/state/state'
+    
+    interface Rooms {
+		gameID: number,
+        game: string, 
+        players: String[], 
+        host: string,
+        player2: string, 
+        chat: string[],
+        orientation: string, // For when the game ends, client can know what the orientation was.
+        fen: string,
+        isCheckmate: string, 
+        isStalemate: string,
+        isDraw: string, 
+        stake: string,
+		place: boolean,
+        token: string,             
+		index: string,
+        idle: boolean,
+        currentTurn: string,
+        wagerTxs: string[],
+        redeemedStake: string[],
+        redeemedDraw: string[],
+	}
+
+    interface User {
+        address: string,
+        defaultusername: string,
+        hasWon8Ball: boolean,
+        username: string,
+        xp: number
+    }
+
+
     import { getLevel } from '$lib/state/level'
 
     let isExpanded = false
     let medal8Ball = false
     
-    let user
-    let userLevel
-    let levelProgress // for progress bar
-    let rooms
+    let user:User
+    let userLevel:number
+    let levelProgress:number // for progress bar
+    let rooms:Rooms[]
     let currentRoom
     
-    let profileLink
+    let profileLink:string
     async function check() { 
         try {
             if (browser) {
+                //@ts-ignore
                 const res = await window.tronLink
                 //console.log(res)
                 if (res) {
                     if (res.tronWeb == undefined || res.tronWeb === false) { 
-                        connectedAddress.set()
+                        connectedAddress.set('')
                     } if (res.tronWeb) {
                         connectedAddress.set(res.tronWeb.defaultAddress.base58)
                         let ifChain = await res.tronWeb.trx.getContract(chessContract)
@@ -61,7 +95,7 @@
 
 
                         const userNotification = JSON.stringify({address: $connectedAddress, name: $connectedUsername})
-                        const getNotifications = async (url) => { // sending address to express and postgres
+                        const getNotifications = async (url:string) => { // sending address to express and postgres
                         const res = await fetch(url, {
                             method: 'post',
                             headers: {'Content-Type': 'application/json'},
@@ -98,7 +132,10 @@
 		else rooms = JSON.parse(await res.json())
         
 
-            if (rooms != null) room = rooms.find(room => room.players.includes($connectedUsername))
+            if (rooms != null && rooms.length && rooms != undefined) {
+            if (rooms?.find(room => room.players.includes($connectedUsername))) {
+                room = rooms.find(room => room.players.includes($connectedUsername))
+            
                 if (room) { 
                     inGame.set(true)
                     currentRoom = true
@@ -106,6 +143,8 @@
                     inGame.set(false)
                     currentRoom = false
                 }
+            }
+            }
             //console.log('inGame', $inGame)
               
         
@@ -140,7 +179,7 @@
 
     async function checkUser() {
         if (browser) {
-            
+            //@ts-ignore
             const res = await window.tronLink 
             if (res.tronWeb) connectedAddress.set(res.tronWeb.defaultAddress.base58)
             //@ts-ignore
@@ -153,6 +192,7 @@
                 if (!res.ok) throw new Error('null fetch')
                 if (res) user = await res.json()
                 if (user) {
+                    console.log(user)
                     userLevel = await getLevel(user.xp);
                     levelProgress = userLevel - Math.floor(userLevel)
 
@@ -183,7 +223,9 @@
 
     async function connectTronlink() {
         try {
+            //@ts-ignore
 			const res = await window.tronLink.request({method: "tron_requestAccounts"})
+            //@ts-ignore
 			let accounts = await window.tronLink;
 			
 			if (typeof res.code === 'undefined') {
@@ -193,7 +235,7 @@
 			connectedAddress.set(accounts.tronWeb.defaultAddress.base58)
             let user = JSON.stringify({address: accounts.tronWeb.defaultAddress.base58})
             
-            const submitData = async (url) => { // sending address to express and postgres
+            const submitData = async (url:string) => { // sending address to express and postgres
                 const res = await fetch(url, {
                     method: 'post',
                     headers: {'Content-Type': 'application/json'},
@@ -238,10 +280,12 @@
 
     async function redirectJoin() {
         createPrompt.set(false)
-        if ($page.routeId == "/username") goto('../join')
-        if ($page.routeId.includes('/profile/')) goto('../../join')
-        if ($page.routeId == '/join') goto('./')
-        if ($page.routeId == '/') goto('./join')
+        if ($page.routeId != null) {
+            if ($page.routeId == "/username") goto('../join')
+            if ($page.routeId.includes('/profile/')) goto('../../join')
+            if ($page.routeId == '/join') goto('./')
+            if ($page.routeId == '/') goto('./join')
+        }
 
 
     }
@@ -300,7 +344,7 @@
                 {/if}
             </div>
             <div class='pl-6 pr-6 pt-3  pb-3'>
-                <i><div class='hover:scale-[1.05] transition transition-200 hover:text-amber-400 animate-pulse'><a href={profileLink} alt='noreferrer'><u>{$connectedUsername}'s account</u></a></div></i>
+                <i><div class='hover:scale-[1.05] transition transition-200 hover:text-amber-400 animate-pulse'><a href={profileLink} ><u>{$connectedUsername}'s account</u></a></div></i>
 
                 <div class='flex-row '>
                     <div class='flex wrap text-gray-400 hover:text-gray-500'>

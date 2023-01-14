@@ -35,8 +35,8 @@ interface Notification {
 }
 import { writable } from 'svelte/store';
 
-export const connectedAddress = writable();
-export const connectedUsername = writable()
+export const connectedAddress = writable<string>();
+export const connectedUsername = writable<string>()
 export const defaultUsername = writable();
 
 export const isHostAddress = writable()
