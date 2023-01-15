@@ -1,11 +1,10 @@
 <script lang='ts'>
 	
-
 	interface Roadmaps {
 		title: string,
 		description: string,
 		image: string
-	}
+	}	
 
 
 	const roadmaps:Roadmaps[] = [

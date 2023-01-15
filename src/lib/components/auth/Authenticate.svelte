@@ -10,6 +10,7 @@
 
 
     import { theme } from '$lib/state/Theme.svelte'
+    import type { Rooms } from '$lib/state/state'
     import { urlRooms, urlEndedRooms, url0, url1, url2, tipSocket, getXp, authPrompt, notificationsUrl, defaultUsername } from '$lib/state/state'
     import { 
         connectedAddress, 
@@ -31,28 +32,7 @@
 
     } from '$lib/state/state'
     
-    interface Rooms {
-		gameID: number,
-        game: string, 
-        players: String[], 
-        host: string,
-        player2: string, 
-        chat: string[],
-        orientation: string, // For when the game ends, client can know what the orientation was.
-        fen: string,
-        isCheckmate: string, 
-        isStalemate: string,
-        isDraw: string, 
-        stake: string,
-		place: boolean,
-        token: string,             
-		index: string,
-        idle: boolean,
-        currentTurn: string,
-        wagerTxs: string[],
-        redeemedStake: string[],
-        redeemedDraw: string[],
-	}
+
 
     interface User {
         address: string,
@@ -125,7 +105,7 @@
     
     
     async function updateRooms() {
-        let room
+        let room:Rooms | undefined
         let testaddr
 		const res = await fetch(urlRooms)
 		if (!res.ok) return res.text().then(text => { throw new Error(text) })

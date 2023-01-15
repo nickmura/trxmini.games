@@ -28,11 +28,51 @@ interface PostBody {
     y: string,
 }
 
+export interface Chat {
+    user: string,
+    msg: string,
+    command: boolean,
+    request: string,
+}
+
+export interface WagerTx {
+    txid: string,
+    user: string,
+    player: string,
+}
+
+export interface Rooms {
+    gameID: number,
+    game: string, 
+    players: String[], 
+    host: string,
+    player2: string, 
+    chat: Chat[],
+    orientation: string, // For when the game ends, client can know what the orientation was.
+    fen: string,
+    isCheckmate: string, 
+    isStalemate: string,
+    isDraw: string, 
+    stake: string,
+    place: boolean,
+    token: string,             
+    index: string,
+    idle: boolean,
+    currentTurn: string,
+    wagerTxs: WagerTx[],
+    redeemedStake: string[],
+    redeemedDraw: string[],
+}
+
+
 interface Notification {
     notification: String,
     id: Number,
 
 }
+
+
+
 import { writable } from 'svelte/store';
 
 export const connectedAddress = writable<string>();
@@ -49,7 +89,7 @@ export const avatarSrc = writable<string>('https://f004.backblazeb2.com/file/trx
 export const profileBadges = writable<Badge[]>([]);
 export const trxDomains = writable<Array<string>>()
 
-export const userID = writable<String>(); // Allows users to play with their address or username. If no username, assigns address. 
+export const userID = writable<string>(); // Allows users to play with their address or username. If no username, assigns address. 
 export const connectedChain = writable(false);
 
 export const getBalance = writable<number>() 
@@ -107,7 +147,7 @@ export const eventAPI = 'http://192.53.123.185:5020/api'
 export const chessWs = 'http://192.53.123.185:3001';
 
 export const currentState = writable('') // Saves current FEN state of chess game.
-export const wagerTx = writable()
+export const wagerTx = writable<String>()
 export const theRoom = writable()
 let prompted = false
 

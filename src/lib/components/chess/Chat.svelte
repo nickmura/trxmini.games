@@ -1,6 +1,7 @@
-<script>
-    //@ts-nocheck
+<script lang='ts'>
+
     import { connectedAddress, connectedUsername, userID } from '$lib/state/state'
+    import type { Rooms } from '$lib/state/state'
     import { urlRooms, urlEndedRooms, chessWs } from '$lib/state/state';
     import Auth from '$lib/components/auth/Authenticate.svelte'
     
@@ -8,24 +9,38 @@
 	import { onMount } from 'svelte';
     const socket = io(chessWs);
 
-    let message 
-    let getMsgs = []
+
+    interface Chat {
+        user: string,
+        msg: string,
+        command: boolean,
+        request: string,
+    }
+
+
+
+    let message:string | undefined
+    let getMsgs:Chat[] | undefined 
+    let rooms:Rooms[] | undefined
+    getMsgs = []
     $: getMsgs
 
 
     async function fetchMessages() {
         let room
         const res = await fetch(urlRooms)
-        if (!res.ok) throw new Error(res)
-        let rooms = JSON.parse(await res.json())
+        if (!res.ok) throw new Error (`${res.status}: ${res.statusText}`)
+        rooms = JSON.parse(await res.json())
 
         if (rooms?.find(room => room.players.includes($userID))) {
             room = rooms.find(room => room.players.includes($userID))
-            
-            if (room.chat.length) {
-                console.log(getMsgs)
-                getMsgs = room.chat
+            if (room) {
+                if (room.chat.length) {
+                    console.log(getMsgs)
+                    getMsgs = room.chat
+                }
             }
+
         }    
     } setTimeout(fetchMessages, 1500)
 
@@ -33,20 +48,23 @@
     async function fetchEndedMessages() {
         let room
         const res = await fetch(urlEndedRooms)
-        if (!res.ok) throw new Error(res)
+        if (!res.ok) throw new Error (`${res.status}: ${res.statusText}`)
 
-        let rooms = JSON.parse(await res.json())
+        rooms = JSON.parse(await res.json())
 
         if (rooms?.find(room => room.players.includes($userID))) {
             room = rooms?.find(room => room.players.includes($userID))
-            if (room.chat != []) {
-                getMsgs = room.chat
+            if (room) {
+                if (room.chat.length) {
+                    getMsgs = room.chat
+                }
             }
+
         }  
     } setTimeout(fetchMessages, 1500)
 
 
-    async function sendMsg(msg) {
+    async function sendMsg(msg:string | undefined) {
         let _msg
         if (msg != '/forfeit') {
             _msg = {user: $userID, msg: msg}
@@ -67,12 +85,14 @@
 <div class='max-w-[26.5rem]'>
     <div class="border dark:border-blue-500 border-indigo-500 w-[22rem] relative rounded-lg h-[33.5rem] dark:bg-[#17171d] ">
         <div class='p-2     absolute top-0 overflow-y-auto w-full max-h-full'>
-        {#if getMsgs.length}   
-            {#each getMsgs as chatlog}
-                <div class={chatlog.user == 'SYSTEM' ? 'text-gray-400 italic' : ''}>
-                    {chatlog.user}: {chatlog.msg}
-                </div>
-            {/each}
+        {#if getMsgs}
+            {#if getMsgs.length}   
+                {#each getMsgs as chatlog}
+                    <div class={chatlog.user == 'SYSTEM' ? 'text-gray-400 italic' : ''}>
+                        {chatlog.user}: {chatlog.msg}
+                    </div>
+                {/each}
+            {/if}
         {/if}
         </div>
     </div>

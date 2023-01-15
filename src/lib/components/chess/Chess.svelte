@@ -1,17 +1,16 @@
-<script>
-    //@ts-nocheck
-    import { onMount } from 'svelte'
-    import { writable } from 'svelte/store'
-    import { slide } from 'svelte/transition'
-    import { goto } from '$app/navigation'
-    import { browser } from '$app/environment'
-    import { io } from 'socket.io-client'
+<script lang='ts'>
 
+    import { onMount } from 'svelte';
+    import { writable } from 'svelte/store';
+    import { slide } from 'svelte/transition';
+    import { goto } from '$app/navigation';
+    import { browser } from '$app/environment';
+    import { io } from 'socket.io-client';
 
-    import { chessWs, urlRooms, urlEndedRooms, tipSocket } from '$lib/state/state' // ENDPOINTS
+    import type { Rooms } from '$lib/state/state';
+    import { chessWs, urlRooms, urlEndedRooms, tipSocket } from '$lib/state/state'; // ENDPOINTS
     const socket = io(chessWs)
     const notificationSocket = io(tipSocket)
-
 
     import { 
         connectedAddress,
@@ -23,7 +22,9 @@
         creatingGame,
         wagerTx,
         theRoom
-    } from '$lib/state/state'
+    } from '$lib/state/state';
+
+
 
     import Chat from './Chat.svelte'
 
@@ -39,27 +40,28 @@
     let isHostAddress = false
     let isTwoAddress = false
 
-    let rooms
-    let currentRoom
-    let invalidRoom
+    let rooms:Rooms[] | undefined
+    let currentRoom:Rooms 
+    let invalidRoom:boolean
 
     let isCheckmate
-    let isDraw
-    let Stalemate
+    let isDraw:boolean  
+    let Stalemate:boolean
 
     let fullGame = false
     let gameEnded = false
     let hasClicked = false
     let receivedStake = false
 
-    let winner
-    let currentTurn
-    let currentTurnPlayer
-    let host
-    let player2
-    let color
+    let winner:string
+    let currentTurn:string
+    let currentTurnPlayer:string
+    let host:string
+    let player2:string
+    let color:string
 
-    
+    let roomStake:string
+
 
 
 
@@ -79,24 +81,28 @@
             while (!room && counter < 300) {
                 counter++;
                 const res = await fetch(urlRooms)
-		        if (!res.ok) throw new Error(res)
+                if (!res.ok) throw new Error (`${res.status}: ${res.statusText}`)
 		        rooms = JSON.parse(await res.json())
                 room = rooms?.find(room => room.players.includes($userID))
                 if (room) invalidRoom = false;
-                if (!room) invalidRoom - true;
+                if (!room) invalidRoom = true;
             }
                 if (room) {
                     
                     inGame.set(true)
                     socket.emit('reconnectPlayer', room)
                     currentRoom = room
-                    if (room.wagerTxs?.find(wager => wager.user == $userID)) {
-                        wagerTx.set(room.wagerTxs.find(wager => wager.user == $userID).txid)
-                        console.log('WagerTxid', $wagerTx)
-                    }
+                    if (currentRoom) roomStake = currentRoom.stake
+                        if (room.wagerTxs?.find(wager => wager.user == $userID)) {
+                            let tx = room.wagerTxs?.find(wager => wager.user == $userID)
+                            if (tx) wagerTx.set(tx.txid)
+                            console.log('WagerTxid', $wagerTx)
+                        }
+                    
                     
                 }
-                host = room.host
+                if (room) host = room.host
+                //@ts-ignore
                 if (window.tronWeb.isAddress(host)) {
                     isHostAddress = true
                 }
@@ -108,6 +114,7 @@
         if (room && room.players.length > 1) {
             socket.emit('reconnectPlayer', room) //No reason to grab state before game starts.
             currentRoom = room
+            if (currentRoom) roomStake = currentRoom.stake
             player2 = room.player2
             fullGame = true
             currentTurn = room.currentTurn
@@ -126,6 +133,7 @@
             if (currentRoom.isDraw == 'true') {
                 isDraw = true;
             }
+            //@ts-ignore
             if (window.tronWeb.isAddress(player2)) {
                 isTwoAddress = true
             }
@@ -141,10 +149,11 @@
 
         //@ts-ignore
         if (rooms?.find(room => room.players.includes($userID))) {
-            currentRoom = rooms?.find(room => room.players.includes($userID))
-            
+            room = rooms?.find(room => room.players.includes($userID))
+            if (room) currentRoom = room
             if (currentRoom.host) host = currentRoom.host
             if (currentRoom.player2) player2 = currentRoom.player2
+            if (currentRoom) roomStake = currentRoom.stake
             currentState.set(currentRoom.fen)
             fullGame = true
             gameEnded = true
@@ -152,7 +161,8 @@
             inGame.set(true)
             console.log(currentRoom.wagerTxs)
             if (currentRoom.wagerTxs?.find(wager => wager.player == $userID)) {
-                wagerTx.set(currentRoom.wagerTxs.find(wager => wager.player == $userID).txid)
+                let tx = currentRoom.wagerTxs.find(wager => wager.player == $userID)
+                if (tx) wagerTx.set(tx.txid)
                 console.log($wagerTx)
             } 
             if (currentRoom.orientation == $userID) {
@@ -299,10 +309,15 @@
             if ($userID == host) opponent = player2
             if ($userID == player2) opponent = host
             // invoking contract function
+            //@ts-ignore
             const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+                //@ts-ignore
                 window.tronWeb.address.toHex(chessContract), "payWager(uint256)",
+                //@ts-ignore
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
+            //@ts-ignore
             const signedTx = await tronWeb.trx.sign(tx.transaction);
+            //@ts-ignore
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
             wagerTx.set(broadcastTx.txid)
             socket.emit('redeemedStake', $userID, broadcastTx.txid);
@@ -329,10 +344,15 @@
             }
 
             // invoking contract function
+            //@ts-ignore
             const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+                //@ts-ignore
                 window.tronWeb.address.toHex(chessContract), "payDraw(uint256)",
+                //@ts-ignore
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
+            //@ts-ignore
             const signedTx = await tronWeb.trx.sign(tx.transaction);
+            //@ts-ignore
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
 
             wagerTx.set(broadcastTx.txid)
@@ -355,12 +375,17 @@
             }
 
             // invoking contract function
+            //@ts-ignore
             const tx = await window.tronWeb.transactionBuilder.triggerSmartContract(
+                //@ts-ignore    
                 window.tronWeb.address.toHex(chessContract), "forfeit(uint256)",
+                //@ts-ignore
                 options, parameter, window.tronWeb.address.toHex($connectedAddress))
+            //@ts-ignore
             const signedTx = await tronWeb.trx.sign(tx.transaction);
+            //@ts-ignore
             const broadcastTx = await tronWeb.trx.sendRawTransaction(signedTx); 
-
+            console.log(broadcastTx)
             wagerTx.set(broadcastTx.txid);
             
             socket.emit('avertGame', $userID, broadcastTx.txid)
@@ -408,7 +433,7 @@
                     {/if}
                 </div>
                 <div class='mx-4 px-2 py-4 border-b mb-8 dark:border-blue-800 border-indigo-800'>
-                    {currentRoom && player2 ? 'Total Stake' : 'Stake'}: {currentRoom && !player2 ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${currentRoom.stake * 2} TRX`: ''} </div>
+                    {currentRoom && player2 ? 'Total Stake' : 'Stake'}: {currentRoom && !player2 ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${parseInt(currentRoom.stake) * 2} TRX`: ''} </div>
 
 
                 <div class='flex justify-center w-full py-4 px-2 flex-col'>
@@ -484,7 +509,7 @@
                 {:else}
                     <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 dark:opacity-60 opacity-70 animate-pulse'>Please wait...</div>
                 {/if}
-                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 mb-8 dark:opacity-30 opacity-50'>Stake: {currentRoom ? `${currentRoom.stake} TRX`: currentRoom && player2 ? `${parseInt(currentRoom.stake) * 2} TRX`: ''} </div>
+                <div class='mx-4 px-2 py-4 dark:border-blue-800 border-b border-indigo-800 mb-8 dark:opacity-30 opacity-50'>Stake: {currentRoom ? `${roomStake} TRX`: currentRoom && player2 ? `${parseInt(roomStake) * 2} TRX`: ''} </div>
                 
             </div>
         {/if}

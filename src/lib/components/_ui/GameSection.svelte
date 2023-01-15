@@ -3,6 +3,7 @@
 	import { onDestroy } from 'svelte'
 	import { page } from '$app/stores'
 	import { goto } from '$app/navigation'
+	import type { Rooms } from '$lib/state/state'
 	import { chessContract, 
 		connectedAddress, 
 		connectedUsername, 
@@ -13,7 +14,7 @@
 		getBallRoomsUrl,
 		chessWs, 
 		connectedChain, 
-		inGame, 
+		inGame,
 	} from '$lib/state/state'
 	import { theme } from '$lib/state/Theme.svelte'
 	import { io } from 'socket.io-client'
@@ -21,28 +22,7 @@
 	// import Tip from '$lib/components/_ui/dialogs/Tip.svelte';
 
 
-	interface Rooms {
-		gameID: number,
-        game: string, 
-        players: String[], 
-        host: string,
-        player2: string, 
-        chat: string[],
-        orientation: string, // For when the game ends, client can know what the orientation was.
-        fen: string,
-        isCheckmate: string, 
-        isStalemate: string,
-        isDraw: string, 
-        stake: string,
-		place: boolean,
-        token: string,             
-		index: string,
-        idle: boolean,
-        currentTurn: string,
-        wagerTxs: string[],
-        redeemedStake: string[],
-        redeemedDraw: string[],
-	}
+
 	const socket = io(chessWs)
 
 
