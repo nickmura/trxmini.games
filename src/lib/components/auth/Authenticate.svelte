@@ -142,6 +142,7 @@
        rooms = JSON.parse(await res.json())
 
         //@ts-ignore
+        
         if (rooms?.find(room => room.players.includes($connectedUsername))) {
             currentRoom = rooms?.find(room => room.players.includes($connectedUsername))
             if (room) { 

@@ -7,7 +7,9 @@
     import { browser } from '$app/environment';
     import { io } from 'socket.io-client';
 
+    import type { Api, Config, CgActionParams } from './app/index';
     import type { Rooms } from '$lib/state/state';
+
     import { chessWs, urlRooms, urlEndedRooms, tipSocket } from '$lib/state/state'; // ENDPOINTS
     const socket = io(chessWs)
     const notificationSocket = io(tipSocket)
@@ -34,7 +36,7 @@
     import { Chessground, cgStylesHelper } from "./app/index"
     import './app/cgstyles/chessground.css';
 	import { theme } from '$lib/state/Theme.svelte'
-
+    import type cg from 'chessground/types';
 
 
     let isHostAddress = false
@@ -58,8 +60,7 @@
     let currentTurnPlayer:string
     let host:string
     let player2:string
-    let color:string
-
+    let color:"white" | "black" | undefined
     let roomStake:string
 
 
@@ -202,7 +203,7 @@
     $: {
         chess = new Chess($currentState);
     }
-    let cgApi
+    let cgApi:Api
 
 
     socket.on('emitMove', (FEN, turn) => {
@@ -234,7 +235,8 @@
     };
 
     
-    const playOtherSide = (orig,dest)=> {
+    const playOtherSide = (orig:cg.Key,dest:cg.Key)=> {
+        console.log(orig, dest)
         chess.move({from:orig,to:dest});
         cgApi.set({
             turnColor:turnColor(chess),
@@ -260,7 +262,7 @@
     }
 
 
-    function init(api) {
+    function init(api:Api) {
         api.state.movable.dests = validMovesAsDests(chess);
         // @ts-ignore
         console.log($currentState)
@@ -269,7 +271,7 @@
         cgApi.set({
             fen:$currentState,
             lastMove:[], // clear lastMove array to avoid issues related to turn
-            dests:validMovesAsDests(chess),
+            //dests:validMovesAsDests(chess),
             turnColor:turnColor(chess),
             movable :{
                 color:color,
@@ -296,12 +298,12 @@
             isNotGame = true
     }
 
-    async function collectWager(index) {
+    async function collectWager(index:string) {
         try {
             hasClicked = true
             let opponent
             //let index = parseInt(index)
-            var parameter = [{type:'uint',value:index}]
+            var parameter = [{type:'uint',value:parseInt(index)}]
             var options = {
                 feeLimit: 100000000,
 
@@ -333,11 +335,11 @@
 
 
 
-    async function collectDraw(index) {
+    async function collectDraw(index:string) {
         try {
             hasClicked = true
             //let index = parseInt(index)
-            var parameter = [{type:'uint',value:index}]
+            var parameter = [{type:'uint',value:parseInt(index)}]
             var options = {
                 feeLimit: 100000000,
 
@@ -364,7 +366,7 @@
         }
     }
 
-    async function avertGame(index) {
+    async function avertGame(index:string) {
         try {
             hasClicked = true
             //let index = parseInt(index)

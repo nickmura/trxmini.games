@@ -29,4 +29,4 @@ interface CgActionParams {
 }
 
 export { Chessground, cgStylesHelper };
-export type { Config, Api };
+export type { Config, Api, CgActionParams };
