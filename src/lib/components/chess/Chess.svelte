@@ -9,6 +9,7 @@
 
     import type { Api, Config, CgActionParams } from './app/index';
     import type { Rooms } from '$lib/state/state';
+    import type { Square } from 'chess.js';
 
     import { chessWs, urlRooms, urlEndedRooms, tipSocket } from '$lib/state/state'; // ENDPOINTS
     const socket = io(chessWs)
@@ -37,6 +38,7 @@
     import './app/cgstyles/chessground.css';
 	import { theme } from '$lib/state/Theme.svelte'
     import type cg from 'chessground/types';
+	import type { MoveMetadata } from 'chessground/types';
 
 
     let isHostAddress = false
@@ -138,6 +140,7 @@
             if (window.tronWeb.isAddress(player2)) {
                 isTwoAddress = true
             }
+            console.log(color)
         } 
 
     } 
@@ -166,10 +169,11 @@
                 if (tx) wagerTx.set(tx.txid)
                 console.log($wagerTx)
             } 
-            if (currentRoom.orientation == $userID) {
-                color = 'black'
-            } else {
+            if (host == $userID) {
                 color = 'white'
+            } else if (player2 == $userID) {
+
+                color = 'black'
             }
             if (currentRoom.isCheckmate) {
                 winner = currentRoom.isCheckmate
@@ -180,6 +184,7 @@
             if (currentRoom.isDraw == 'true') {
                 isDraw = true;
             }
+            console.log(color)
         }
        
     } 
@@ -205,37 +210,7 @@
     }
     let cgApi:Api
 
-
-    socket.on('emitMove', (FEN, turn) => {
-        currentState.set(FEN)
-        currentTurnPlayer = turn
-    })
-
-    // currentState is undefined until player joins game, which is assigned FEN value when player joins
-    socket.on('playerJoined', (FEN) => {
-        console.log('playerJoined')
-        currentState.set(FEN)
-        updateRooms()
-    })
-    socket.on('gameForfeited', () => {
-        currentState.set('')
-    })
-
-
-    $: config = {
-        fen: $currentState,
-        orientation:color ? color : 'white',
-        dests: validMovesAsDests(chess),
-        movable: {
-            //color: 'both',
-            free: false,
-            dests: validMovesAsDests(chess),
-            events: {after:{playOtherSide}}
-        },
-    };
-
-    
-    const playOtherSide = (orig:cg.Key,dest:cg.Key)=> {
+    const playOtherSide = (orig: cg.Key | Square, dest: cg.Key | Square, metadata: cg.MoveMetadata | undefined) => {
         console.log(orig, dest)
         chess.move({from:orig,to:dest});
         cgApi.set({
@@ -261,6 +236,39 @@
         }
     }
 
+    socket.on('emitMove', (FEN, turn) => {
+
+        console.log('emitMove',FEN, turn)
+        currentState.set(FEN)
+        currentTurnPlayer = turn
+    })
+
+    // currentState is undefined until player joins game, which is assigned FEN value when player joins
+    socket.on('playerJoined', (FEN) => {
+        console.log('playerJoined')
+        currentState.set(FEN)
+        updateRooms()
+    })
+    socket.on('gameForfeited', () => {
+        currentState.set('')
+    })
+
+    let config:Config
+    $: config = {
+        fen: $currentState,
+        orientation:color,
+        // dests: validMovesAsDests(chess),
+        movable: {
+            //color: 'both',
+            free: false,
+            dests: validMovesAsDests(chess),
+            events: {after:playOtherSide}
+        },
+    };
+
+    
+ 
+
 
     function init(api:Api) {
         api.state.movable.dests = validMovesAsDests(chess);
@@ -271,7 +279,7 @@
         cgApi.set({
             fen:$currentState,
             lastMove:[], // clear lastMove array to avoid issues related to turn
-            //dests:validMovesAsDests(chess),
+            // dests:validMovesAsDests(chess),
             turnColor:turnColor(chess),
             movable :{
                 color:color,

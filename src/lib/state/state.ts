@@ -1,6 +1,9 @@
 // REMOVE LOCALHOST AND CHANGE TO IP OF DEV SERVER / PROD SERVER WHEN DEPLOYED
 //  / // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / ? ?
 //  / // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / ? ?
+import { writable } from 'svelte/store';
+
+
 interface Badge {
     name: string
     bio: string,
@@ -73,7 +76,7 @@ interface Notification {
 
 
 
-import { writable } from 'svelte/store';
+
 
 export const connectedAddress = writable<string>();
 export const connectedUsername = writable<string>()
@@ -146,7 +149,7 @@ export const eventAPI = 'http://172.105.106.183:5020/api'
 // Chess socket.io endpoint
 export const chessWs = 'http://172.105.106.183:3001';
 
-export const currentState = writable('') // Saves current FEN state of chess game.
+export const currentState = writable<string>('') // Saves current FEN state of chess game.
 export const wagerTx = writable<String>()
 export const theRoom = writable()
 let prompted = false

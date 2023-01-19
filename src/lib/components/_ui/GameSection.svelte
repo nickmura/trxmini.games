@@ -27,7 +27,7 @@
 
 
 	let endedRooms:Rooms[]
-	let rooms:Rooms[]
+	let rooms:Rooms[] | undefined
 	let ballRooms:Rooms[]
 	$: ballRooms
 	let ballRoomIndex // Gets assigned rooms.length
@@ -51,10 +51,10 @@
 		const res = await fetch(urlRooms)
 		if (!res.ok) throw new Error (`${res.status}: ${res.statusText}`)
 
-		let json = await res.json()
-		rooms = JSON.parse(json)
+		rooms = JSON.parse(await res.json())
+
         if (rooms != null && rooms.length && rooms != undefined) {
-			if (rooms?.find(room => room.players.includes($userID))) {
+			if (rooms.find(room => room.players.includes($userID))) {
 				room = rooms?.find(room => room.players.includes($userID))
 
 				hasRoom = room
