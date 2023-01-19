@@ -8,7 +8,7 @@ import {
   isProfile, 
   fetchedProfile,
   avatarSrc
-} from '$lib/state/state'
+} from '../../../lib/state/state'
 
 /** @type {import('./$types').PageLoad} */
 
@@ -43,9 +43,9 @@ export async function load({ fetch, params }) {
         if (profile == undefined && !user.includes('.trx') && !user.includes('.usdd')) {
           // with .usdd prefix
           try {
-            const fetch = await fetch(getProfileURL + user + '.usdd')
-            if (!fetch.ok) throw new Error('fetch Error, null fetch')
-            profile = await fetch.json()
+            const res = await fetch(getProfileURL + user + '.usdd')
+            if (!res.ok) throw new Error('fetch Error, null fetch')
+            profile = await res.json()
             if (profile != undefined) {
               fetchedProfile.set(profile)
               if (profile.img) avatarSrc.set(profile.img)
@@ -63,7 +63,7 @@ export async function load({ fetch, params }) {
     } catch (error) {
         console.log(error.message)
     }
-    throw error ('404', 'not found')
+    throw error (404, 'not found')
   }
   // if ($connectedUsername == $fetchedProfile.username || $defaultUsername == $fetchedProfile.username 
   //   || $connectedUsername == $fetchedProfile.default_username || 
