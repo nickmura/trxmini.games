@@ -1,4 +1,4 @@
-//@ts-nocheck
+
 // THIS IS SOLELY CONFIGURATION AND ENDPOINTS FOR FOR USERNAMES VIA POSTGRES
 import express from 'express';
 import crypto from 'crypto';
@@ -6,9 +6,12 @@ import B2 from 'backblaze-b2'
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
-
 import { post } from './cred.js';
-import { getLevel, B2AppKeyID, B2AppKey, postRequest } from './level.js';
+//@ts-ignore
+
+//@ts-ignore
+import { getLevel, B2AppKeyID, B2AppKey, postRequest } from './level.ts';
+
 
 const b2 = new B2({
     applicationKeyId:B2AppKeyID,
@@ -240,9 +243,12 @@ app.post('/deletenotification', async (req, res) => {
     const values = [`${notification.id}`]
     let query
     try {
+
         query = await post.query(deleteQuery, values);
         console.log('Deleted notification', notification.id)
-    } catch (error) { console.log(error) } 
+    } catch (error) { 
+        console.log(error) 
+    } 
 })
 
 app.post('/tipnotification', async (req, res) => {
@@ -310,7 +316,7 @@ app.get('/getprofile', async(req, res) => {
 })
 
 
-app.post('/uploadavatar', multer({storage: multer.memoryStorage()}).single("avatar"), async (req, res, next) => {
+app.post('/uploadavatar', multer({storage: multer.memoryStorage()}).single("avatar"), async (req,res,next) => {
     let user = req.query.user
     console.log('$connectedUsername', user)
     if (req.file) {
