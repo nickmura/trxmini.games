@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"db": "node ./src/lib/server/db/server.js",
+		"db": "node --experimental-specifier-resolution=node --loader ts-node/esm ./src/lib/server/db/server.ts",
 		"redis": "node ./src/lib/server/redis/server.js",
 		"chess": "node ./src/lib/server/chess/server.js",
 		"build": "vite build",
@@ -18,7 +18,9 @@
 		"@sveltejs/adapter-auto": "^1.0.0-next.86",
 		"@sveltejs/adapter-static": "^1.0.0-next.47",
 		"@sveltejs/kit": "next",
+		"@types/backblaze-b2": "^1.5.2",
 		"@types/chess.js": "^0.13.4",
+		"@types/uuid": "^9.0.0",
 		"autoprefixer": "^10.4.7",
 		"imagekit": "^4.1.2",
 		"postcss": "^8.4.14",

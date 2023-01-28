@@ -7,7 +7,6 @@
     interface Notification {
         notification: String,
         id: Number,
-
     }
 
 

@@ -1,10 +1,10 @@
-import { Server } from 'socket.io'
-
+import { Server } from 'socket.io';
 import express from 'express';
 import cors from 'cors';
 
 //@ts-ignore ==> For imports on server.
 import { eventAPI, _redisPasswd } from '../state.js'
+
 import { createClient } from 'redis';
 
 //@ts-ignore ==> for imports on server.

@@ -12,7 +12,6 @@ import { post } from './cred.js';
 //@ts-ignore
 import { getLevel, B2AppKeyID, B2AppKey, postRequest } from './level.ts';
 
-
 const b2 = new B2({
     applicationKeyId:B2AppKeyID,
     applicationKey:B2AppKey,
