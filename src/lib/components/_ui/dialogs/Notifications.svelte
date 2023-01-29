@@ -12,7 +12,7 @@
 
     async function deleteNotification(n:Notification) {
         let array:Notification[] = $playerNotifications
-        let deleteNotificationUrl = 'http://170.187.182.220:5001/deletenotification'
+        let deleteNotificationUrl = 'http://146.190.244.186:5001/deletenotification'
         let body = JSON.stringify({notification: n.notification, id: n.id})
 
         const index = array?.findIndex(notification => notification.id == n.id)

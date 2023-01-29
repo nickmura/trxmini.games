@@ -114,40 +114,40 @@ export const medalAlert = writable(false)
 export const creatingGame = writable()
 
 // POSTGRES ENDPOINTS
-export const url0 = 'http://170.187.182.220:5001/address'
-export const url1 = 'http://170.187.182.220:5001/username'
-export const url2 = 'http://170.187.182.220:5001/getaddr?username='
-export const getXp = 'http://170.187.182.220:5001/getxp?user=' // May not need this.
-export const notificationsUrl = 'http://170.187.182.220:5001/getnotifications'
-export const getProfileURL = 'http://170.187.182.220:5001/getprofile?user='
-export const changeUsernameURL = 'http://170.187.182.220:5001/changeusername'
-export const getDomainsURL = `https://app.trxdomains.xyz/api/domains/getDomains?address=`
-export const uploadAvatarURL = 'http://170.187.182.220:5001/uploadavatar'
-export const getAvatarURL = 'http://170.187.182.220:5001/getavatar'
+export const url0 = 'http://146.190.244.186:5001/address';
+export const url1 = 'http://146.190.244.186:5001/username';
+export const url2 = 'http://146.190.244.186:5001/getaddr?username=';
+export const getXp = 'http://146.190.244.186:5001/getxp?user=' // May not need this.
+export const notificationsUrl = 'http://146.190.244.186:5001/getnotifications';
+export const getProfileURL = 'http://146.190.244.186:5001/getprofile?user=';
+export const changeUsernameURL = 'http://146.190.244.186:5001/changeusername';
+export const getDomainsURL = `https://app.trxdomains.xyz/api/domains/getDomains?address=`;
+export const uploadAvatarURL = 'http://146.190.244.186:5001/uploadavatar'
+export const getAvatarURL = 'http://146.190.244.186:5001/getavatar'
 
 // REDIS ENDPOINTS
 
 
-export const makeBallRoom = 'http://172.105.106.183:5020/makeballroom?user='
-export const getBallRoomsUrl = 'http://172.105.106.183:5020/getballrooms'
+export const makeBallRoom = 'http://146.190.244.186:5020/makeballroom?user=';
+export const getBallRoomsUrl = 'http://146.190.244.186:5020/getballrooms';
 
-export const urlRooms = 'http://172.105.106.183:5020/rooms'
-export const urlEndedRooms = 'http://172.105.106.183:5020/endedrooms'
+export const urlRooms = 'http://146.190.244.186:5020/rooms';
+export const urlEndedRooms = 'http://146.190.244.186:5020/endedrooms';
 
-export const tipSocket = 'http://172.105.106.183:4903/'
+export const tipSocket = 'http://146.190.244.186:4903/';
 
 // chess contract, aswell as endpoint that Listens for contract events via trongrid.io API, such as the index which is a nessescary parameter to invoke the relevant struct.
-export const tipContract = 'TBPL4jVJMwnMLUjmX9GDTgXcC8y3T5zVgD';
-export const chessContract = 'TMGBGionnPs1TFRHxNrZRiGneZaDi6zkBh'
-export const _chessContract  = 'TQyY41mqbHVWWHWt5Zq1pPL5rYd7HgM2kE'
-export const trxDomainContract = 'TAtgoVq9xqv1C65hjFTerJQZFt4rbAPea6'
+export const tipContract = 'TBPL4jVJMwnMLUjmX9GDTgXcC8y3T5zVgD';;
+export const chessContract = 'TMGBGionnPs1TFRHxNrZRiGneZaDi6zkBh';
+export const _chessContract  = 'TQyY41mqbHVWWHWt5Zq1pPL5rYd7HgM2kE';
+export const trxDomainContract = 'TAtgoVq9xqv1C65hjFTerJQZFt4rbAPea6';
 
-export const chessEventListener = `https://api.shasta.trongrid.io/v1/contracts/${chessContract}/events` 
+export const chessEventListener = `https://api.shasta.trongrid.io/v1/contracts/${chessContract}/events`;
 
-export const eventAPI = 'http://172.105.106.183:5020/api'
+export const eventAPI = 'http://146.190.244.186:5020/api'
  
 // Chess socket.io endpoint
-export const chessWs = 'http://172.105.106.183:3001';
+export const chessWs = 'http://146.190.244.186:3001';
 
 export const currentState = writable<string>('') // Saves current FEN state of chess game.
 export const wagerTx = writable<String>()

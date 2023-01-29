@@ -9,7 +9,7 @@
 
 
     //This needs to be assigned when the query parameter is actually defined. Otherwise, it will provide the parameter undefined.
-    //const url2 = `//170.187.182.220:5001/username?addr=${$connectedAddress}`
+    //const url2 = `//146.190.244.186:5001/username?addr=${$connectedAddress}`
 
     let username 
     
@@ -51,7 +51,7 @@
 
 
     async function checkUniqueUser(uniqueUser) {
-        const url3 = `http://170.187.182.220:5001/unique?user=${uniqueUser}`
+        const url3 = `http://146.190.244.186:5001/unique?user=${uniqueUser}`
         let user = JSON.stringify({name: uniqueUser+'.trx'})
             const submitData = async (url) => { // sending address to express and postgres
                 const res = await fetch(url, {

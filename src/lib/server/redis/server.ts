@@ -9,7 +9,7 @@ import type { Rooms, WagerTx, Chat } from '../state.js';
 import { createClient } from 'redis';
 import { io } from 'socket.io-client';
 
-const client = createClient({ url: `redis://nick:${_redisPasswd}@172.105.106.183:6379`});
+const client = createClient({ url: `redis://nick:${_redisPasswd}@146.190.244.186:6379`});
 
 const whitelist = ['https://test2.trxmini.games', '//test2.trxmini.games', 'https://trxmini.games', 
 '//trxmini.games', 'http://localhost:5173', '//localhost:5173', '//127.0.0.1:5173', '//undefined']
@@ -135,7 +135,7 @@ const server = new Server(4903, {
 server.on('connection', async (socket) => {
     socket.on('tippedPlayer', async (from, to, amount, txid) => {
         console.log(`${from} HAS SENT ${to} ${amount} TRX`)
-        let url = 'http://170.187.182.220:5001/tipnotification'
+        let url = 'http://146.190.244.186:5001/tipnotification'
         let body = JSON.stringify({sender: from, recipient: to, amount: amount, txid: txid})
         server.emit('recievedTip', from, to, amount, txid);
         postRequest(url, body)
@@ -143,7 +143,7 @@ server.on('connection', async (socket) => {
 
     socket.on('wonChessWager', async (winner, opponent, txid, amount) => {
         console.log('wonChessWager', winner)
-        let url = 'http://170.187.182.220:5001/chessnotification'
+        let url = 'http://146.190.244.186:5001/chessnotification'
         let body
         if (winner.includes('.trx')) {
             body = JSON.stringify({winner: winner, opponent: opponent, amount: amount, txid: txid})

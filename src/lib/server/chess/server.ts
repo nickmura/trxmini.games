@@ -10,7 +10,7 @@ import { createClient } from 'redis';
 //@ts-ignore ==> for imports on server.
 import type { Rooms, Chat, WagerTx } from '../state.js'
 
-const client = createClient({ url: `redis://nick:${_redisPasswd}@172.105.106.183:6379` });
+const client = createClient({ url: `redis://nick:${_redisPasswd}@146.190.244.186:6379` });
 client.connect();
 
 
@@ -209,7 +209,7 @@ io.on('connection', (socket) => {
                         playerObject = JSON.stringify({ address: player })
                     }
 
-                    const playerOpponentUrl = 'http://170.187.182.220:5001/gameplayed'
+                    const playerOpponentUrl = 'http://146.190.244.186:5001/gameplayed'
                     
                     const submitPlayerData = async (url) => { // sending address to express and postgres
                         const res = await fetch(url, {
@@ -333,7 +333,7 @@ io.on('connection', (socket) => {
 
 
         // Gives xp to the winner
-        const winUrl = 'http://170.187.182.220:5001/gamewon'
+        const winUrl = 'http://146.190.244.186:5001/gamewon'
         const submitWinnerData = async (url) => { // sending address to express and postgres
             const res = await fetch(url, {
                 method: 'post',
@@ -350,7 +350,7 @@ io.on('connection', (socket) => {
 
 
         // Gives xp to the loser (sorry)
-        const lossUrl = 'http://170.187.182.220:5001/gameplayed'
+        const lossUrl = 'http://146.190.244.186:5001/gameplayed'
         const submitLoserData = async (url) => { // sending address to express and postgres
             const res = await fetch(url, {
                 method: 'post',
@@ -384,7 +384,7 @@ io.on('connection', (socket) => {
             playerObject = JSON.stringify({ address: player })
         }
 
-        const playerOpponentUrl = 'http://170.187.182.220:5001/gameplayed'
+        const playerOpponentUrl = 'http://146.190.244.186:5001/gameplayed'
         const submitPlayerData = async (url) => { // sending address to express and postgres
             const res = await fetch(url, {
                 method: 'post',
@@ -438,7 +438,7 @@ io.on('connection', (socket) => {
             playerObject = JSON.stringify({ address: player })
         }
 
-        const playerOpponentUrl = 'http://170.187.182.220:5001/gameplayed'
+        const playerOpponentUrl = 'http://146.190.244.186:5001/gameplayed'
         const submitPlayerData = async (url) => { // sending address to express and postgres
             const res = await fetch(url, {
                 method: 'post',

@@ -168,7 +168,7 @@
 
             if ($connectedAddress) {
                 
-                const url2 = `http://170.187.182.220:5001/username?addr=${$connectedAddress}`
+                const url2 = `http://146.190.244.186:5001/username?addr=${$connectedAddress}`
                 const res = await fetch(url2)
                 if (!res.ok) throw new Error('null fetch')
                 if (res) user = await res.json()
