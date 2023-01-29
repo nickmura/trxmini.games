@@ -145,6 +145,8 @@ export const trxDomainContract = 'TAtgoVq9xqv1C65hjFTerJQZFt4rbAPea6';
 export const chessEventListener = `https://api.shasta.trongrid.io/v1/contracts/${chessContract}/events`;
 
 export const eventAPI = 'http://146.190.244.186:5020/api'
+
+
  
 // Chess socket.io endpoint
 export const chessWs = 'http://146.190.244.186:3001';
