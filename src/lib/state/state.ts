@@ -3,7 +3,6 @@
 //  / // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / ? ?
 import { writable } from 'svelte/store';
 
-
 interface Badge {
     name: string
     bio: string,

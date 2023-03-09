@@ -1,8 +1,10 @@
 <script lang='ts'>
 
-import { slide} from 'svelte/transition'
-import { connectedAddress, connectedUsername, notificationsUrl, playerNotifications, getBalance, tipSocket, medalAlert, authPrompt, postRequest } from '$lib/state/state'
-import { io } from 'socket.io-client'
+import { slide} from 'svelte/transition';
+import { connectedAddress, connectedUsername, notificationsUrl, playerNotifications, getBalance, tipSocket, medalAlert, authPrompt, postRequest } from '$lib/state/state';
+import { io } from 'socket.io-client';
+
+
 
 const socket = io(tipSocket)
 let sender:String

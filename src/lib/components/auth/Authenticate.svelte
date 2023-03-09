@@ -267,8 +267,6 @@
             if ($page.routeId == '/join') goto('./')
             if ($page.routeId == '/') goto('./join')
         }
-
-
     }
 
     async function tipPlayer() {
