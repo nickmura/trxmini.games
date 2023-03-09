@@ -138,8 +138,9 @@ export const tipSocket = 'http://146.190.244.186:4903/';
 // chess contract, aswell as endpoint that Listens for contract events via trongrid.io API, such as the index which is a nessescary parameter to invoke the relevant struct.
 export const tipContract = 'TBPL4jVJMwnMLUjmX9GDTgXcC8y3T5zVgD';;
 export const chessContract = 'TMGBGionnPs1TFRHxNrZRiGneZaDi6zkBh';
-export const _chessContract  = 'TQyY41mqbHVWWHWt5Zq1pPL5rYd7HgM2kE';
 export const trxDomainContract = 'TAtgoVq9xqv1C65hjFTerJQZFt4rbAPea6';
+// export const _chessContract  = 'TQyY41mqbHVWWHWt5Zq1pPL5rYd7HgM2kE';
+
 
 export const chessEventListener = `https://api.shasta.trongrid.io/v1/contracts/${chessContract}/events`;
 
